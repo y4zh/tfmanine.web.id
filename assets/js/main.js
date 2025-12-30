@@ -153,7 +153,8 @@ function openDetail(routeId) {
 
 // Go back (Shared)
 function goBack() {
-    window.location.href = 'index.html';
+    // Gunakan tanda garis miring "/" agar selalu kembali ke halaman utama website
+    window.location.href = '/'; 
 }
 
 // Get route slug (Detail Page)
@@ -699,3 +700,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
