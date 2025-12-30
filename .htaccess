@@ -1,0 +1,30 @@
+# Aktifkan Rewrite Engine
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# Prevent weird 404 loops
+ErrorDocument 404 "404 Not Found"
+
+# 0. Asset Redirection (Fix for Relative Paths in Virtual Directories)
+# Redirect /rute/assets/... to /assets/...
+RewriteRule ^rute/assets/(.*)$ assets/$1 [L,NC]
+
+# 1. Hapus ekstensi .html dari URL browser (Redirect Eksternal)
+RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+RewriteRule ^ /%1 [L,R=301]
+
+# 2. Redirect /index ke root /
+RewriteCond %{THE_REQUEST} /index [NC]
+RewriteRule ^(.*)index$ /$1 [L,R=301]
+
+# 3. Routing untuk Halaman Detail Rute
+# Mengarah ke file baru route-detail.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^rute/([^/]+)/?$ route-detail.html?rute=$1 [L,QSA,NC]
+
+# 4. Tambahkan ekstensi .html secara internal (untuk file lain)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^([^/]+)/?$ $1.html [L]

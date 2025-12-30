@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Transportasi - MAN 9 Jakarta</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#0072bc', accent: '#FF5733' },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], data: ['PT Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="bg-gray-50 h-screen flex flex-col overflow-hidden">
+    <nav class="shrink-0 z-50 bg-primary shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center text-white font-bold border-2 border-white/20">
+                        9</div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-blue-200 uppercase tracking-wider font-semibold">Transportasi</span>
+                        <span class="text-white font-bold leading-tight">MAN 9 Jakarta</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="index.html"
+                        class="text-white hover:text-blue-200 transition-colors font-medium text-sm">Beranda</a>
+                    <a href="peta.html"
+                        class="bg-white/20 text-white px-4 py-1.5 rounded-full transition-colors font-medium text-sm backdrop-blur-sm border border-white/10">Peta</a>
+                    <a href="index.html#rute-section"
+                        class="text-white hover:text-blue-200 transition-colors font-medium text-sm">Rute</a>
+                    <a href="index.html#guides-section"
+                        class="text-white hover:text-blue-200 transition-colors font-medium text-sm">Panduan</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <main class="flex-1 relative w-full h-full">
+        <div id="map-container" class="absolute inset-0 w-full h-full bg-gray-100"></div>
+        <div class="absolute bottom-8 left-4 right-4 z-20 pointer-events-none">
+            <div
+                class="max-w-4xl mx-auto bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 border border-white/50 pointer-events-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Pilih Jenis Transportasi</h2>
+                    <a href="index.html#route-list-section"
+                        class="text-sm font-semibold text-primary hover:underline flex items-center">
+                        Lihat Semua Rute
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="window.location.href='index.html?mode=brt'"
+                        class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 hover:border-primary hover:shadow-md transition-all flex flex-col items-center space-y-2 group">
+                        <div
+                            class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="assets/images/icon-bus.png" class="w-6 h-6 object-contain">
+                        </div>
+                        <span class="text-xs font-bold text-gray-700">Transjakarta</span>
+                    </button>
+                    <button onclick="window.location.href='index.html?mode=mikro'"
+                        class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 hover:border-primary hover:shadow-md transition-all flex flex-col items-center space-y-2 group">
+                        <div
+                            class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="assets/images/icon-mikrotrans.png" class="w-6 h-6 object-contain">
+                        </div>
+                        <span class="text-xs font-bold text-gray-700">Mikrotrans</span>
+                    </button>
+                    <button onclick="window.location.href='index.html?mode=krl'"
+                        class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 hover:border-primary hover:shadow-md transition-all flex flex-col items-center space-y-2 group">
+                        <div
+                            class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="assets/images/icon-train.png" class="w-6 h-6 object-contain">
+                        </div>
+                        <span class="text-xs font-bold text-gray-700">KRL</span>
+                    </button>
+                    <button onclick="window.location.href='index.html?mode=lrt'"
+                        class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 hover:border-primary hover:shadow-md transition-all flex flex-col items-center space-y-2 group">
+                        <div
+                            class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <img src="assets/images/icon-lrt.png" class="w-6 h-6 object-contain">
+                        </div>
+                        <span class="text-xs font-bold text-gray-700">LRT</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/map.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>
