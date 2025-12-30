@@ -153,8 +153,7 @@ function openDetail(routeId) {
 
 // Go back (Shared)
 function goBack() {
-    // Gunakan tanda garis miring "/" agar selalu kembali ke halaman utama website
-    window.location.href = '/'; 
+    window.location.href = '/';
 }
 
 // Get route slug (Detail Page)
@@ -225,8 +224,13 @@ function renderTimeline(stops) {
 
     // Check for route map image (e.g., for 11P)
     if (currentRouteDetail && currentRouteDetail.routeMapImage) {
+        
+        // --- Hapus padding kiri biar gambar pas di tengah ---
+        container.classList.remove('pl-6', 'md:pl-4');
+        // --------------------------------------------------
+
         // Hide direction buttons specific to this timeline
-        const dirContainer = container.previousElementSibling; // The switcher is before the container
+        const dirContainer = container.previousElementSibling; 
         if (dirContainer && dirContainer.classList.contains('flex') && dirContainer.classList.contains('items-center')) {
             dirContainer.style.display = 'none';
         }
@@ -239,6 +243,10 @@ function renderTimeline(stops) {
         `;
         return;
     }
+
+    // --- Kembalikan padding untuk rute biasa ---
+    container.classList.add('pl-6', 'md:pl-4');
+    // ------------------------------------------
 
     if (!stops || stops.length === 0) {
         container.innerHTML = '<p class="text-gray-500 text-center py-4">Data pemberhentian tidak tersedia.</p>';
@@ -397,7 +405,6 @@ function renderTimeline(stops) {
 
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
-             <!-- Vertical Line -->
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              
              ${dotHtml}
@@ -700,4 +707,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
