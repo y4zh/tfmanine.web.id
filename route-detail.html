@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportasi MAN 9 Jakarta</title>
-    <meta name="description" content="Detail informasi rute transportasi umum menuju MAN 9 Jakarta">
-
-    <!-- Google Fonts -->
+    <meta name="description" content="Transportasi umum menuju MAN 9 Jakarta">
     <link
         href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
         rel="stylesheet">
@@ -32,7 +30,6 @@
     </script>
 
     <style>
-        /* Loading global styles */
         .shimmer {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
@@ -49,7 +46,6 @@
             }
         }
     </style>
-    <!-- Use relative path for assets to support local file preview and .htaccess rewrites -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
@@ -76,9 +72,7 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-6 fade-in pb-24">
-        <!-- Hero Section -->
         <div class="relative mb-32 z-10">
-            <!-- Image Container -->
             <div id="hero-image-container"
                 class="w-full h-72 md:h-80 rounded-[2.5rem] overflow-hidden shadow-2xl group relative z-0">
                 <div
@@ -88,15 +82,12 @@
                     class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out">
             </div>
 
-            <!-- Floating Info Card -->
             <div id="hero-info-card" class="absolute -bottom-24 left-4 right-4 md:left-8 md:right-8 z-20">
                 <div
                     class="bg-white/95 backdrop-blur-md rounded-[2rem] shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] p-6 md:p-8 border border-white/50 ring-1 ring-black/5">
                     <div class="flex flex-col gap-6">
-                        <!-- Top: Identity -->
                         <div class="flex items-start gap-5">
                             <div id="route-badge-container" class="shrink-0 relative">
-                                <!-- Badge injected via JS -->
                                 <div class="w-16 h-16 bg-gray-200 rounded-full animate-pulse"></div>
                             </div>
                             <div class="flex-1 min-w-0 pt-1">
@@ -109,13 +100,10 @@
                                 </p>
                             </div>
                         </div>
-
-                        <!-- Divider -->
+                        
                         <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-
-                        <!-- Bottom: Stats -->
+                        
                         <div class="grid grid-cols-3 gap-2 md:gap-8 divide-x divide-gray-100">
-                            <!-- Tarif -->
                             <div class="text-center px-2">
                                 <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Tarif</p>
                                 <p id="route-tarif" class="text-sm md:text-base font-bold text-gray-800 font-data">--
@@ -123,7 +111,6 @@
                                 <p id="route-tarif-note"
                                     class="text-[10px] text-gray-400 mt-0.5 leading-tight hidden md:block">--</p>
                             </div>
-                            <!-- Headway -->
                             <div class="text-center px-2">
                                 <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Headway</p>
                                 <p id="route-headway"
@@ -136,7 +123,6 @@
                                     <span>--</span>
                                 </p>
                             </div>
-                            <!-- Operasional -->
                             <div class="text-center px-2">
                                 <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Operasional
                                 </p>
@@ -152,23 +138,18 @@
                 </div>
             </div>
         </div>
-
-        <!-- Content Flow -->
+        
         <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
             Pemberhentian
             <span
                 class="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">Scroll
                 untuk melihat</span>
         </h2>
-
-        <!-- Timeline Card -->
         <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-6 md:p-8 relative overflow-hidden">
-            <!-- Top Gradient Mask for scrolling effect -->
             <div
                 class="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none">
             </div>
 
-            <!-- Direction Switcher -->
             <div class="flex items-center justify-between mb-10 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
                 <button id="btn-dir-0"
                     class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 shadow-sm bg-white text-primary ring-1 ring-black/5"
@@ -182,13 +163,10 @@
                 </button>
             </div>
 
-            <!-- Vertical Stepper Container -->
             <div id="timeline-container" class="relative pl-6 md:pl-4 space-y-0">
-                <!-- Stepper injected here -->
             </div>
         </div>
 
-        <!-- Back Button -->
         <div class="mt-8 text-center">
             <button onclick="goBack()"
                 class="text-gray-400 hover:text-primary font-medium text-sm transition-colors flex items-center justify-center gap-2 mx-auto py-2 px-4 rounded-full hover:bg-blue-50">
@@ -205,14 +183,12 @@
     <footer class="bg-gray-800 text-white py-8 mt-8">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                <!-- Left: Logo & Description -->
                 <div class="md:w-1/2">
                     <img src="assets/images/logo.svg" alt="logo ea ea josjis" class="h-10 w-auto mb-3">
                     <p class="text-sm text-gray-400 leading-relaxed">
                         Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di MAN 9 Jakarta.
                     </p>
                 </div>
-                <!-- Right: Social Media -->
                 <div class="md:w-1/2 md:text-right">
                     <h4 class="text-sm font-semibold text-white mb-3">Hubungi Kami</h4>
                     <div class="space-y-2">
@@ -240,7 +216,7 @@
             <div class="border-t border-gray-700 mt-6 pt-4 text-center">
                 <p class="text-xs text-gray-500">© 2025 Transportasi MAN 9 Jakarta - Data rute dapat berubah
                     sewaktu-waktu.</p>
-                <p class="text-xs text-gray-500">v1.3.4 (Beta version)</p>
+                <p class="text-xs text-gray-500">v1.3.9 (Beta version)</p>
             </div>
         </div>
     </footer>
@@ -248,5 +224,6 @@
     <script src="assets/js/data.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
+
 
 </html>
