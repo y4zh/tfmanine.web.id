@@ -6,17 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportasi MAN 9 Jakarta</title>
     <meta name="description"
-        content="Informasi lengkap rute transportasi umum menuju MAN 9 Jakarta - Transjakarta, Mikrotrans, KRL, dan LRT">
-
-    <!-- Google Fonts -->
+        content="Transportasi umum menuju MAN 9 Jakarta - Transjakarta, Mikrotrans, KRL, dan LRT">
     <link
         href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
         rel="stylesheet">
-
-    <!-- Tailwind CSS CDN -->
+    
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Mapbox GL JS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 
@@ -38,7 +34,7 @@
     </script>
 
     <style>
-        /* Loading global styles */
+        
     </style>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -47,7 +43,6 @@
     <nav class="sticky top-0 z-50 bg-primary shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
-                <!-- Left: Logo & Text -->
                 <div class="flex items-center space-x-3">
                     <div class="flex items-center">
                         <img src="assets/images/logo.svg" alt="Transportasi MAN 9 Jakarta"
@@ -85,7 +80,6 @@
     <section class="max-w-7xl mx-auto px-4 py-8">
         <h2 class="text-lg font-bold text-gray-800 mb-4">Pilih Jenis Transportasi</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <!-- Transjakarta -->
             <button onclick="filterRoute('brt')"
                 class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
                 data-mode="brt">
@@ -95,7 +89,6 @@
                 <span class="text-sm font-semibold text-gray-700">Transjakarta</span>
             </button>
 
-            <!-- Mikrotrans & Rusun -->
             <button onclick="filterRoute('mikro')"
                 class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
                 data-mode="mikro">
@@ -105,7 +98,6 @@
                 <span class="text-sm font-semibold text-gray-700">Mikrotrans</span>
             </button>
 
-            <!-- KRL -->
             <button onclick="filterRoute('krl')"
                 class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
                 data-mode="krl">
@@ -115,7 +107,6 @@
                 <span class="text-sm font-semibold text-gray-700">KRL</span>
             </button>
 
-            <!-- LRT -->
             <button onclick="filterRoute('lrt')"
                 class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
                 data-mode="lrt">
@@ -138,7 +129,6 @@
             </button>
         </div>
         <div id="route-list" class="space-y-3">
-            <!-- Route cards will be injected here -->
         </div>
     </section>
 
@@ -155,21 +145,19 @@
             Panduan Perjalanan
         </h2>
         <div id="guides-container" class="space-y-3">
-            <!-- Guide accordions will be injected here -->
         </div>
     </section>
 
     <footer class="bg-gray-800 text-white py-8">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                <!-- Left: Logo & Description -->
                 <div class="md:w-1/2">
                     <img src="assets/images/logo.svg" alt="logo teefmanen" class="h-10 w-auto mb-3">
                     <p class="text-sm text-gray-400 leading-relaxed">
                         Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di MAN 9 Jakarta.
                     </p>
                 </div>
-                <!-- Right: Social Media -->
+                
                 <div class="md:w-1/2 md:text-right">
                     <h4 class="text-sm font-semibold text-white mb-3">Hubungi Kami</h4>
                     <div class="space-y-2">
@@ -197,7 +185,7 @@
             <div class="border-t border-gray-700 mt-6 pt-4 text-center">
                 <p class="text-xs text-gray-500">© 2025 Transportasi MAN 9 Jakarta - Data rute dapat berubah
                     sewaktu-waktu</p>
-                <p class="text-xs text-gray-500">v1.3.4 (Beta version)</p>
+                <p class="text-xs text-gray-500">v1.3.9 (Beta version)</p>
             </div>
         </div>
     </footer>
@@ -206,5 +194,6 @@
     <script src="assets/js/map.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
+
 
 </html>
