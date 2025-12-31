@@ -738,7 +738,7 @@ window.appData = {
                         { name: "Klender Baru", transfers: ["JAK 85"] },
                         { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
                         { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
-                        { name: "Jatinegara", transfers: ["B25"], icons: ["KAJJ.svg"], halteInfo: { type: "integrasi", halte: ["Stasiun Jatinegara"], routes: ["11", "11M", "B25"] } },
+                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg", "icon-bus.svg"], halteInfo: { type: "integrasi", stops : [{halte: ["Stasiun Jatinegara"], routes: ["11", "11M", "B25"] },{halte : ["Bali Mester"], routes: ["5", "5B", "5C"]} },
                         { name: "Matraman", transfers: [], halteInfo: { type: "integrasi", halte: ["Matraman Baru"], routes: ["5", "5C", "B25"] } },
                         { name: "Manggarai", transfers: ["A", "B"], trainConnections: ["A", "B"] },
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
@@ -946,3 +946,4 @@ window.routeColors = {
     "MRT": "#ca2047",    // MRT Lin Utara Selatan
     "KRL": "#26baed"     // Generic KRL
 };
+
