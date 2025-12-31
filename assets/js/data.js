@@ -727,7 +727,7 @@ window.appData = {
                 {
                     name: "Via Manggarai",
                     stops: [
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"] },
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"], icons : ["KAJJ.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
