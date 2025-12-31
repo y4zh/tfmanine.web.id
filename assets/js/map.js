@@ -9,7 +9,7 @@ const map = new mapboxgl.Map({
     container: 'map-container',
     style: 'mapbox://styles/mapbox/streets-v12',
     center: [106.910491, -6.241088], // MAN 9 Jakarta (updated coordinates)
-    zoom: 10
+    zoom: 14
 });
 
 // Add navigation controls
@@ -186,6 +186,7 @@ function initializeMarkers() {
 
 // Initialize markers when map loads
 map.on('load', initializeMarkers);
+
 
 
 
