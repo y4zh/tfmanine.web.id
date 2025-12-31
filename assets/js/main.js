@@ -448,7 +448,11 @@ function renderTimeline(stops) {
                 <span class="text-xs text-gray-500">${count} pemberhentian</span>
             </button>
             <div id="section-${sectionId}" class="mt-2 pl-2 ${contentHidden}">
-                ${validStops.map((stop, idx) => createStopItem(stop, idx, stops.length, sectionStops.indexOf(stop))).join('')}
+                ${validStops.map((stop, idx) => {
+                    // FIX: Gunakan index asli dari array utama 'stops', bukan index lokal dropdown
+                    const realIndex = stops.indexOf(stop);
+                    return createStopItem(stop, idx, stops.length, realIndex);
+                }).join('')}
             </div>
         </div>`;
     };
