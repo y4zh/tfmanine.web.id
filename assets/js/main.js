@@ -427,7 +427,8 @@ function renderTimeline(stops) {
     };
 
     // Create collapsible section HTML
-    const createCollapsibleSection = (sectionStops, sectionId, label, isExpanded = false) => {
+    // --- DIPERBAIKI: Menambahkan parameter startIndex untuk hitungan globalIdx yang benar ---
+    const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
 
@@ -449,8 +450,8 @@ function renderTimeline(stops) {
             </button>
             <div id="section-${sectionId}" class="mt-2 pl-2 ${contentHidden}">
                 ${validStops.map((stop, idx) => {
-                    // FIX: Gunakan index asli dari array utama 'stops', bukan index lokal dropdown
-                    const realIndex = stops.indexOf(stop);
+                    // --- DIPERBAIKI: Menghitung realIndex (global) berdasarkan startIndex ---
+                    const realIndex = startIndex + idx;
                     return createStopItem(stop, idx, stops.length, realIndex);
                 }).join('')}
             </div>
@@ -481,7 +482,8 @@ function renderTimeline(stops) {
                 // Stops between first and active (collapsible)
                 if (firstActiveInBefore > 1) {
                     const middleStops = beforeSeparator.slice(1, firstActiveInBefore);
-                    html += createCollapsibleSection(middleStops, 'before-active-1', 'Lihat {count} Pemberhentian Sebelumnya');
+                    // Pass start index 1
+                    html += createCollapsibleSection(middleStops, 'before-active-1', 'Lihat {count} Pemberhentian Sebelumnya', 1);
                 }
 
                 // Active stops and nearby
@@ -494,14 +496,16 @@ function renderTimeline(stops) {
                 // Remaining stops before separator (collapsible)
                 if (activeAreaEnd < beforeSeparator.length) {
                     const remainingStops = beforeSeparator.slice(activeAreaEnd);
-                    html += createCollapsibleSection(remainingStops, 'after-active-1', 'Lihat {count} Pemberhentian Sesudahnya');
+                    // Pass start index activeAreaEnd
+                    html += createCollapsibleSection(remainingStops, 'after-active-1', 'Lihat {count} Pemberhentian Sesudahnya', activeAreaEnd);
                 }
             } else {
                 // No active in this section - show first and last, collapse middle
                 html += createStopItem(beforeSeparator[0], 0, stops.length, 0);
                 if (beforeSeparator.length > 2) {
                     const middleStops = beforeSeparator.slice(1, -1);
-                    html += createCollapsibleSection(middleStops, 'middle-1', 'Lihat {count} Pemberhentian');
+                    // Pass start index 1
+                    html += createCollapsibleSection(middleStops, 'middle-1', 'Lihat {count} Pemberhentian', 1);
                 }
                 if (beforeSeparator.length > 1) {
                     html += createStopItem(beforeSeparator[beforeSeparator.length - 1], beforeSeparator.length - 1, stops.length, separatorIndex - 1);
@@ -511,7 +515,8 @@ function renderTimeline(stops) {
 
         // Separator dropdown for after section
         if (afterSeparator.length > 0) {
-            html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya');
+            // Pass start index separatorIndex + 1
+            html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
         }
 
     } else {
@@ -522,7 +527,8 @@ function renderTimeline(stops) {
         // Collapsible section before active stop
         if (firstActiveIndex > 1) {
             const beforeActive = stops.slice(1, firstActiveIndex);
-            html += createCollapsibleSection(beforeActive, 'before-active', 'Lihat {count} Pemberhentian Sebelumnya');
+            // Pass start index 1
+            html += createCollapsibleSection(beforeActive, 'before-active', 'Lihat {count} Pemberhentian Sebelumnya', 1);
         }
 
         // Show active stop(s) and a few around it
@@ -535,7 +541,8 @@ function renderTimeline(stops) {
         // Collapsible section after active area
         if (activeEnd < stops.length - 1) {
             const afterActive = stops.slice(activeEnd, -1);
-            html += createCollapsibleSection(afterActive, 'after-active', 'Lihat {count} Pemberhentian Sesudahnya');
+            // Pass start index activeEnd
+            html += createCollapsibleSection(afterActive, 'after-active', 'Lihat {count} Pemberhentian Sesudahnya', activeEnd);
         }
 
         // Show last stop
