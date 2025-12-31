@@ -326,10 +326,12 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
+            // FIX: top-3 (12px) - Pas tengah untuk padding y-2
             dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
+            // FIX: top-3 (12px)
             dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
@@ -349,12 +351,14 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
             }
 
+            // FIX: top-[-2px] (Adjusted for larger active dot)
             dotHtml = `<div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
+            // FIX: top-4 (16px) - Titik kecil biasa
             dotHtml = `<div class="absolute -left-[9px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
@@ -364,7 +368,9 @@ function renderTimeline(stops) {
 
         let transfersHtml = '';
         
+        // --- BADGE GAP & ACTIVE CHECK ---
         if (stop.transfers && stop.transfers.length > 0 && !isActive) {
+            // FIX: gap-1 (KEMBALI KE ASAL) dan mt-1.5 (Jarak dari teks ke badge)
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-1.5">`; 
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
@@ -385,6 +391,7 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
+        // --- FIX MARGIN KIRI: ml-6 (24px) agar lebih dekat ke garis ---
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
@@ -646,7 +653,7 @@ function renderDetail() {
             if (!route.details.tarifNote) tarifNote.classList.add('hidden');
         }
 
-        // --- HEADWAY UPDATE: ADD FONT-SANS + BOLD ---
+        // --- HEADWAY UPDATE: REMOVE font-sans, KEEP font-bold ---
         const headwayEl = document.getElementById('route-headway');
         if (headwayEl) {
             headwayEl.className = "flex flex-col items-center justify-center"; 
@@ -656,9 +663,9 @@ function renderDetail() {
                     <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="font-bold font-sans">${route.details.headway || '--'}</span>
+                    <span class="font-bold">${route.details.headway || '--'}</span>
                 </div>
-                <span class="text-xs font-medium text-gray-500 mt-1 font-sans">${noteText}</span>
+                <span class="text-xs font-medium text-gray-500 mt-1">${noteText}</span>
             `;
         }
 
