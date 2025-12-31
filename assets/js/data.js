@@ -137,7 +137,7 @@ window.appData = {
                         { name: "Pasar Enjo", transfers: ["11M"] },
                         { name: "Flyover Cipinang", transfers: ["11M"] },
                         { name: "Cipinang", transfers: ["11M"] },
-                        { name: "Stasiun Klender", transfers: ["11M"], icons: ["icon-train.svg"] },
+                        { name: "Stasiun Klender", transfers: ["11M", "C | Cikarang"], icons: ["icon-train.svg"] },
                         { name: "Klender", transfers: ["11M"] },
                         { name: "Kampung Sumur", transfers: ["11M"] },
                         { name: "Buaran", transfers: ["11M"] },
@@ -701,7 +701,7 @@ window.appData = {
                         { name: "RS Islam Pondok Kopi 1", transfers: ["JAK 39"] },
                         { name: "Minimarket Pondok Kopi", transfers: ["JAK 39"] },
                         { name: "Akses Bawah Flyover Pondok Kopi", transfers: ["JAK 39"] },
-                        { name: "St. Klender Baru", transfers: ["JAK 39", "C | Cikarang"], trainConnections: ["C"] },
+                        { name: "St. Klender Baru", transfers: ["JAK 39", "C"], trainConnections: ["C"] },
                         { name: "Jln. Bintara IV", transfers: [] }
                     ]
                 }
@@ -727,12 +727,12 @@ window.appData = {
                 {
                     name: "Via Manggarai",
                     stops: [
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"], icons : ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
-                        { name: "Bekasi", transfers: [], icons : ["KAJJ.svg"] },
+                        { name: "Bekasi", transfers: [] },
                         { name: "Kranji", transfers: [] },
                         { name: "Cakung", transfers: [] },
                         { name: "Klender Baru", transfers: ["JAK 85"] },
@@ -795,23 +795,23 @@ window.appData = {
                         { name: "Klender Baru", transfers: ["JAK 85"] },
                         { name: "Cakung", transfers: [] },
                         { name: "Kranji", transfers: [] },
-                        { name: "Bekasi", transfers: [], icons : ["KAJJ.svg"] },
+                        { name: "Bekasi", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"], icons : ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: [] }
                     ]
                 },
                 {
                     name: "Via Pasar Senen",
                     stops: [
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"], icons : ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
-                        { name: "Bekasi", transfers: [], icons : ["KAJJ.svg"] },
+                        { name: "Bekasi", transfers: [] },
                         { name: "Kranji", transfers: [] },
                         { name: "Cakung", transfers: [] },
                         { name: "Klender Baru", transfers: ["JAK 85"] },
@@ -874,12 +874,12 @@ window.appData = {
                         { name: "Klender Baru", transfers: ["JAK 85"] },
                         { name: "Cakung", transfers: [] },
                         { name: "Kranji", transfers: [] },
-                        { name: "Bekasi", transfers: [], icons : ["KAJJ.svg"] },
+                        { name: "Bekasi", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"], icons : ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: [] }
                     ]
                 }
             ]
@@ -976,7 +976,7 @@ window.routeColors = {
     "5N": "#BC5827",
     "6": "#2ca74a",
     "6A": "#76C18A",
-    "6B": "#99C175",
+    "6B": "#2ca74a",
     "6H": "#75358C",
     "6K": "#4A8F4D",
     "6M": "#7B3669",
@@ -1013,7 +1013,7 @@ window.routeColors = {
     "CB | Cibubur": "#21409a",     // Lin Cibubur
     "BK | Bekasi": "#006838",     // Lin Bekasi (LRT)
     "MRT": "#ca2047",    // MRT Lin Utara Selatan
-    "KRL": "#26baed",     // Generic KRL
+    "KRL": "#26baed",    // Generic KRL
     "LW | Walahar" : "#b6b7b7",
     "LJ | Jatiluhur" : "#404040"
 };
