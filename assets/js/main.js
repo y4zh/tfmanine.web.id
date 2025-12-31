@@ -212,6 +212,7 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
+// --- FUNGSI RENDER TIMELINE (LOGIKA BARU DI SINI) ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -243,6 +244,7 @@ function renderTimeline(stops) {
     let separatorIndex = stops.findIndex(s => s.isSeparator || s.name === '---');
     if (firstActiveIndex === -1) firstActiveIndex = 0;
 
+    // --- Helper Functions ---
     const renderHalteInfo = (stop) => {
         if (!stop.halteInfo) return '';
         const { type, halte, routes, stops: halteStops } = stop.halteInfo;
@@ -329,15 +331,14 @@ function renderTimeline(stops) {
             </div>`;
         } else if (isLast) {
             dotHtml = `<div class="absolute -left-[11px] top-1 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
-               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
         } else if (isActive) {
-            // --- DIPERBAIKI: Agar ikon JAK muat dan rapi ---
+            // FIX ICON JAK 02 (Susun ke bawah & lebih besar)
             let codeDisplay = currentRouteDetail.code || '';
             let contentHtml = '';
 
             if (codeDisplay.startsWith('JAK')) {
-                // Ambil angkanya saja (misal "85")
                 const num = codeDisplay.replace(/JAK/i, '').trim();
                 contentHtml = `
                     <div class="flex flex-col items-center justify-center leading-none">
@@ -349,7 +350,6 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
             }
 
-            // Diperbesar jadi w-10 (40px) dan posisi left disesuaikan jadi -19px
             dotHtml = `<div class="absolute -left-[19px] top-[-6px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[19px] top-[-6px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
@@ -435,8 +435,10 @@ function renderTimeline(stops) {
     };
 
     let html = '';
+    const COLLAPSE_THRESHOLD = 5; // Minimal 5 item baru di-collapse
 
     if (separatorIndex > -1) {
+        // --- LOGIKA UNTUK RUTE DENGAN SEPARATOR (KRL) ---
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         const activeInBefore = beforeSeparator.some(s => s.isActive);
@@ -444,11 +446,18 @@ function renderTimeline(stops) {
         if (beforeSeparator.length > 0) {
             if (activeInBefore) {
                 const firstActiveInBefore = beforeSeparator.findIndex(s => s.isActive);
-                html += createStopItem(beforeSeparator[0], 0, stops.length, 0);
+                html += createStopItem(beforeSeparator[0], 0, stops.length, 0); // Mulai
 
                 if (firstActiveInBefore > 1) {
                     const middleStops = beforeSeparator.slice(1, firstActiveInBefore);
-                    html += createCollapsibleSection(middleStops, 'before-active-1', 'Lihat {count} Pemberhentian Sebelumnya', 1);
+                    // LOGIKA BARU: Cek jumlah
+                    if (middleStops.length <= COLLAPSE_THRESHOLD) {
+                        middleStops.forEach((stop, midIdx) => {
+                             html += createStopItem(stop, midIdx, stops.length, 1 + midIdx);
+                        });
+                    } else {
+                        html += createCollapsibleSection(middleStops, 'before-active-1', 'Lihat {count} Pemberhentian Sebelumnya', 1);
+                    }
                 }
 
                 const activeAreaStart = Math.max(1, firstActiveInBefore);
@@ -459,13 +468,27 @@ function renderTimeline(stops) {
 
                 if (activeAreaEnd < beforeSeparator.length) {
                     const remainingStops = beforeSeparator.slice(activeAreaEnd);
-                    html += createCollapsibleSection(remainingStops, 'after-active-1', 'Lihat {count} Pemberhentian Sesudahnya', activeAreaEnd);
+                    // LOGIKA BARU
+                    if (remainingStops.length <= COLLAPSE_THRESHOLD) {
+                         remainingStops.forEach((stop, remIdx) => {
+                             html += createStopItem(stop, remIdx, stops.length, activeAreaEnd + remIdx);
+                         });
+                    } else {
+                        html += createCollapsibleSection(remainingStops, 'after-active-1', 'Lihat {count} Pemberhentian Sesudahnya', activeAreaEnd);
+                    }
                 }
             } else {
-                html += createStopItem(beforeSeparator[0], 0, stops.length, 0);
+                html += createStopItem(beforeSeparator[0], 0, stops.length, 0); // Mulai
                 if (beforeSeparator.length > 2) {
                     const middleStops = beforeSeparator.slice(1, -1);
-                    html += createCollapsibleSection(middleStops, 'middle-1', 'Lihat {count} Pemberhentian', 1);
+                     // LOGIKA BARU
+                    if (middleStops.length <= COLLAPSE_THRESHOLD) {
+                        middleStops.forEach((stop, midIdx) => {
+                            html += createStopItem(stop, midIdx, stops.length, 1 + midIdx);
+                        });
+                    } else {
+                        html += createCollapsibleSection(middleStops, 'middle-1', 'Lihat {count} Pemberhentian', 1);
+                    }
                 }
                 if (beforeSeparator.length > 1) {
                     html += createStopItem(beforeSeparator[beforeSeparator.length - 1], beforeSeparator.length - 1, stops.length, separatorIndex - 1);
@@ -474,28 +497,52 @@ function renderTimeline(stops) {
         }
 
         if (afterSeparator.length > 0) {
-            html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
+            // LOGIKA BARU UNTUK SEPARATOR
+            if (afterSeparator.length <= COLLAPSE_THRESHOLD) {
+                 afterSeparator.forEach((stop, aftIdx) => {
+                    html += createStopItem(stop, aftIdx, stops.length, separatorIndex + 1 + aftIdx);
+                 });
+            } else {
+                html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
+            }
         }
 
     } else {
-        html += createStopItem(stops[0], 0, stops.length, 0);
+        // --- LOGIKA UNTUK RUTE NORMAL (BUS/ANGKOT) ---
+        html += createStopItem(stops[0], 0, stops.length, 0); // Selalu Tampilkan Awal
 
         if (firstActiveIndex > 1) {
             const beforeActive = stops.slice(1, firstActiveIndex);
-            html += createCollapsibleSection(beforeActive, 'before-active', 'Lihat {count} Pemberhentian Sebelumnya', 1);
+            // LOGIKA BARU: Jika kurang dari 5, jangan di-collapse
+            if (beforeActive.length <= COLLAPSE_THRESHOLD) {
+                beforeActive.forEach((stop, bIdx) => {
+                    html += createStopItem(stop, bIdx, stops.length, 1 + bIdx);
+                });
+            } else {
+                html += createCollapsibleSection(beforeActive, 'before-active', 'Lihat {count} Pemberhentian Sebelumnya', 1);
+            }
         }
 
         const activeStart = Math.max(1, firstActiveIndex);
         const activeEnd = Math.min(stops.length - 1, firstActiveIndex + 3);
+        
         for (let i = activeStart; i < activeEnd; i++) {
             html += createStopItem(stops[i], i, stops.length, i);
         }
 
         if (activeEnd < stops.length - 1) {
-            const afterActive = stops.slice(activeEnd, -1);
-            html += createCollapsibleSection(afterActive, 'after-active', 'Lihat {count} Pemberhentian Sesudahnya', activeEnd);
+            const afterActive = stops.slice(activeEnd, -1); // Ambil sampai sebelum yang terakhir
+            // LOGIKA BARU
+            if (afterActive.length <= COLLAPSE_THRESHOLD) {
+                afterActive.forEach((stop, aIdx) => {
+                    html += createStopItem(stop, aIdx, stops.length, activeEnd + aIdx);
+                });
+            } else {
+                html += createCollapsibleSection(afterActive, 'after-active', 'Lihat {count} Pemberhentian Sesudahnya', activeEnd);
+            }
         }
 
+        // Selalu Tampilkan Akhir (Destination) - Di luar loop collapsible
         if (stops.length > 1) {
             html += createStopItem(stops[stops.length - 1], stops.length - 1, stops.length, stops.length - 1);
         }
@@ -503,6 +550,7 @@ function renderTimeline(stops) {
 
     container.innerHTML = html;
 }
+// --- AKHIR FUNGSI RENDER TIMELINE ---
 
 function toggleStopSection(sectionId) {
     const section = document.getElementById(`section-${sectionId}`);
