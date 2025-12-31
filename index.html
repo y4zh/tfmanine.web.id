@@ -81,43 +81,8 @@
 
     <section class="max-w-7xl mx-auto px-4 py-8">
         <h2 class="text-lg font-bold text-gray-800 mb-4">Moda Transportasi</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <button onclick="filterRoute('brt')"
-                class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
-                data-mode="brt">
-                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center overflow-hidden">
-                    <img src="assets/images/icon-bus.svg" alt="Bus" class="w-8 h-8 object-contain">
-                </div>
-                <span class="text-sm font-semibold text-gray-700">Transjakarta</span>
-            </button>
-
-            <button onclick="filterRoute('mikro')"
-                class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
-                data-mode="mikro">
-                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center overflow-hidden">
-                    <img src="assets/images/icon-mikrotrans.svg" alt="Mikrotrans" class="w-8 h-8 object-contain">
-                </div>
-                <span class="text-sm font-semibold text-gray-700">Mikrotrans</span>
-            </button>
-
-            <button onclick="filterRoute('krl')"
-                class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
-                data-mode="krl">
-                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center overflow-hidden">
-                    <img src="assets/images/icon-train.svg" alt="KRL" class="w-8 h-8 object-contain">
-                </div>
-                <span class="text-sm font-semibold text-gray-700">KRL</span>
-            </button>
-
-            <button onclick="filterRoute('lrt')"
-                class="category-btn bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary flex flex-col items-center space-y-2"
-                data-mode="lrt">
-                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center overflow-hidden">
-                    <img src="assets/images/icon-lrt.svg" alt="LRT" class="w-8 h-8 object-contain">
-                </div>
-                <span class="text-sm font-semibold text-gray-700">LRT</span>
-            </button>
-        </div>
+        <div id="category-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            </div>
     </section>
 
     <section id="route-list-section" class="max-w-7xl mx-auto px-4 pb-6 hidden">
@@ -134,9 +99,6 @@
         </div>
     </section>
 
-
-
-    </section>
     <section id="guides-section" class="max-w-7xl mx-auto px-4 pb-8">
         <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24"
@@ -192,14 +154,17 @@
         </div>
     </footer>
 
-    <script src="/assets/js/data.js"></script>
-    <script src="/assets/js/map.js"></script>
-    <script src="/assets/js/main.js?v=revisifinal"></script>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/map.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof renderCategories === 'function') {
+                renderCategories();
+            }
+        });
+    </script>
 </body>
 
-
 </html>
-
-
-
-
