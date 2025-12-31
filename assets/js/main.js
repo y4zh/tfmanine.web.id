@@ -1,5 +1,30 @@
 let currentFilter = null;
 
+// --- BARU: FUNGSI RENDER KATEGORI (MODA TRANSPORTASI) ---
+function renderCategories() {
+    const container = document.getElementById('category-grid');
+    if (!container) return; // Jaga-jaga kalau elemen gak ada
+
+    // Data kategori (ikon & nama)
+    const categories = [
+        { id: 'brt', name: 'Transjakarta', icon: 'icon-bus.svg' },
+        { id: 'mikro', name: 'Mikrotrans', icon: 'icon-mikrotrans.svg' },
+        { id: 'krl', name: 'KRL', icon: 'icon-train.svg' },
+        { id: 'lrt', name: 'LRT', icon: 'icon-lrt.svg' }
+    ];
+
+    // Generate HTML: Tanpa border warna, ikon diperbesar
+    container.innerHTML = categories.map(cat => `
+        <button onclick="filterRoute('${cat.id}')" 
+                class="category-btn group bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary/10 transition-all duration-300 flex flex-col items-center justify-center h-32 md:h-40" 
+                data-mode="${cat.id}">
+            <img src="assets/images/${cat.icon}" alt="${cat.name}" 
+                 class="w-16 h-16 md:w-20 md:h-20 object-contain mb-3 transition-transform group-hover:scale-110">
+            <span class="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">${cat.name}</span>
+        </button>
+    `).join('');
+}
+
 // Filter routes by mode (Index Page)
 function filterRoute(mode) {
     currentFilter = mode;
@@ -326,12 +351,10 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
-            // FIX: top-3 (12px) - Pas tengah untuk padding y-2
             dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
-            // FIX: top-3 (12px)
             dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
@@ -351,14 +374,12 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
             }
 
-            // FIX: top-[-2px] (Adjusted for larger active dot)
             dotHtml = `<div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
-            // FIX: top-4 (16px) - Titik kecil biasa
             dotHtml = `<div class="absolute -left-[9px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
@@ -368,9 +389,7 @@ function renderTimeline(stops) {
 
         let transfersHtml = '';
         
-        // --- BADGE GAP & ACTIVE CHECK ---
         if (stop.transfers && stop.transfers.length > 0 && !isActive) {
-            // FIX: gap-1 (KEMBALI KE ASAL) dan mt-1.5 (Jarak dari teks ke badge)
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-1.5">`; 
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
@@ -391,7 +410,6 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- FIX MARGIN KIRI: ml-6 (24px) agar lebih dekat ke garis ---
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
@@ -412,7 +430,6 @@ function renderTimeline(stops) {
         `;
     };
 
-    // --- FUNGSI DROPDOWN PINTAR ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -446,18 +463,14 @@ function renderTimeline(stops) {
     const COLLAPSE_THRESHOLD = 7; 
 
     if (separatorIndex > -1) {
-        // --- LOGIKA UNTUK RUTE DENGAN SEPARATOR (KRL) ---
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         const activeInBefore = beforeSeparator.some(s => s.isActive);
         
         if (beforeSeparator.length > 0) {
             if (activeInBefore) {
-                // KASUS: User ada di SEBELUM TRANSIT
                 const firstActiveInBefore = beforeSeparator.findIndex(s => s.isActive);
-                html += createStopItem(beforeSeparator[0], 0, stops.length, 0); // Mulai
-
-                // 1. Render Sebelumnya
+                html += createStopItem(beforeSeparator[0], 0, stops.length, 0); 
                 if (firstActiveInBefore > 1) {
                     const middleStops = beforeSeparator.slice(1, firstActiveInBefore);
                     if (middleStops.length <= COLLAPSE_THRESHOLD) {
@@ -468,17 +481,12 @@ function renderTimeline(stops) {
                         html += createCollapsibleSection(middleStops, 'before-active-1', 'Lihat {count} Pemberhentian Sebelumnya', 1);
                     }
                 }
-
-                // 2. Render Aktif & Sekitarnya
                 const activeAreaStart = Math.max(1, firstActiveInBefore);
                 const activeAreaEnd = Math.min(beforeSeparator.length, firstActiveInBefore + 3);
                 for (let i = activeAreaStart; i < activeAreaEnd; i++) {
                     html += createStopItem(beforeSeparator[i], i, stops.length, i);
                 }
-
-                // 3. Render SISANYA + SETELAH TRANSIT (Digabung)
                 const remainingStopsAll = stops.slice(activeAreaEnd); 
-
                 if (remainingStopsAll.length <= COLLAPSE_THRESHOLD) {
                      remainingStopsAll.forEach((stop, remIdx) => {
                          html += createStopItem(stop, remIdx, stops.length, activeAreaEnd + remIdx);
@@ -488,8 +496,7 @@ function renderTimeline(stops) {
                 }
 
             } else {
-                // KASUS: User ada di SESUDAH TRANSIT
-                html += createStopItem(beforeSeparator[0], 0, stops.length, 0); // Mulai
+                html += createStopItem(beforeSeparator[0], 0, stops.length, 0); 
                 if (beforeSeparator.length > 2) {
                     const middleStops = beforeSeparator.slice(1, -1);
                     if (middleStops.length <= COLLAPSE_THRESHOLD) {
@@ -503,7 +510,6 @@ function renderTimeline(stops) {
                 if (beforeSeparator.length > 1) {
                     html += createStopItem(beforeSeparator[beforeSeparator.length - 1], beforeSeparator.length - 1, stops.length, separatorIndex - 1);
                 }
-
                 if (afterSeparator.length > 0) {
                      if (afterSeparator.length <= COLLAPSE_THRESHOLD) {
                         afterSeparator.forEach((stop, aftIdx) => {
@@ -517,8 +523,7 @@ function renderTimeline(stops) {
         } 
 
     } else {
-        // --- LOGIKA UNTUK RUTE NORMAL (BUS/ANGKOT) ---
-        html += createStopItem(stops[0], 0, stops.length, 0); // Selalu Tampilkan Awal
+        html += createStopItem(stops[0], 0, stops.length, 0); 
 
         if (firstActiveIndex > 1) {
             const beforeActive = stops.slice(1, firstActiveIndex);
