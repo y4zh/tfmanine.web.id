@@ -332,10 +332,29 @@ function renderTimeline(stops) {
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
         } else if (isActive) {
-            dotHtml = `<div class="absolute -left-[13px] top-0 h-7 w-7 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
-                       <div class="absolute -left-[13px] top-0 h-7 w-7 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center">
-                           <span class="text-[8px] font-bold text-white">${currentRouteDetail.code || ''}</span>
+            // --- DIPERBAIKI: Agar ikon JAK muat dan rapi ---
+            let codeDisplay = currentRouteDetail.code || '';
+            let contentHtml = '';
+
+            if (codeDisplay.startsWith('JAK')) {
+                // Ambil angkanya saja (misal "85")
+                const num = codeDisplay.replace(/JAK/i, '').trim();
+                contentHtml = `
+                    <div class="flex flex-col items-center justify-center leading-none">
+                        <span class="text-[7px] font-bold opacity-90 mb-[1px]">JAK</span>
+                        <span class="text-[11px] font-bold">${num}</span>
+                    </div>
+                `;
+            } else {
+                contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
+            }
+
+            // Diperbesar jadi w-10 (40px) dan posisi left disesuaikan jadi -19px
+            dotHtml = `<div class="absolute -left-[19px] top-[-6px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
+                       <div class="absolute -left-[19px] top-[-6px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
+                           ${contentHtml}
                        </div>`;
+
         } else {
             dotHtml = `<div class="absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
