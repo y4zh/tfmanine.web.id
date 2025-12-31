@@ -370,8 +370,8 @@ function renderTimeline(stops) {
         
         // --- BADGE GAP & ACTIVE CHECK ---
         if (stop.transfers && stop.transfers.length > 0 && !isActive) {
-            // FIX: mt-0.5 (2px gap - Sangat dekat!)
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-0.5">`; 
+            // FIX: gap-2 (8px) agar lebih lega. Sebelumnya gap-1.
+            transfersHtml = `<div class="flex flex-wrap gap-2 mt-0.5">`; 
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
                 if (window.routeColors) {
