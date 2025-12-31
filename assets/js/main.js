@@ -212,7 +212,7 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
-// --- FUNGSI RENDER TIMELINE (LOGIKA BARU DI SINI) ---
+// --- FUNGSI RENDER TIMELINE (LOGIKA REVISI SMART DROPDOWN) ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -331,7 +331,7 @@ function renderTimeline(stops) {
             </div>`;
         } else if (isLast) {
             dotHtml = `<div class="absolute -left-[11px] top-1 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
-               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
         } else if (isActive) {
             // FIX ICON JAK 02 (Susun ke bawah & lebih besar)
@@ -364,7 +364,10 @@ function renderTimeline(stops) {
             : "hover:bg-gray-50 border-transparent hover:border-gray-100";
 
         let transfersHtml = '';
-        if (stop.transfers && stop.transfers.length > 0) {
+        
+        // --- LOGIKA HAPUS BADGE: Jika sedang AKTIF (isActive), jangan tampilkan badge transfer kecil
+        // karena sudah ada info detail di bawahnya. Biar gak redundan.
+        if (!isActive && stop.transfers && stop.transfers.length > 0) {
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`;
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
@@ -405,7 +408,9 @@ function renderTimeline(stops) {
         `;
     };
 
+    // --- FUNGSI DROPDOWN PINTAR (Hanya collapse jika item banyak) ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
+        // Hilangkan separator dari hitungan agar tidak muncul di dropdown
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
 
@@ -427,7 +432,10 @@ function renderTimeline(stops) {
             </button>
             <div id="section-${sectionId}" class="mt-2 pl-2 ${contentHidden}">
                 ${validStops.map((stop, idx) => {
-                    const realIndex = startIndex + idx;
+                    // Cari index asli dari sectionStops yang belum difilter (untuk passing ke createStopItem)
+                    // Tapi karena kita cuma render yang valid, kita pakai index relatif + startIndex
+                    // Note: Logic index ini hanya kosmetik untuk dot warna
+                    const realIndex = startIndex + idx; 
                     return createStopItem(stop, idx, stops.length, realIndex);
                 }).join('')}
             </div>
@@ -435,7 +443,7 @@ function renderTimeline(stops) {
     };
 
     let html = '';
-    const COLLAPSE_THRESHOLD = 5; // Minimal 5 item baru di-collapse
+    const COLLAPSE_THRESHOLD = 7; // USER REQUEST: Minimal 7 item baru di-collapse
 
     if (separatorIndex > -1) {
         // --- LOGIKA UNTUK RUTE DENGAN SEPARATOR (KRL) ---
@@ -445,12 +453,13 @@ function renderTimeline(stops) {
         
         if (beforeSeparator.length > 0) {
             if (activeInBefore) {
+                // KASUS: User ada di SEBELUM TRANSIT (Contoh: Jatinegara)
                 const firstActiveInBefore = beforeSeparator.findIndex(s => s.isActive);
                 html += createStopItem(beforeSeparator[0], 0, stops.length, 0); // Mulai
 
+                // 1. Render Sebelumnya (Collapsed jika > 7)
                 if (firstActiveInBefore > 1) {
                     const middleStops = beforeSeparator.slice(1, firstActiveInBefore);
-                    // LOGIKA BARU: Cek jumlah
                     if (middleStops.length <= COLLAPSE_THRESHOLD) {
                         middleStops.forEach((stop, midIdx) => {
                              html += createStopItem(stop, midIdx, stops.length, 1 + midIdx);
@@ -460,28 +469,32 @@ function renderTimeline(stops) {
                     }
                 }
 
+                // 2. Render Aktif & Sekitarnya
                 const activeAreaStart = Math.max(1, firstActiveInBefore);
                 const activeAreaEnd = Math.min(beforeSeparator.length, firstActiveInBefore + 3);
                 for (let i = activeAreaStart; i < activeAreaEnd; i++) {
                     html += createStopItem(beforeSeparator[i], i, stops.length, i);
                 }
 
-                if (activeAreaEnd < beforeSeparator.length) {
-                    const remainingStops = beforeSeparator.slice(activeAreaEnd);
-                    // LOGIKA BARU
-                    if (remainingStops.length <= COLLAPSE_THRESHOLD) {
-                         remainingStops.forEach((stop, remIdx) => {
-                             html += createStopItem(stop, remIdx, stops.length, activeAreaEnd + remIdx);
-                         });
-                    } else {
-                        html += createCollapsibleSection(remainingStops, 'after-active-1', 'Lihat {count} Pemberhentian Sesudahnya', activeAreaEnd);
-                    }
+                // 3. Render SISANYA + SETELAH TRANSIT (Digabung biar gak double dropdown)
+                // Kita ambil semua sisa stops mulai dari akhir area aktif sampai habis (termasuk separator & sesudah transit)
+                // Slice dari array UTAMA 'stops'
+                const remainingStopsAll = stops.slice(activeAreaEnd); 
+
+                if (remainingStopsAll.length <= COLLAPSE_THRESHOLD) {
+                     remainingStopsAll.forEach((stop, remIdx) => {
+                         html += createStopItem(stop, remIdx, stops.length, activeAreaEnd + remIdx);
+                     });
+                } else {
+                    // Ini menggabungkan "Sesudahnya" dan "Selanjutnya" jadi satu dropdown
+                    html += createCollapsibleSection(remainingStopsAll, 'after-active-merged', 'Lihat {count} Pemberhentian Selanjutnya', activeAreaEnd);
                 }
+
             } else {
+                // KASUS: User ada di SESUDAH TRANSIT
                 html += createStopItem(beforeSeparator[0], 0, stops.length, 0); // Mulai
                 if (beforeSeparator.length > 2) {
                     const middleStops = beforeSeparator.slice(1, -1);
-                     // LOGIKA BARU
                     if (middleStops.length <= COLLAPSE_THRESHOLD) {
                         middleStops.forEach((stop, midIdx) => {
                             html += createStopItem(stop, midIdx, stops.length, 1 + midIdx);
@@ -493,19 +506,24 @@ function renderTimeline(stops) {
                 if (beforeSeparator.length > 1) {
                     html += createStopItem(beforeSeparator[beforeSeparator.length - 1], beforeSeparator.length - 1, stops.length, separatorIndex - 1);
                 }
-            }
-        }
 
-        if (afterSeparator.length > 0) {
-            // LOGIKA BARU UNTUK SEPARATOR
-            if (afterSeparator.length <= COLLAPSE_THRESHOLD) {
-                 afterSeparator.forEach((stop, aftIdx) => {
-                    html += createStopItem(stop, aftIdx, stops.length, separatorIndex + 1 + aftIdx);
-                 });
-            } else {
-                html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
+                // Render bagian sesudah separator (tempat user aktif)
+                // Ini akan dihandle logic dropdown biasa (mirip else di bawah)
+                // Tapi kita perlu handle dropdown khusus afterSeparator di sini jika user aktif di sana
+                if (afterSeparator.length > 0) {
+                     // Kita biarkan logic render biasa, tapi hati-hati double render.
+                     // Sederhananya, jika user aktif di "after", kita render dropdown terpisah sbg "Lanjutan"
+                     if (afterSeparator.length <= COLLAPSE_THRESHOLD) {
+                        afterSeparator.forEach((stop, aftIdx) => {
+                            html += createStopItem(stop, aftIdx, stops.length, separatorIndex + 1 + aftIdx);
+                        });
+                    } else {
+                        html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
+                    }
+                }
             }
-        }
+        } 
+        // Jika tidak ada beforeSeparator (rute mulai dari transit?), logic di atas aman.
 
     } else {
         // --- LOGIKA UNTUK RUTE NORMAL (BUS/ANGKOT) ---
@@ -513,7 +531,7 @@ function renderTimeline(stops) {
 
         if (firstActiveIndex > 1) {
             const beforeActive = stops.slice(1, firstActiveIndex);
-            // LOGIKA BARU: Jika kurang dari 5, jangan di-collapse
+            // LOGIKA BARU: Jika kurang dari 7, jangan di-collapse
             if (beforeActive.length <= COLLAPSE_THRESHOLD) {
                 beforeActive.forEach((stop, bIdx) => {
                     html += createStopItem(stop, bIdx, stops.length, 1 + bIdx);
