@@ -142,7 +142,7 @@ window.appData = {
                             transfers: ["11M", "C | Cikarang"], 
                             icons: ["icon-train.svg"],
                             halteInfo: {
-                                type: "stasiun",
+                                type: "integrasi",
                                 halte: ["Stasiun Klender"],
                                 routes: ["11", "11M", "C | Cikarang"]
                             }
@@ -157,7 +157,7 @@ window.appData = {
                             isActive: true, 
                             label: "Terdekat",
                             halteInfo: {
-                                type: "stasiun",
+                                type: "integrasi",
                                 halte: ["Simpang Buaran"],
                                 routes: ["11", "11M", "C | Cikarang"]
                             }
@@ -165,7 +165,7 @@ window.appData = {
                         { name: "Flyover Pondok Kopi", transfers: ["11M"] },
                         { name: "Penggilingan", transfers: ["11D", "11M"] },
                         { name: "Walikota Jakarta Timur", transfers: ["11D", "11M"] },
-                        { name: "Pulo Gebang", transfers: ["11D", "JAK 27", "JAK 40", "JAK 100", 'JAK 110A"] }
+                        { name: "Pulo Gebang", transfers: ["11D"] }
                     ]
                 }
             ]
