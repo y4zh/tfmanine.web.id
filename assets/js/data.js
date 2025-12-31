@@ -4,8 +4,8 @@ window.appData = {
         { name: "MAN 9 Jakarta", type: "school", coords: [106.910491, -6.241088], desc: "Jl. Hj Dogol No 54, Pondok Bambu" },
 
         // Transit stations - Orange markers
-        { name: "Stasiun Buaran", type: "train", coords: [106.9231, -6.2153], desc: "Akses KRL Commuterline Lin Cikarang" },
-        { name: "Halte Simpang Buaran", type: "brt", coords: [106.9242, -6.2158], desc: "11" },
+        { name: "Stasiun Buaran", type: "train", coords: [106.9231, -6.2153], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI" },
+        { name: "Halte Simpang Buaran", type: "brt", coords: [106.9242, -6.2158], desc: "11 (Pulo Gebang - Kampung Melayu)" },
         { name: "LRT Jatibening Baru", type: "lrt", coords: [106.9265, -6.2570], desc: "BK (Lin Bekasi)" },
 
         // Bus stops near MAN 9 - Green markers with walking time info
@@ -1031,8 +1031,8 @@ window.routeColors = {
     "B25": "#A9C498",
     "D11": "#669043",
     "2B": "#266e9a",
-    "BK": "#006838",
-    "C": "#26baed",
+    "BK | Lin Bekasi": "#006838",
+    "C | Lin Cikarang": "#26baed",
 
     // KRL Train Lines
     "A | Basoetta": "#262262",      // Lin Bandara Soetta
