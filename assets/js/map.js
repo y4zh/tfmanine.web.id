@@ -31,6 +31,9 @@ const ROUTE_COLORS = {
     '7P': '#911d3c',
     '11Q': '#10c0ff',
     '11P': '#B2A5A3',
+    'BK': '#006838',
+    'C': '#26baed',
+    '11' : '#2F4FA2',
     'JAK': '#00b0ec'  // Default for all JAK routes
 };
 
@@ -183,3 +186,4 @@ function initializeMarkers() {
 
 // Initialize markers when map loads
 map.on('load', initializeMarkers);
+
