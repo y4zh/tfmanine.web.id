@@ -727,7 +727,7 @@ window.appData = {
                 {
                     name: "Via Manggarai",
                     stops: [
-                        { name: "Cikarang", transfers: [] },
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
@@ -800,13 +800,13 @@ window.appData = {
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: [] }
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"] },
                     ]
                 },
                 {
                     name: "Via Pasar Senen",
                     stops: [
-                        { name: "Cikarang", transfers: [] },
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
@@ -879,7 +879,7 @@ window.appData = {
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: [] }
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur", "LW | Walahar"] },
                     ]
                 }
             ]
