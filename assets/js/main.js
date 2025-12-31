@@ -391,7 +391,7 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- FIX PADDING: py-2 (8px vertical padding) & leading-none (biar rapet) ---
+        // --- FIX PADDING: py-2 px-4 agar teks sejajar dengan titik ---
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
@@ -556,3 +556,152 @@ function renderTimeline(stops) {
 
     container.innerHTML = html;
 }
+
+function toggleStopSection(sectionId) {
+    const section = document.getElementById(`section-${sectionId}`);
+    const icon = document.getElementById(`icon-${sectionId}`);
+
+    if (section && icon) {
+        section.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
+    }
+}
+
+function renderDetail() {
+    console.log("🔍 DEBUG: Memulai renderDetail...");
+
+    if (!window.appData) {
+        console.error("CRITICAL ERROR: window.appData kosong!");
+        return; 
+    }
+
+    const routeSlug = getRouteSlug();
+    console.log("🔍 DEBUG: Slug URL =", routeSlug);
+
+    if (!routeSlug) { 
+        console.error("ERROR: URL tidak valid.");
+        return; 
+    }
+
+    const route = getRouteData(routeSlug);
+    
+    if (!route) { 
+        console.error("ERROR: Data rute not found for slug:", routeSlug);
+        return; 
+    }
+
+    currentRouteDetail = route; 
+
+    const heroImg = document.getElementById('hero-image');
+    if (heroImg && route.details && route.details.heroImage) heroImg.src = route.details.heroImage;
+
+    const heroContainer = document.getElementById('hero-image-container');
+    const heroInfoCard = document.getElementById('hero-info-card');
+
+    if (route.code === '11P' || route.hideHeroImage) {
+        if (heroContainer) heroContainer.style.display = 'none';
+        if (heroInfoCard) {
+            heroInfoCard.classList.remove('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
+            heroInfoCard.classList.add('relative', 'w-full', 'mt-4');
+        }
+        const parentSection = heroInfoCard?.closest('.relative.mb-32.z-10');
+        if (parentSection) {
+            parentSection.classList.remove('mb-32');
+            parentSection.classList.add('mb-8');
+        }
+    } else {
+        if (heroContainer) heroContainer.style.display = 'block';
+        if (heroInfoCard) {
+            heroInfoCard.classList.add('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
+            heroInfoCard.classList.remove('relative', 'w-full', 'mt-4');
+        }
+        const parentSection = heroInfoCard?.closest('.relative.mb-8.z-10');
+        if (parentSection) {
+            parentSection.classList.remove('mb-8');
+            parentSection.classList.add('mb-32');
+        }
+    }
+
+    const badgeContainer = document.getElementById('route-badge-container');
+    if (badgeContainer) {
+        if (route.code.startsWith('JAK ')) {
+            const number = route.code.replace('JAK ', '');
+            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex flex-col items-center justify-center text-white font-bold border-2 border-white" style="background-color: ${route.badgeColor || '#0072bc'}">
+                <span class="text-xs leading-none">JAK</span>
+                <span class="text-2xl leading-tight">${number}</span>
+            </div>`;
+        } else {
+            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold border-2 border-white" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
+        }
+    }
+
+    document.getElementById('route-name').textContent = route.name;
+    const modeInfo = getModeLabel(route.mode); 
+    const metaContainer = document.getElementById('route-meta');
+    if (metaContainer) {
+        metaContainer.innerHTML = `
+            <span class="w-2 h-2 rounded-full" style="background-color: ${route.badgeColor || '#ccc'}"></span>
+            <span>${modeInfo.text}</span>
+        `;
+    }
+
+    if (route.details) {
+        document.getElementById('route-tarif').textContent = route.details.tarif || '--';
+        const tarifNote = document.getElementById('route-tarif-note');
+        if (tarifNote) {
+            tarifNote.textContent = route.details.tarifNote || '';
+            if (!route.details.tarifNote) tarifNote.classList.add('hidden');
+        }
+
+        document.getElementById('route-headway').innerHTML = `
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>${route.details.headway || '--'}</span>
+        `;
+        document.getElementById('route-ops').textContent = route.details.ops || '--';
+        const opsNote = document.getElementById('route-ops-note');
+        if (opsNote) {
+            opsNote.textContent = route.details.opsNote || '';
+            if (!route.details.opsNote) opsNote.classList.add('hidden');
+        }
+    }
+
+    if (route.directions && route.directions.length > 0) {
+        route.directions.forEach((dir, i) => {
+            const btn = document.getElementById(`btn-dir-${i}`);
+            if (btn) {
+                btn.textContent = dir.name;
+                btn.classList.remove('hidden');
+            }
+        });
+        if (route.directions.length < 2) {
+            const btn1 = document.getElementById(`btn-dir-1`);
+            if (btn1) btn1.classList.add('hidden');
+        }
+        switchDirection(0);
+    }
+
+    document.title = `${route.code} - ${route.name} | TF MANINE`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('guides-container')) {
+        initGuides();
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        if (mode) {
+            setTimeout(() => { filterRoute(mode); }, 100);
+        }
+        if (window.location.pathname.endsWith('index.html')) {
+            const cleanUrl = window.location.pathname.replace('index.html', '');
+            window.history.replaceState({}, document.title, cleanUrl || '/');
+        }
+    }
+    if (document.getElementById('hero-image')) {
+        renderDetail();
+        const routeSlug = getRouteSlug();
+        if (routeSlug && window.location.search.includes('rute=')) {
+            const cleanUrl = '/rute/' + routeSlug;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+    }
+});
