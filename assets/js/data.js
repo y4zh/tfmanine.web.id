@@ -143,8 +143,8 @@ window.appData = {
                             icons: ["icon-train.svg"],
                             halteInfo: {
                                 type: "integrasi",
-                                halte: ["Stasiun Klender"],
-                                routes: ["11", "11M", "C | Cikarang"]
+                                halte: ["Klender"],
+                                routes: ["C | Cikarang"]
                             }
                         },
                         { name: "Klender", transfers: ["11M"] },
@@ -158,8 +158,8 @@ window.appData = {
                             label: "Terdekat",
                             halteInfo: {
                                 type: "integrasi",
-                                halte: ["Simpang Buaran"],
-                                routes: ["11", "11M", "C | Cikarang"]
+                                halte: ["Buaran"],
+                                routes: ["C | Cikarang"]
                             }
                         },
                         { name: "Flyover Pondok Kopi", transfers: ["11M"] },
