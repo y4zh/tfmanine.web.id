@@ -326,11 +326,13 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
-            dotHtml = `<div class="absolute -left-[11px] top-1 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
+            // FIX: top-3 (12px) agar sejajar dengan teks
+            dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
-            dotHtml = `<div class="absolute -left-[11px] top-1 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
+            // FIX: top-3 (12px) agar sejajar
+            dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
         } else if (isActive) {
@@ -349,13 +351,15 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
             }
 
-            dotHtml = `<div class="absolute -left-[19px] top-[-6px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
-                       <div class="absolute -left-[19px] top-[-6px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
+            // FIX: top-[-2px] (sedikit adjust karena ukurannya gede) biar center dengan teks
+            dotHtml = `<div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
+                       <div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
-            dotHtml = `<div class="absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
+            // FIX: top-3 (12px) agar sejajar dengan teks
+            dotHtml = `<div class="absolute -left-[9px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
         const cardClass = isActive
@@ -366,8 +370,8 @@ function renderTimeline(stops) {
         
         // --- BADGE GAP & ACTIVE CHECK ---
         if (stop.transfers && stop.transfers.length > 0 && !isActive) {
-            // FIX: mt-1.5 agar lebih dekat tapi tidak mepet (sebelumnya mt-2)
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1.5">`; 
+            // FIX: mt-1 agar lebih dekat tapi tidak mepet (sebelumnya mt-1.5)
+            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`; 
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
                 if (window.routeColors) {
@@ -387,15 +391,15 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- FIX PADDING: py-3 px-4 agar teks sejajar dengan titik (sebelumnya p-4) ---
+        // --- FIX PADDING: py-2.5 px-4 agar teks sejajar dengan titik ---
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              ${dotHtml}
-             <div class="ml-9 md:ml-10 py-3 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
+             <div class="ml-9 md:ml-10 py-2.5 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
                  <div class="flex justify-between items-start">
                      <div>
-                         <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''}">${stop.name}${stationIconsHtml}</h4>
+                         <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-tight">${stop.name}${stationIconsHtml}</h4>
                          ${label ? `<span class="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md">${label}</span>` : ''}
                      </div>
                      ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Mulai</span>' : ''}
@@ -552,153 +556,3 @@ function renderTimeline(stops) {
 
     container.innerHTML = html;
 }
-// --- AKHIR FUNGSI RENDER TIMELINE ---
-
-function toggleStopSection(sectionId) {
-    const section = document.getElementById(`section-${sectionId}`);
-    const icon = document.getElementById(`icon-${sectionId}`);
-
-    if (section && icon) {
-        section.classList.toggle('hidden');
-        icon.classList.toggle('rotate-180');
-    }
-}
-
-function renderDetail() {
-    console.log("🔍 DEBUG: Memulai renderDetail...");
-
-    if (!window.appData) {
-        console.error("CRITICAL ERROR: window.appData kosong!");
-        return; 
-    }
-
-    const routeSlug = getRouteSlug();
-    console.log("🔍 DEBUG: Slug URL =", routeSlug);
-
-    if (!routeSlug) { 
-        console.error("ERROR: URL tidak valid.");
-        return; 
-    }
-
-    const route = getRouteData(routeSlug);
-    
-    if (!route) { 
-        console.error("ERROR: Data rute not found for slug:", routeSlug);
-        return; 
-    }
-
-    currentRouteDetail = route; 
-
-    const heroImg = document.getElementById('hero-image');
-    if (heroImg && route.details && route.details.heroImage) heroImg.src = route.details.heroImage;
-
-    const heroContainer = document.getElementById('hero-image-container');
-    const heroInfoCard = document.getElementById('hero-info-card');
-
-    if (route.code === '11P' || route.hideHeroImage) {
-        if (heroContainer) heroContainer.style.display = 'none';
-        if (heroInfoCard) {
-            heroInfoCard.classList.remove('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
-            heroInfoCard.classList.add('relative', 'w-full', 'mt-4');
-        }
-        const parentSection = heroInfoCard?.closest('.relative.mb-32.z-10');
-        if (parentSection) {
-            parentSection.classList.remove('mb-32');
-            parentSection.classList.add('mb-8');
-        }
-    } else {
-        if (heroContainer) heroContainer.style.display = 'block';
-        if (heroInfoCard) {
-            heroInfoCard.classList.add('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
-            heroInfoCard.classList.remove('relative', 'w-full', 'mt-4');
-        }
-        const parentSection = heroInfoCard?.closest('.relative.mb-8.z-10');
-        if (parentSection) {
-            parentSection.classList.remove('mb-8');
-            parentSection.classList.add('mb-32');
-        }
-    }
-
-    const badgeContainer = document.getElementById('route-badge-container');
-    if (badgeContainer) {
-        if (route.code.startsWith('JAK ')) {
-            const number = route.code.replace('JAK ', '');
-            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex flex-col items-center justify-center text-white font-bold border-2 border-white" style="background-color: ${route.badgeColor || '#0072bc'}">
-                <span class="text-xs leading-none">JAK</span>
-                <span class="text-2xl leading-tight">${number}</span>
-            </div>`;
-        } else {
-            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold border-2 border-white" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
-        }
-    }
-
-    document.getElementById('route-name').textContent = route.name;
-    const modeInfo = getModeLabel(route.mode); 
-    const metaContainer = document.getElementById('route-meta');
-    if (metaContainer) {
-        metaContainer.innerHTML = `
-            <span class="w-2 h-2 rounded-full" style="background-color: ${route.badgeColor || '#ccc'}"></span>
-            <span>${modeInfo.text}</span>
-        `;
-    }
-
-    if (route.details) {
-        document.getElementById('route-tarif').textContent = route.details.tarif || '--';
-        const tarifNote = document.getElementById('route-tarif-note');
-        if (tarifNote) {
-            tarifNote.textContent = route.details.tarifNote || '';
-            if (!route.details.tarifNote) tarifNote.classList.add('hidden');
-        }
-
-        document.getElementById('route-headway').innerHTML = `
-            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span>${route.details.headway || '--'}</span>
-        `;
-        document.getElementById('route-ops').textContent = route.details.ops || '--';
-        const opsNote = document.getElementById('route-ops-note');
-        if (opsNote) {
-            opsNote.textContent = route.details.opsNote || '';
-            if (!route.details.opsNote) opsNote.classList.add('hidden');
-        }
-    }
-
-    if (route.directions && route.directions.length > 0) {
-        route.directions.forEach((dir, i) => {
-            const btn = document.getElementById(`btn-dir-${i}`);
-            if (btn) {
-                btn.textContent = dir.name;
-                btn.classList.remove('hidden');
-            }
-        });
-        if (route.directions.length < 2) {
-            const btn1 = document.getElementById(`btn-dir-1`);
-            if (btn1) btn1.classList.add('hidden');
-        }
-        switchDirection(0);
-    }
-
-    document.title = `${route.code} - ${route.name} | TF MANINE`;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('guides-container')) {
-        initGuides();
-        const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
-        if (mode) {
-            setTimeout(() => { filterRoute(mode); }, 100);
-        }
-        if (window.location.pathname.endsWith('index.html')) {
-            const cleanUrl = window.location.pathname.replace('index.html', '');
-            window.history.replaceState({}, document.title, cleanUrl || '/');
-        }
-    }
-    if (document.getElementById('hero-image')) {
-        renderDetail();
-        const routeSlug = getRouteSlug();
-        if (routeSlug && window.location.search.includes('rute=')) {
-            const cleanUrl = '/rute/' + routeSlug;
-            window.history.replaceState({}, document.title, cleanUrl);
-        }
-    }
-});
