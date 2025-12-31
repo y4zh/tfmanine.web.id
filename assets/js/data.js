@@ -5,8 +5,8 @@ window.appData = {
 
         // Transit stations - Orange markers
         { name: "Stasiun Buaran", type: "train", coords: [106.9231, -6.2153], desc: "Akses KRL Commuterline Lin Cikarang" },
-        { name: "Halte Simpang Buaran", type: "brt", coords: [106.9242, -6.2158], desc: "Transit ke Koridor 11" },
-        { name: "LRT Jatibening Baru", type: "lrt", coords: [106.9265, -6.2570], desc: "BK | Bekasi" },
+        { name: "Halte Simpang Buaran", type: "brt", coords: [106.9242, -6.2158], desc: "11" },
+        { name: "LRT Jatibening Baru", type: "lrt", coords: [106.9265, -6.2570], desc: "BK | Lin Bekasi" },
 
         // Bus stops near MAN 9 - Green markers with walking time info
         { name: "Rusun Pondok Bambu", type: "busstop", coords: [106.910853, -6.241690], desc: "11P (Walikota Jakarta Timur), JAK 85 (Bintara)", walkTime: 1, distance: 50 },
@@ -1031,6 +1031,8 @@ window.routeColors = {
     "B25": "#A9C498",
     "D11": "#669043",
     "2B": "#266e9a",
+    "BK | Lin Bekasi": "#006838",
+    "C | Lin Cikarang": "#26baed",
 
     // KRL Train Lines
     "A | Basoetta": "#262262",      // Lin Bandara Soetta
