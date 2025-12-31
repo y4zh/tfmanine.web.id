@@ -23,12 +23,15 @@ function filterRoute(mode) {
     let filteredRoutes = [];
     let titleText = 'Daftar Rute';
 
+    if (!window.appData) {
+        console.error("Database routes belum dimuat!");
+        return;
+    }
+
     if (mode === 'brt') {
-        // For Transjakarta, show both BRT and Non-BRT
         filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
         titleText = 'Rute Transjakarta';
     } else if (mode === 'mikro') {
-        // Mikrotrans includes rusun routes - sort so rusun is first
         filteredRoutes = window.appData.routes.filter(r => r.mode === 'mikro');
         filteredRoutes.sort((a, b) => {
             if (a.subtype === 'rusun' && b.subtype !== 'rusun') return -1;
@@ -49,7 +52,6 @@ function filterRoute(mode) {
     title.textContent = titleText;
     count.textContent = `(${filteredRoutes.length} rute)`;
 
-    // Helper to format route badge (multi-line for JAK routes)
     const formatBadge = (code, color) => {
         if (code.startsWith('JAK ')) {
             const number = code.replace('JAK ', '');
@@ -61,7 +63,6 @@ function filterRoute(mode) {
         return `<span class="text-white text-sm font-bold px-3 py-1.5 rounded-lg" style="background-color: ${color}">${code}</span>`;
     };
 
-    // Generate route cards
     container.innerHTML = filteredRoutes.map(route => `
         <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100" onclick="openDetail('${route.id}')">
             <div class="flex items-center justify-between">
@@ -81,7 +82,6 @@ function filterRoute(mode) {
         </div>
     `).join('');
 
-    // Show section
     section.classList.remove('hidden');
     section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -146,7 +146,6 @@ function openDetail(routeId) {
     const route = window.appData.routes.find(r => r.id === routeId);
     if (route) {
         const slug = route.code.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '');
-        // Works both locally and on server
         window.location.href = 'route-detail.html?rute=' + slug;
     }
 }
@@ -158,11 +157,9 @@ function goBack() {
 
 // Get route slug (Detail Page)
 function getRouteSlug() {
-    // Check URL path first (e.g., /rute/jak-85)
     const pathMatch = window.location.pathname.match(/\/rute\/([a-zA-Z0-9-]+)/);
     if (pathMatch) return pathMatch[1];
 
-    // Fallback to query parameter (e.g., ?rute=jak-85)
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('rute');
 }
@@ -199,17 +196,14 @@ function switchDirection(index) {
 
     currentDirectionIndex = index;
 
-    // Update buttons state
     const directions = currentRouteDetail.directions;
     directions.forEach((dir, i) => {
         const btn = document.getElementById(`btn-dir-${i}`);
         if (btn) {
             if (i === index) {
-                // Active
                 btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 shadow-sm bg-white text-primary ring-1 ring-black/5 scale-[1.02]";
                 btn.classList.remove('text-gray-500', 'hover:bg-white/50');
             } else {
-                // Inactive
                 btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-medium text-gray-500 hover:bg-white/50 transition-all duration-300";
             }
         }
@@ -222,14 +216,8 @@ function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
 
-    // Check for route map image (e.g., for 11P)
     if (currentRouteDetail && currentRouteDetail.routeMapImage) {
-        
-        // --- Hapus padding kiri biar gambar pas di tengah ---
         container.classList.remove('pl-6', 'md:pl-4');
-        // --------------------------------------------------
-
-        // Hide direction buttons specific to this timeline
         const dirContainer = container.previousElementSibling; 
         if (dirContainer && dirContainer.classList.contains('flex') && dirContainer.classList.contains('items-center')) {
             dirContainer.style.display = 'none';
@@ -244,32 +232,23 @@ function renderTimeline(stops) {
         return;
     }
 
-    // --- Kembalikan padding untuk rute biasa ---
     container.classList.add('pl-6', 'md:pl-4');
-    // ------------------------------------------
 
     if (!stops || stops.length === 0) {
         container.innerHTML = '<p class="text-gray-500 text-center py-4">Data pemberhentian tidak tersedia.</p>';
         return;
     }
 
-    // Find first active stop index and separator index
     let firstActiveIndex = stops.findIndex(s => s.isActive);
     let separatorIndex = stops.findIndex(s => s.isSeparator || s.name === '---');
-
-    // If no active stop found, show all stops
     if (firstActiveIndex === -1) firstActiveIndex = 0;
 
-    // Helper to render halte integration info for KRL/LRT
     const renderHalteInfo = (stop) => {
         if (!stop.halteInfo) return '';
-
         const { type, halte, routes, stops: halteStops } = stop.halteInfo;
         const typeLabel = type === 'integrasi' ? 'Integrasi Halte' : (type === 'stasiun' ? 'Integrasi' : 'Halte Terdekat');
-
         let halteHtml = '';
 
-        // New format: stops array with individual halte/routes
         if (halteStops && Array.isArray(halteStops)) {
             halteHtml = halteStops.map(stopItem => {
                 const routeBadges = stopItem.routes.map(r => {
@@ -282,9 +261,7 @@ function renderTimeline(stops) {
                 }).join('');
                 return `<div class="flex flex-wrap items-center gap-1"><span class="text-gray-700 font-medium">${stopItem.halte}</span> ${routeBadges}</div>`;
             }).join('');
-        }
-        // Old format: halte array + routes array (shared routes for all halte)
-        else if (halte && routes) {
+        } else if (halte && routes) {
             halteHtml = halte.map(h => {
                 const routeBadges = routes.map(r => {
                     let color = "#6b7280";
@@ -298,7 +275,6 @@ function renderTimeline(stops) {
             }).join('');
         }
 
-        // Station integration (for train connections like Sudirman C line)
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
             const { station, trainLines } = stop.stationIntegration;
@@ -325,37 +301,27 @@ function renderTimeline(stops) {
         </div>`;
     };
 
-    // Helper to render station icons (train icons + auto bus icon for halte integrations)
     const renderStationIcons = (stop) => {
         let iconsHtml = '';
-
-        // Render explicit icons (KCIC, KAJJ, MRT, train, etc.)
         if (stop.icons && stop.icons.length > 0) {
             iconsHtml += stop.icons.map(icon =>
                 `<img src="assets/images/${icon}" alt="${icon.replace('.svg', '')}" class="h-5 w-5 inline-block ml-1">`
             ).join('');
         }
-
-        // Auto-add bus icon if station has halte integration with bus routes
         if (stop.halteInfo) {
             iconsHtml += `<img src="assets/images/icon-bus.svg" alt="bus" class="h-5 w-5 inline-block ml-1">`;
         }
-
         return iconsHtml;
     };
 
-    // Helper to render a stop item
     const createStopItem = (stop, idx, totalStops, globalIdx) => {
-        // Skip separator items in normal rendering
         if (stop.isSeparator || stop.name === '---') return '';
 
         const isFirst = globalIdx === 0;
         const isLast = globalIdx === totalStops - 1;
         const isActive = stop.isActive;
-        // Changed from "Dekat MAN 9" to "TERDEKAT"
         const label = stop.label || (isActive ? "TERDEKAT" : null);
 
-        // Dot Style
         let dotHtml = '';
         if (isFirst) {
             dotHtml = `<div class="absolute -left-[11px] top-1 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
@@ -374,12 +340,10 @@ function renderTimeline(stops) {
             dotHtml = `<div class="absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
-        // Card Style (highlight active)
         const cardClass = isActive
             ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md transform scale-[1.02]"
             : "hover:bg-gray-50 border-transparent hover:border-gray-100";
 
-        // Transfer Pills
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`;
@@ -399,16 +363,13 @@ function renderTimeline(stops) {
             transfersHtml += `</div>`;
         }
 
-        // Halte integration info (for KRL/LRT)
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
-             
              ${dotHtml}
-
              <div class="ml-4 p-3 rounded-2xl border transition-all duration-300 ${cardClass}">
                  <div class="flex justify-between items-start">
                      <div>
@@ -418,7 +379,6 @@ function renderTimeline(stops) {
                      ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Mulai</span>' : ''}
                      ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100">Selesai</span>' : ''}
                  </div>
-                 
                  ${transfersHtml}
                  ${halteInfoHtml}
              </div>
@@ -426,8 +386,6 @@ function renderTimeline(stops) {
         `;
     };
 
-    // Create collapsible section HTML
-    // --- DIPERBAIKI: Menambahkan parameter startIndex untuk hitungan globalIdx yang benar ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -450,7 +408,6 @@ function renderTimeline(stops) {
             </button>
             <div id="section-${sectionId}" class="mt-2 pl-2 ${contentHidden}">
                 ${validStops.map((stop, idx) => {
-                    // --- DIPERBAIKI: Menghitung realIndex (global) berdasarkan startIndex ---
                     const realIndex = startIndex + idx;
                     return createStopItem(stop, idx, stops.length, realIndex);
                 }).join('')}
@@ -460,51 +417,35 @@ function renderTimeline(stops) {
 
     let html = '';
 
-    // Check if this is a KRL route with separator
     if (separatorIndex > -1) {
-        // Split into before separator and after separator
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
-
-        // Find active stops in each section
         const activeInBefore = beforeSeparator.some(s => s.isActive);
-        const activeInAfter = afterSeparator.some(s => s.isActive);
-
-        // Render before separator section
+        
         if (beforeSeparator.length > 0) {
             if (activeInBefore) {
-                // Show first stop, then collapsible "sebelumnya", then active area, then collapsible "sesudahnya"
                 const firstActiveInBefore = beforeSeparator.findIndex(s => s.isActive);
-
-                // First stop always visible
                 html += createStopItem(beforeSeparator[0], 0, stops.length, 0);
 
-                // Stops between first and active (collapsible)
                 if (firstActiveInBefore > 1) {
                     const middleStops = beforeSeparator.slice(1, firstActiveInBefore);
-                    // Pass start index 1
                     html += createCollapsibleSection(middleStops, 'before-active-1', 'Lihat {count} Pemberhentian Sebelumnya', 1);
                 }
 
-                // Active stops and nearby
                 const activeAreaStart = Math.max(1, firstActiveInBefore);
                 const activeAreaEnd = Math.min(beforeSeparator.length, firstActiveInBefore + 3);
                 for (let i = activeAreaStart; i < activeAreaEnd; i++) {
                     html += createStopItem(beforeSeparator[i], i, stops.length, i);
                 }
 
-                // Remaining stops before separator (collapsible)
                 if (activeAreaEnd < beforeSeparator.length) {
                     const remainingStops = beforeSeparator.slice(activeAreaEnd);
-                    // Pass start index activeAreaEnd
                     html += createCollapsibleSection(remainingStops, 'after-active-1', 'Lihat {count} Pemberhentian Sesudahnya', activeAreaEnd);
                 }
             } else {
-                // No active in this section - show first and last, collapse middle
                 html += createStopItem(beforeSeparator[0], 0, stops.length, 0);
                 if (beforeSeparator.length > 2) {
                     const middleStops = beforeSeparator.slice(1, -1);
-                    // Pass start index 1
                     html += createCollapsibleSection(middleStops, 'middle-1', 'Lihat {count} Pemberhentian', 1);
                 }
                 if (beforeSeparator.length > 1) {
@@ -513,39 +454,29 @@ function renderTimeline(stops) {
             }
         }
 
-        // Separator dropdown for after section
         if (afterSeparator.length > 0) {
-            // Pass start index separatorIndex + 1
             html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
         }
 
     } else {
-        // Normal route without separator
-        // Show first stop
         html += createStopItem(stops[0], 0, stops.length, 0);
 
-        // Collapsible section before active stop
         if (firstActiveIndex > 1) {
             const beforeActive = stops.slice(1, firstActiveIndex);
-            // Pass start index 1
             html += createCollapsibleSection(beforeActive, 'before-active', 'Lihat {count} Pemberhentian Sebelumnya', 1);
         }
 
-        // Show active stop(s) and a few around it
         const activeStart = Math.max(1, firstActiveIndex);
         const activeEnd = Math.min(stops.length - 1, firstActiveIndex + 3);
         for (let i = activeStart; i < activeEnd; i++) {
             html += createStopItem(stops[i], i, stops.length, i);
         }
 
-        // Collapsible section after active area
         if (activeEnd < stops.length - 1) {
             const afterActive = stops.slice(activeEnd, -1);
-            // Pass start index activeEnd
             html += createCollapsibleSection(afterActive, 'after-active', 'Lihat {count} Pemberhentian Sesudahnya', activeEnd);
         }
 
-        // Show last stop
         if (stops.length > 1) {
             html += createStopItem(stops[stops.length - 1], stops.length - 1, stops.length, stops.length - 1);
         }
@@ -554,7 +485,6 @@ function renderTimeline(stops) {
     container.innerHTML = html;
 }
 
-// Toggle collapsible stop sections
 function toggleStopSection(sectionId) {
     const section = document.getElementById(`section-${sectionId}`);
     const icon = document.getElementById(`icon-${sectionId}`);
@@ -565,71 +495,55 @@ function toggleStopSection(sectionId) {
     }
 }
 
-// Render detail page (Detail Page)
 function renderDetail() {
-    console.log("DEBUG: Memulai renderDetail..."); // Cek apakah fungsi jalan
+    console.log("🔍 DEBUG: Memulai renderDetail...");
 
-    const routeSlug = getRouteSlug();
-    console.log("DEBUG: Slug yang didapat =", routeSlug); // Cek slugnya terbaca apa
-
-    if (!routeSlug) { 
-        console.error("ERROR: Slug URL tidak ditemukan!");
-        // window.location.href = 'index.html';  <-- KITA MATIKAN DULU (KASIH //)
-        alert("Error: URL tidak valid (Slug kosong). Cek Console."); 
+    if (!window.appData) {
+        console.error("CRITICAL ERROR: window.appData kosong!");
         return; 
     }
 
-    // Cek apakah data.js sudah masuk
-    if (!window.appData) {
-        console.error("ERROR: window.appData kosong! File data.js gagal dimuat.");
-        alert("Error: Database rute tidak terhubung (data.js 404).");
-        return;
+    const routeSlug = getRouteSlug();
+    console.log("🔍 DEBUG: Slug URL =", routeSlug);
+
+    if (!routeSlug) { 
+        console.error("ERROR: URL tidak valid.");
+        return; 
     }
 
     const route = getRouteData(routeSlug);
-    console.log("DEBUG: Data Rute =", route); // Cek apakah datanya ketemu
-
+    
     if (!route) { 
-        console.error("ERROR: Data rute tidak ditemukan di database!");
-        alert("Error: Rute tidak ditemukan di database. Cek Console.");
+        console.error("ERROR: Data rute not found for slug:", routeSlug);
         return; 
     }
 
     currentRouteDetail = route; 
-}
 
-    // 1. Update Hero & Meta
     const heroImg = document.getElementById('hero-image');
     if (heroImg && route.details && route.details.heroImage) heroImg.src = route.details.heroImage;
 
-    // Special layout for 11P (No Hero Image)
     const heroContainer = document.getElementById('hero-image-container');
     const heroInfoCard = document.getElementById('hero-info-card');
 
     if (route.code === '11P' || route.hideHeroImage) {
         if (heroContainer) heroContainer.style.display = 'none';
-
         if (heroInfoCard) {
             heroInfoCard.classList.remove('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
             heroInfoCard.classList.add('relative', 'w-full', 'mt-4');
         }
-
         const parentSection = heroInfoCard?.closest('.relative.mb-32.z-10');
         if (parentSection) {
             parentSection.classList.remove('mb-32');
             parentSection.classList.add('mb-8');
         }
-
     } else {
-        // Reset defaults (in case of SPA navigation)
         if (heroContainer) heroContainer.style.display = 'block';
-
         if (heroInfoCard) {
             heroInfoCard.classList.add('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
             heroInfoCard.classList.remove('relative', 'w-full', 'mt-4');
         }
-
-        const parentSection = heroInfoCard?.closest('.relative.mb-8.z-10'); // Check if it was modified
+        const parentSection = heroInfoCard?.closest('.relative.mb-8.z-10');
         if (parentSection) {
             parentSection.classList.remove('mb-8');
             parentSection.classList.add('mb-32');
@@ -638,7 +552,6 @@ function renderDetail() {
 
     const badgeContainer = document.getElementById('route-badge-container');
     if (badgeContainer) {
-        // Multi-line badge for JAK routes
         if (route.code.startsWith('JAK ')) {
             const number = route.code.replace('JAK ', '');
             badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex flex-col items-center justify-center text-white font-bold border-2 border-white" style="background-color: ${route.badgeColor || '#0072bc'}">
@@ -651,9 +564,7 @@ function renderDetail() {
     }
 
     document.getElementById('route-name').textContent = route.name;
-
-    // Route Meta (Mode)
-    const modeInfo = getModeLabel(route.mode); // Reuse existing helper
+    const modeInfo = getModeLabel(route.mode); 
     const metaContainer = document.getElementById('route-meta');
     if (metaContainer) {
         metaContainer.innerHTML = `
@@ -662,7 +573,6 @@ function renderDetail() {
         `;
     }
 
-    // Docs / Stats
     if (route.details) {
         document.getElementById('route-tarif').textContent = route.details.tarif || '--';
         const tarifNote = document.getElementById('route-tarif-note');
@@ -683,9 +593,7 @@ function renderDetail() {
         }
     }
 
-    // 2. Setup Directions
     if (route.directions && route.directions.length > 0) {
-        // Setup buttons
         route.directions.forEach((dir, i) => {
             const btn = document.getElementById(`btn-dir-${i}`);
             if (btn) {
@@ -693,45 +601,31 @@ function renderDetail() {
                 btn.classList.remove('hidden');
             }
         });
-
-        // Hide unused buttons if < 2 directions (e.g. circle or one-way logic)
         if (route.directions.length < 2) {
             const btn1 = document.getElementById(`btn-dir-1`);
             if (btn1) btn1.classList.add('hidden');
         }
-
-        // Render Initial Direction (0)
         switchDirection(0);
     }
 
     document.title = `${route.code} - ${route.name} | TF MANINE`;
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we are on the index page (by checking for guides-container)
     if (document.getElementById('guides-container')) {
         initGuides();
-
-        // Check for mode filter in URL
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
         if (mode) {
             setTimeout(() => { filterRoute(mode); }, 100);
         }
-
-        // Clean URL
         if (window.location.pathname.endsWith('index.html')) {
             const cleanUrl = window.location.pathname.replace('index.html', '');
             window.history.replaceState({}, document.title, cleanUrl || '/');
         }
     }
-
-    // Check if we are on the detail page (by checking for hero-image which is unique to new detail)
     if (document.getElementById('hero-image')) {
         renderDetail();
-
-        // Clean URL for detail page
         const routeSlug = getRouteSlug();
         if (routeSlug && window.location.search.includes('rute=')) {
             const cleanUrl = '/rute/' + routeSlug;
@@ -739,4 +633,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
