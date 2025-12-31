@@ -567,13 +567,36 @@ function toggleStopSection(sectionId) {
 
 // Render detail page (Detail Page)
 function renderDetail() {
+    console.log("DEBUG: Memulai renderDetail..."); // Cek apakah fungsi jalan
+
     const routeSlug = getRouteSlug();
-    if (!routeSlug) { window.location.href = 'index.html'; return; }
+    console.log("DEBUG: Slug yang didapat =", routeSlug); // Cek slugnya terbaca apa
+
+    if (!routeSlug) { 
+        console.error("ERROR: Slug URL tidak ditemukan!");
+        // window.location.href = 'index.html';  <-- KITA MATIKAN DULU (KASIH //)
+        alert("Error: URL tidak valid (Slug kosong). Cek Console."); 
+        return; 
+    }
+
+    // Cek apakah data.js sudah masuk
+    if (!window.appData) {
+        console.error("ERROR: window.appData kosong! File data.js gagal dimuat.");
+        alert("Error: Database rute tidak terhubung (data.js 404).");
+        return;
+    }
 
     const route = getRouteData(routeSlug);
-    if (!route) { window.location.href = 'index.html'; return; }
+    console.log("DEBUG: Data Rute =", route); // Cek apakah datanya ketemu
 
-    currentRouteDetail = route; // Store global
+    if (!route) { 
+        console.error("ERROR: Data rute tidak ditemukan di database!");
+        alert("Error: Rute tidak ditemukan di database. Cek Console.");
+        return; 
+    }
+
+    currentRouteDetail = route; 
+}
 
     // 1. Update Hero & Meta
     const heroImg = document.getElementById('hero-image');
@@ -591,8 +614,6 @@ function renderDetail() {
             heroInfoCard.classList.add('relative', 'w-full', 'mt-4');
         }
 
-        // Adjust parent container margin if needed? 
-        // The parent .relative.mb-32.z-10 might need less margin bottom since there's no overlap
         const parentSection = heroInfoCard?.closest('.relative.mb-32.z-10');
         if (parentSection) {
             parentSection.classList.remove('mb-32');
@@ -718,3 +739,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
