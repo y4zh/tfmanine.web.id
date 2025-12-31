@@ -132,6 +132,16 @@ window.appData = {
                     stops: [
                         { name: "Kampung Melayu", transfers: ["5", "5C", "7", "11", "B25"] },
                         { name: "Jatinegara", transfers: ["5", "5B", "5C", "11", "B25"] },
+                         { 
+                            name: "Stasiun Jatinegara", 
+                            transfers: ["11M", "C | Cikarang"], 
+                            icons: ["icon-train.svg","KAJJ.svg"],
+                            halteInfo: {
+                                type: "stasiun",
+                                halte: ["Jatinegara"],
+                                routes: ["C | Cikarang"]
+                            }
+                         },
                         { name: "Stasiun Jatinegara", transfers: ["11M", "B25", "C | Cikarang"], icons: ["icon-train.svg"] },
                         { name: "Flyover Jatinegara", transfers: ["4K", "10", "B25"] },
                         { name: "Pasar Enjo", transfers: ["11M"] },
