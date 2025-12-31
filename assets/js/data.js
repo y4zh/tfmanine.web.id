@@ -142,7 +142,7 @@ window.appData = {
                             transfers: ["11M", "C | Cikarang"], 
                             icons: ["icon-train.svg"],
                             halteInfo: {
-                                type: "terdekat",
+                                type: "Terdekat",
                                 halte: ["Stasiun Klender"],
                                 routes: ["11", "11M", "C | Cikarang"]
                             }
@@ -157,7 +157,7 @@ window.appData = {
                             isActive: true, 
                             label: "Terdekat",
                             halteInfo: {
-                                type: "terdekat",
+                                type: "Terdekat",
                                 halte: ["Simpang Buaran"],
                                 routes: ["11", "11M", "C | Cikarang"]
                             }
