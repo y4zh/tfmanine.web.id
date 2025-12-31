@@ -334,7 +334,6 @@ function renderTimeline(stops) {
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
         } else if (isActive) {
-            // FIX ICON JAK 02 (Susun ke bawah & lebih besar)
             let codeDisplay = currentRouteDetail.code || '';
             let contentHtml = '';
 
@@ -365,9 +364,10 @@ function renderTimeline(stops) {
 
         let transfersHtml = '';
         
-        // --- FIX UTAMA: GUNAKAN !isActive AGAR MUNCUL DI STASIUN YANG TIDAK AKTIF ---
+        // --- BADGE GAP & ACTIVE CHECK ---
         if (stop.transfers && stop.transfers.length > 0 && !isActive) {
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`;
+            // FIX: mt-1.5 agar lebih dekat tapi tidak mepet (sebelumnya mt-2)
+            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1.5">`; 
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
                 if (window.routeColors) {
@@ -387,12 +387,12 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- FIX JARAK: Margin kiri diperbesar agar tidak mepet garis ---
+        // --- FIX PADDING: py-3 px-4 agar teks sejajar dengan titik (sebelumnya p-4) ---
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              ${dotHtml}
-             <div class="ml-9 md:ml-10 p-4 rounded-2xl border transition-all duration-300 ${cardClass}">
+             <div class="ml-9 md:ml-10 py-3 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
                  <div class="flex justify-between items-start">
                      <div>
                          <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''}">${stop.name}${stationIconsHtml}</h4>
