@@ -365,9 +365,8 @@ function renderTimeline(stops) {
 
         let transfersHtml = '';
         
-        // --- FIX: PASTIKAN BADGE TRANSFER HILANG SAAT AKTIF ---
-        // Kita cek: Kalau isActive = TRUE, maka kode di dalam {} TIDAK JALAN.
-        if (stop.transfers && stop.transfers.length > 0 && isActive === false) {
+        // --- FIX UTAMA: GUNAKAN !isActive AGAR MUNCUL DI STASIUN YANG TIDAK AKTIF ---
+        if (stop.transfers && stop.transfers.length > 0 && !isActive) {
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`;
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
@@ -388,7 +387,7 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- FIX JARAK MEPET: ml-4 diubah jadi ml-9 md:ml-10 ---
+        // --- FIX JARAK: Margin kiri diperbesar agar tidak mepet garis ---
         return `
         <div class="relative pb-10 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
