@@ -737,7 +737,7 @@ window.appData = {
             name: "Cikarang - Kampung Bandan",
             badgeColor: "#26baed",
             details: {
-                tarif: "Rp 3.000 - Rp 6.000",
+                tarif: "Rp 3.000 - Rp 13.000",
                 ops: "04.00 - 24.00",
                 headway: "15-30 Menit",
                 headwayNote: "Situasional",
