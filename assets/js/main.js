@@ -1,6 +1,6 @@
 let currentFilter = null;
 
-// --- FUNGSI RENDER KATEGORI (MODA TRANSPORTASI) ---
+// --- FUNGSI RENDER KATEGORI ---
 function renderCategories() {
     const container = document.getElementById('category-grid');
     if (!container) return; 
@@ -223,7 +223,7 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
-// --- FUNGSI RENDER TIMELINE FINAL FIX (JARAK MEPET BANGET) ---
+// --- FUNGSI RENDER TIMELINE FINAL FIX ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -337,10 +337,12 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
+            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
             dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
+            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
             dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
@@ -360,12 +362,14 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
             }
 
+            // FIX POSITION: Center on vertical line
             dotHtml = `<div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
+            // FIX POSITION: Center on vertical line (w-4 = 16px, left should be -8px)
             dotHtml = `<div class="absolute -left-[8px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
@@ -373,9 +377,10 @@ function renderTimeline(stops) {
             ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md"
             : "hover:bg-gray-50 border-transparent hover:border-gray-100";
 
+        // GENERATE TRANSFERS HTML (Badge Rute)
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1.5">`; 
+            transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`; 
             stop.transfers.forEach(t => {
                 let color = "#6b7280";
                 if (window.routeColors) {
@@ -395,27 +400,48 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- UPDATE FINAL: Margin Kiri dirapatkan lagi jadi ml-3 (12px) dan Padding jadi px-3 ---
+        // --- UPDATE LOGIC SUSUNAN KONTEN KARTU ---
+        let contentHtml = '';
+        
+        if (isActive) {
+            // LOGIKA AKTIF (TERDEKAT): Nama -> Transfers -> Label Terdekat
+            contentHtml = `
+            <div class="flex justify-between items-start">
+                <div class="w-full">
+                    <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none">${stop.name}${stationIconsHtml}</h4>
+                    ${transfersHtml} ${label ? `<div class="mt-2"><span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md">${label}</span></div>` : ''} </div>
+                ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Mulai</span>' : ''}
+                ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100">Selesai</span>' : ''}
+            </div>
+            `;
+        } else {
+            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Transfers dibawah
+            contentHtml = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-sm md:text-base font-bold text-gray-800 leading-none">${stop.name}${stationIconsHtml}</h4>
+                </div>
+                ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Mulai</span>' : ''}
+                ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100">Selesai</span>' : ''}
+            </div>
+            ${transfersHtml}
+            `;
+        }
+
+        // --- RENDER FINAL KARTU ---
         return `
         <div class="relative pb-4 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              ${dotHtml}
              <div class="ml-3 py-2 px-3 rounded-2xl border transition-all duration-300 ${cardClass}">
-                 <div class="flex justify-between items-start">
-                     <div>
-                         <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none">${stop.name}${stationIconsHtml}</h4>
-                         ${label ? `<span class="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md">${label}</span>` : ''}
-                     </div>
-                     ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Mulai</span>' : ''}
-                     ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100">Selesai</span>' : ''}
-                 </div>
-                 ${transfersHtml}
+                 ${contentHtml}
                  ${halteInfoHtml}
              </div>
         </div>
         `;
     };
 
+    // --- UPDATE DROPDOWN: TAMBAH MARGIN MY-6 (Jarak Atas Bawah Jauh) ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -425,8 +451,7 @@ function renderTimeline(stops) {
         const contentHidden = isExpanded ? '' : 'hidden';
 
         return `
-        <div class="collapsible-section mb-4">
-            <button onclick="toggleStopSection('${sectionId}')" 
+        <div class="collapsible-section my-6"> <button onclick="toggleStopSection('${sectionId}')" 
                     class="w-full flex items-center justify-between p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
                 <span class="text-sm font-semibold text-gray-600">
                     <svg class="w-4 h-4 inline-block mr-2 transition-transform ${iconRotate}" id="icon-${sectionId}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -452,7 +477,6 @@ function renderTimeline(stops) {
     
     if (separatorIndex > -1) {
         // --- LOGIKA KHUSUS UNTUK RUTE DENGAN SEPARATOR (KRL LOOP) ---
-        // MENAMPILKAN SEMUA STASIUN SEBELUM SEPARATOR TANPA DROPDOWN (Jatinegara dkk muncul)
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         
@@ -460,7 +484,6 @@ function renderTimeline(stops) {
             html += createStopItem(stop, idx, stops.length, idx);
         });
 
-        // HANYA BAGIAN INI YANG JADI DROPDOWN
         if (afterSeparator.length > 0) {
              html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
         }
