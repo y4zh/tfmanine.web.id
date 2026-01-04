@@ -441,7 +441,7 @@ function renderTimeline(stops) {
         `;
     };
 
-    // --- FIX JARAK DROPDOWN: 'mt-8 mb-16' (Sangat Lega) ---
+// --- FUNGSI DROPDOWN (JARAK DIPAKSA LEGA) ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -451,7 +451,8 @@ function renderTimeline(stops) {
         const contentHidden = isExpanded ? '' : 'hidden';
 
         return `
-        <div class="collapsible-section mt-8 mb-16"> <button onclick="toggleStopSection('${sectionId}')" 
+        <div class="collapsible-section" style="margin-top: 40px; margin-bottom: 40px;">
+            <button onclick="toggleStopSection('${sectionId}')" 
                     class="w-full flex items-center justify-between p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
                 <span class="text-sm font-semibold text-gray-600">
                     <svg class="w-4 h-4 inline-block mr-2 transition-transform ${iconRotate}" id="icon-${sectionId}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -469,7 +470,6 @@ function renderTimeline(stops) {
             </div>
         </div>`;
     };
-
     let html = '';
     const COLLAPSE_THRESHOLD = 7; 
 
@@ -688,3 +688,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
