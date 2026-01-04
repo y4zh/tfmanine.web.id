@@ -1,5 +1,30 @@
 let currentFilter = null;
 
+// --- BARU: FUNGSI RENDER KATEGORI (MODA TRANSPORTASI) ---
+function renderCategories() {
+    const container = document.getElementById('category-grid');
+    if (!container) return; // Jaga-jaga kalau elemen gak ada
+
+    // Data kategori (ikon & nama)
+    const categories = [
+        { id: 'brt', name: 'Transjakarta', icon: 'icon-bus.svg' },
+        { id: 'mikro', name: 'Mikrotrans', icon: 'icon-mikrotrans.svg' },
+        { id: 'krl', name: 'KRL', icon: 'icon-train.svg' },
+        { id: 'lrt', name: 'LRT', icon: 'icon-lrt.svg' }
+    ];
+
+    // Generate HTML: Tanpa border warna, ikon SEDIKIT DIKECILKAN
+    container.innerHTML = categories.map(cat => `
+        <button onclick="filterRoute('${cat.id}')" 
+                class="category-btn group bg-white rounded-2xl p-4 shadow-sm border-2 border-transparent hover:border-primary/10 transition-all duration-300 flex flex-col items-center justify-center h-32 md:h-40" 
+                data-mode="${cat.id}">
+            <img src="assets/images/${cat.icon}" alt="${cat.name}" 
+                 class="w-12 h-12 md:w-16 md:h-16 object-contain mb-3 transition-transform group-hover:scale-110">
+            <span class="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">${cat.name}</span>
+        </button>
+    `).join('');
+}
+
 // Filter routes by mode (Index Page)
 function filterRoute(mode) {
     currentFilter = mode;
@@ -653,6 +678,7 @@ function renderDetail() {
             if (!route.details.tarifNote) tarifNote.classList.add('hidden');
         }
 
+        // --- HEADWAY UPDATE: REMOVE font-sans, KEEP font-bold ---
         const headwayEl = document.getElementById('route-headway');
         if (headwayEl) {
             headwayEl.className = "flex flex-col items-center justify-center"; 
