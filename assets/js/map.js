@@ -53,12 +53,31 @@ function getRouteColor(routeCode) {
 function formatRoutesWithBadges(desc) {
     if (!desc) return '';
 
-    // Pattern to match routes like "4F (Pulo Gadung)", "JAK 02 (Duren Sawit)", etc.
+    // Regex to capture: Code (e.g., "11", "JAK 85", "C") followed by Description in parentheses
+    // Updated to be more flexible for different formats
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
     const matches = [...desc.matchAll(routePattern)];
 
     if (matches.length === 0) {
-        // No pattern matches, return original description
+        // Fallback: If no parentheses format, try to split by comma for simple lists
+        // This handles cases where description might just be "JAK 85, JAK 26" without parentheses details
+        if (desc.includes(',') || /^[A-Z0-9\s]+$/.test(desc)) {
+             const potentialRoutes = desc.split(',').map(s => s.trim());
+             let html = '<div style="display: flex; flex-wrap: wrap; gap: 4px;">';
+             potentialRoutes.forEach(r => {
+                 // heuristic: if short (likely a code), badge it. if long, keep text.
+                 if (r.length < 10) {
+                     const color = getRouteColor(r);
+                     html += `<span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap;">${r}</span>`;
+                 } else {
+                     html += `<span style="font-size: 11px; color: #555;">${r}</span>`;
+                 }
+             });
+             html += '</div>';
+             return html;
+        }
+
+        // No recognized pattern, return plain text
         return `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.5;">${desc}</p>`;
     }
 
@@ -71,7 +90,7 @@ function formatRoutesWithBadges(desc) {
 
         html += `
             <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap;">${routeCode}</span>
+                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; min-width: 30px; text-align: center;">${routeCode}</span>
                 <span style="font-size: 11px; color: #555;">${direction}</span>
             </div>
         `;
@@ -150,8 +169,9 @@ function initializeMarkers() {
                 <h3 style="margin: 0 0 8px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'};">${location.name}</h3>
         `;
 
-        // Format routes with colored badges for bus stops
-        if (location.type === 'busstop' || location.type === 'busstop_area') {
+        // Format routes with colored badges for ALL transport types now (train, brt, lrt, busstop)
+        // Previously this was restricted to just busstop/busstop_area
+        if (['train', 'brt', 'lrt', 'busstop', 'busstop_area'].includes(location.type)) {
             popupContent += formatRoutesWithBadges(location.desc);
         } else {
             popupContent += `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4;">${location.desc}</p>`;
@@ -186,7 +206,3 @@ function initializeMarkers() {
 
 // Initialize markers when map loads
 map.on('load', initializeMarkers);
-
-
-
-
