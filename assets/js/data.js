@@ -4,10 +4,10 @@ window.appData = {
         { name: "MAN 9 Jakarta", type: "school", coords: [106.910491, -6.241088], desc: "Jl. Hj Dogol No 54, Pondok Bambu" },
 
         // Transit stations - Orange markers
-        { name: "Stasiun Buaran", type: "train", coords: [106.9231, -6.2153], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI)" },
-        { name: "Halte Simpang Buaran", type: "brt", coords: [106.9242, -6.2158], desc: "11 (Pulo Gebang - Kampung Melayu)" },
-        { name: "LRT Jatibening Baru", type: "lrt", coords: [106.9265, -6.2570], desc: "BK (Lin Bekasi)" },
-
+        { name: "Stasiun Buaran", type: "train", coords: [106.9232049366804, -6.215499349296717], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI)" },
+        { name: "Simpang Buaran", type: "brt", coords: [106.9243316143217, -6.2159234027650445], desc: "11 (Pulo Gebang - Kampung Melayu), 11M (Rusun Rawa Bebek - Bukit Duri)" },
+        { name: "Stasiun Jati Bening Baru", type: "lrt", coords: [106.92781695600796, -6.257618166172584], desc: "BK (Lin Bekasi | Dukuh Atas - Jati Mulya)" },
+        { name: "Stasiun Klender", type: "train", coords: [106.89937206810781, -6.213175339993197], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI)" }
         // Bus stops near MAN 9 - Green markers with walking time info
         { name: "Rusun Pondok Bambu", type: "busstop", coords: [106.910853, -6.241690], desc: "11P (Walikota Jakarta Timur), JAK 85 (Bintara)", walkTime: 1, distance: 50 },
         { name: "Puskesmas Duren Sawit", type: "busstop", coords: [106.910906, -6.241853], desc: "JAK 85 (Cipinang Indah)", walkTime: 2, distance: 80 },
