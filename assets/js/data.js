@@ -748,12 +748,12 @@ window.appData = {
                     name: "via Manggarai",
                     stops: [
                         // --- FASE 1: Cikarang s.d. Kampung Bandan (MUNCUL) ---
-                        { name: "Cikarang", transfers: [] },
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
-                        { name: "Bekasi", transfers: [] },
+                        { name: "Bekasi", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Kranji", transfers: [] },
                         { name: "Cakung", transfers: [] },
                         { name: "Klender Baru", transfers: ["JAK 85"] },
@@ -804,28 +804,28 @@ window.appData = {
                             }
                         },
                         { name: "Klender", transfers: [] },
-                        { name: "Buaran", transfers: [] },
+                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } }, },
                         { name: "Klender Baru", transfers: [] },
                         { name: "Cakung", transfers: [] },
                         { name: "Kranji", transfers: [] },
-                        { name: "Bekasi", transfers: [] },
+                        { name: "Bekasi", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Bekasi Timur", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: [] }
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] }
                     ]
                 },
                 {
                     name: "via Pasar Senen",
                     stops: [
                         // --- FASE 1: Cikarang s.d. Kampung Bandan (MUNCUL) ---
-                        { name: "Cikarang", transfers: [] },
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
-                        { name: "Bekasi", transfers: [] },
+                        { name: "Bekasi", transfers: [], icons: ["KAJJ.svg"]},
                         { name: "Kranji", transfers: [] },
                         { name: "Cakung", transfers: [] },
                         { name: "Klender Baru", transfers: ["JAK 85"] },
@@ -875,8 +875,8 @@ window.appData = {
                                 ]
                             }
                         },
-                        { name: "Klender", transfers: [] },
-                        { name: "Buaran", transfers: [] },
+                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },},
+                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } }, },
                         { name: "Klender Baru", transfers: [] },
                         { name: "Cakung", transfers: [] },
                         { name: "Kranji", transfers: [] },
@@ -885,7 +885,7 @@ window.appData = {
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: [] }
+                        { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] }
                     ]
                 }
             ]
