@@ -772,12 +772,12 @@ window.appData = {
                             }
                         },
                         { name: "Matraman", transfers: [], halteInfo: { type: "integrasi", halte: ["Matraman Baru"], routes: ["5", "5C", "B25"] } },
-                        { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], trainConnections: ["A | Basoetta", "B | Bogor"] },
+                        { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
-                        { name: "BNI City", transfers: [] },
+                        { name: "BNI City", transfers: [], icons: ["KAB.svg"] },
                         { name: "Karet", transfers: [] },
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
-                        { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
+                        { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], icons : ["KAB.svg"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Angke", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
                         
@@ -845,12 +845,12 @@ window.appData = {
 
                         // --- FASE 2: Arah Balik ke Cikarang (TERSEMBUNYI) ---
                         { name: "Angke", transfers: [] },
-                        { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
+                        { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
                         { name: "Karet", transfers: [] },
-                        { name: "BNI City", transfers: [] },
+                        { name: "BNI City", transfers: [], icons: ["KAB.svg"] },
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
-                        { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], trainConnections: ["A | Basoetta", "B | Bogor"] },
+                        { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
                         { name: "Matraman", transfers: [] },
                         { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Klender", transfers: [] },
