@@ -1,15 +1,12 @@
-// Cek Mapbox GL
 if (!window.mapboxgl) {
     console.error('Mapbox GL JS not loaded');
 } else {
     mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsd2lsIiwiYSI6ImNtajZmZGdmMjBicmwzZm93c2ZsNnpkeDEifQ.KW_3csyevdAsjY6A9Q9OCA';
 }
 
-// Variable Global
 let allMarkers = [];
-let activeFilter = 'all'; // Default: tampilkan semua
+let activeFilter = 'all'; // State untuk melacak filter yang sedang aktif
 
-// Inisialisasi Map
 const map = new mapboxgl.Map({
     container: 'map-container',
     style: 'mapbox://styles/mapbox/streets-v12',
@@ -17,33 +14,25 @@ const map = new mapboxgl.Map({
     zoom: 14
 });
 
-// Kontrol Navigasi (Zoom +/-)
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-// Konfigurasi Warna Marker
 const COLORS = {
-    school: '#0072bc',       // Biru
-    train: '#FF5733',        // Oranye
-    brt: '#FF5733',          // Oranye
-    lrt: '#FF5733',          // Oranye
-    busstop: '#22c55e',      // Hijau
-    busstop_area: '#4b5563'  // Abu-abu
+    school: '#0072bc', train: '#FF5733', brt: '#FF5733', lrt: '#FF5733',
+    busstop: '#22c55e', busstop_area: '#4b5563'
 };
 
-// Konfigurasi Warna Badge Rute
 const ROUTE_COLORS = {
     '4F': '#b900e2', '7P': '#911d3c', '11Q': '#10c0ff', '11P': '#B2A5A3',
     'BK': '#006838', 'C': '#26baed', '11': '#2F4FA2', 'JAK': '#00b0ec'
 };
 
-// Helper: Ambil warna rute
 function getRouteColor(routeCode) {
     if (ROUTE_COLORS[routeCode]) return ROUTE_COLORS[routeCode];
     if (routeCode && routeCode.toUpperCase().startsWith('JAK')) return ROUTE_COLORS['JAK'];
     return '#6b7280';
 }
 
-// Helper: Format Badge Rute di Popup (Rapi & Sejajar)
+// --- FUNGSI FORMAT BADGE DENGAN ALIGNMENT TENGAH ---
 function formatRoutesWithBadges(desc) {
     if (!desc) return '';
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
@@ -59,7 +48,6 @@ function formatRoutesWithBadges(desc) {
         const direction = match[2].trim();
         const color = getRouteColor(routeCode);
         
-        // Layout Badge Rute
         html += `
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="
@@ -84,7 +72,6 @@ function formatRoutesWithBadges(desc) {
     return html;
 }
 
-// SVG Icons
 const ICONS = {
     school: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Z"/></svg>`,
     train: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
@@ -98,7 +85,130 @@ const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16
     <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/>
 </svg>`;
 
-// --- FUNGSI UPDATE TAMPILAN MARKER (FILTER) ---
+// --- 1. FUNGSI NAVBAR FILTER (POSISI DIPERBAIKI) ---
+function createInteractiveLegend() {
+    // Hapus legend lama jika ada
+    const oldLegend = document.querySelector('.map-legend-navbar');
+    if (oldLegend) oldLegend.remove();
+
+    const navbarContainer = document.createElement('div');
+    navbarContainer.className = 'map-legend-navbar';
+    
+    // Style Fix: Bottom naik ke 40px biar ga nabrak, z-index tinggi
+    navbarContainer.style.cssText = `
+        position: absolute;
+        bottom: 40px; 
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        background: white;
+        padding: 8px 12px;
+        border-radius: 99px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        width: max-content;
+        max-width: 90%;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none; 
+        -webkit-overflow-scrolling: touch;
+    `;
+    
+    // Hide scrollbar Webkit
+    const style = document.createElement('style');
+    style.innerHTML = `.map-legend-navbar::-webkit-scrollbar { display: none; }`;
+    document.head.appendChild(style);
+
+    // Data Item Filter
+    const legendItems = [
+        { id: 'school', label: 'Sekolah', color: COLORS.school },
+        { id: 'transit', label: 'Transit', color: COLORS.train },
+        { id: 'busstop', label: 'Bus Stop Terdekat', color: COLORS.busstop },
+        { id: 'busstop_area', label: 'Bus Stop Sekitar', color: COLORS.busstop_area }
+    ];
+
+    legendItems.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'legend-item';
+        itemDiv.dataset.filter = item.id;
+        
+        // Style Item
+        itemDiv.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 1;
+            flex-shrink: 0; 
+            padding: 4px 8px;
+            border-radius: 20px;
+        `;
+
+        const dot = document.createElement('span');
+        dot.style.cssText = `
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: ${item.color};
+            display: inline-block;
+        `;
+
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        label.style.cssText = `
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px;
+            color: #374151;
+            font-weight: 600;
+        `;
+
+        itemDiv.appendChild(dot);
+        itemDiv.appendChild(label);
+
+        itemDiv.onclick = () => {
+            if (activeFilter === item.id) {
+                activeFilter = 'all';
+            } else {
+                activeFilter = item.id;
+            }
+            updateMapDisplay();
+            updateLegendUI();
+        };
+
+        navbarContainer.appendChild(itemDiv);
+    });
+
+    const mapEl = document.getElementById('map-container');
+    // Pastikan container relative agar absolute positioning jalan benar
+    if (mapEl) {
+        mapEl.style.position = 'relative'; 
+        mapEl.appendChild(navbarContainer);
+    }
+}
+
+// --- 2. UPDATE TAMPILAN FILTER (Highlight Aktif) ---
+function updateLegendUI() {
+    const items = document.querySelectorAll('.legend-item');
+    items.forEach(item => {
+        if (activeFilter === 'all') {
+            item.style.opacity = '1';
+            item.style.backgroundColor = 'transparent';
+        } else {
+            if (item.dataset.filter === activeFilter) {
+                item.style.opacity = '1';
+                item.style.backgroundColor = '#f3f4f6'; // Highlight background
+            } else {
+                item.style.opacity = '0.4';
+                item.style.backgroundColor = 'transparent';
+            }
+        }
+    });
+}
+
+// --- 3. UPDATE MARKER DI PETA ---
 function updateMapDisplay() {
     allMarkers.forEach(data => {
         let isVisible = false;
@@ -106,7 +216,6 @@ function updateMapDisplay() {
         if (activeFilter === 'all') {
             isVisible = true;
         } else if (activeFilter === 'transit') {
-            // Gabung KRL, BRT, LRT jadi satu kategori "Transit"
             if (['train', 'brt', 'lrt'].includes(data.type)) isVisible = true;
         } else if (data.type === activeFilter) {
             isVisible = true;
@@ -120,104 +229,7 @@ function updateMapDisplay() {
     });
 }
 
-// --- FUNGSI MEMBUAT NAVBAR LEGEND (OTOMATIS) ---
-function createLegendNavbar() {
-    // Cek dulu, kalau navbar sudah ada (misal dari HTML), hapus atau gunakan kembali
-    const existingNav = document.getElementById('generated-map-legend');
-    if (existingNav) existingNav.remove();
-
-    const navbar = document.createElement('div');
-    navbar.id = 'generated-map-legend';
-    
-    // Style Navbar: Putih, Melayang di Bawah, Rounded
-    navbar.style.cssText = `
-        position: absolute;
-        bottom: 25px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 100; /* Z-Index tinggi biar tampil di atas map */
-        background: white;
-        padding: 10px 16px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        display: flex;
-        gap: 12px;
-        width: max-content;
-        max-width: 90%;
-        overflow-x: auto;
-        white-space: nowrap;
-        scrollbar-width: none;
-    `;
-
-    // Data Item Legend (Sekaligus Tombol Filter)
-    const items = [
-        { id: 'school', label: 'Sekolah', color: COLORS.school },
-        { id: 'transit', label: 'Transit', color: COLORS.train },
-        { id: 'busstop', label: 'Bus Stop Terdekat', color: COLORS.busstop },
-        { id: 'busstop_area', label: 'Bus Stop Sekitar', color: COLORS.busstop_area }
-    ];
-
-    items.forEach(item => {
-        const btn = document.createElement('div');
-        btn.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        `;
-
-        // Indikator Warna (Dot)
-        const dot = document.createElement('span');
-        dot.style.cssText = `
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: ${item.color};
-            display: inline-block;
-        `;
-
-        // Label Teks
-        const label = document.createElement('span');
-        label.textContent = item.label;
-        label.style.cssText = `
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-        `;
-
-        btn.appendChild(dot);
-        btn.appendChild(label);
-
-        // Event Klik: Filter Logic
-        btn.onclick = () => {
-            // Reset style semua tombol
-            Array.from(navbar.children).forEach(child => child.style.background = 'transparent');
-
-            // Logic Toggle Filter
-            if (activeFilter === item.id) {
-                activeFilter = 'all'; // Jika diklik lagi, reset ke All
-            } else {
-                activeFilter = item.id;
-                btn.style.background = '#f3f4f6'; // Highlight aktif
-            }
-            updateMapDisplay();
-        };
-
-        navbar.appendChild(btn);
-    });
-
-    // Masukkan Navbar ke dalam Container Map
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer) {
-        mapContainer.appendChild(navbar);
-    }
-}
-
-// Fungsi Utama Inisialisasi Marker
+// --- 4. INITIALIZE MARKERS & POPUP ---
 function initializeMarkers() {
     if (!window.appData || !window.appData.locations) {
         console.error('Data not loaded');
@@ -233,7 +245,6 @@ function initializeMarkers() {
         const markerSize = isAreaStop ? 24 : 32;
         const borderWidth = isAreaStop ? 2 : 3;
 
-        // Elemen Marker Custom
         const el = document.createElement('div');
         el.className = 'custom-marker';
         el.style.cssText = `
@@ -250,7 +261,6 @@ function initializeMarkers() {
         `;
         el.innerHTML = iconSvg;
 
-        // Konten Popup
         let popupContent = `
             <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px; max-width: 280px; padding: 4px;">
                 <h3 style="margin: 0 0 10px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'}; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">${location.name}</h3>
@@ -273,6 +283,7 @@ function initializeMarkers() {
                 </div>
             `;
         }
+
         popupContent += `</div>`;
 
         const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
@@ -288,9 +299,8 @@ function initializeMarkers() {
         });
     });
 
-    // Panggil fungsi pembuat navbar legend
-    createLegendNavbar();
+    // Panggil Navbar Filter Baru
+    createInteractiveLegend();
 }
 
-// Jalankan saat map selesai loading
 map.on('load', initializeMarkers);
