@@ -5,6 +5,7 @@ if (!window.mapboxgl) {
 }
 
 let allMarkers = [];
+let activeFilter = 'all'; // State untuk melacak filter yang sedang aktif
 
 const map = new mapboxgl.Map({
     container: 'map-container',
@@ -21,7 +22,7 @@ const COLORS = {
 };
 
 const ROUTE_COLORS = {
-    '4F': '#b900e2', '7P': '#911d3c', '11Q': '#10c0ff', '11P': '#B2A5A3',
+    '4F': '#b900e2', '7P': '#911d3c', '11Q': '#10c0ff', '11P','11M': '#B2A5A3',
     'BK': '#006838', 'C': '#26baed', '11': '#2F4FA2', 'JAK': '#00b0ec'
 };
 
@@ -31,7 +32,6 @@ function getRouteColor(routeCode) {
     return '#6b7280';
 }
 
-// --- FUNGSI FORMAT ROUTE BADGE (YANG DIPERBAIKI ALIGNMENTNYA) ---
 function formatRoutesWithBadges(desc) {
     if (!desc) return '';
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
@@ -47,7 +47,6 @@ function formatRoutesWithBadges(desc) {
         const direction = match[2].trim();
         const color = getRouteColor(routeCode);
         
-        // FIX: align-items: center (biar sejajar tengah), badge pakai flexbox juga
         html += `
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="
@@ -74,7 +73,7 @@ function formatRoutesWithBadges(desc) {
 
 const ICONS = {
     school: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Z"/></svg>`,
-    train: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
+    train: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
     brt: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
     lrt: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
     busstop: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
@@ -85,80 +84,138 @@ const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16
     <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/>
 </svg>`;
 
-function createFilterControls() {
-    const filterContainer = document.createElement('div');
-    filterContainer.className = 'map-filter-controls';
-    filterContainer.style.cssText = `
+// --- 1. FUNGSI NAVBAR BAWAH SEBAGAI FILTER ---
+function createInteractiveLegend() {
+    // Hapus legend lama jika ada (biar gak duplikat)
+    const oldLegend = document.querySelector('.map-legend-navbar');
+    if (oldLegend) oldLegend.remove();
+
+    const navbarContainer = document.createElement('div');
+    navbarContainer.className = 'map-legend-navbar';
+    
+    // Style mirip screenshot: Putih, Rounded, Shadow, Posisi Bawah
+    navbarContainer.style.cssText = `
         position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 10;
+        bottom: 25px; 
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        background: white;
+        padding: 12px 16px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        max-width: 90%;
+        gap: 16px;
+        align-items: center;
+        width: max-content;
+        max-width: 95%;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none; /* Hide scrollbar Firefox */
     `;
 
-    const filters = [
-        { label: 'Semua', type: 'all', color: '#333' },
-        { label: 'Sekolah', type: 'school', color: COLORS.school },
-        { label: 'Transit (KRL/BRT)', type: 'transit', color: COLORS.train },
-        { label: 'Halte Terdekat', type: 'busstop', color: COLORS.busstop },
-        { label: 'Halte Sekitar', type: 'busstop_area', color: COLORS.busstop_area }
+    // Data Item Filter (Sesuai Gambar)
+    const legendItems = [
+        { id: 'school', label: 'Sekolah', color: COLORS.school },
+        { id: 'transit', label: 'Transit', color: COLORS.train },
+        { id: 'busstop', label: 'Bus Stop Terdekat', color: COLORS.busstop },
+        { id: 'busstop_area', label: 'Bus Stop Sekitar', color: COLORS.busstop_area }
     ];
 
-    filters.forEach(f => {
-        const btn = document.createElement('button');
-        btn.textContent = f.label;
-        btn.style.cssText = `
-            background: white;
-            border: 1px solid #ddd;
-            border-left: 4px solid ${f.color};
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #333;
+    legendItems.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'legend-item';
+        itemDiv.dataset.filter = item.id;
+        
+        // Style Item
+        itemDiv.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
+            transition: opacity 0.2s;
+            opacity: 1; /* Default opacity */
         `;
-        btn.onmouseover = () => { btn.style.transform = 'translateY(-1px)'; btn.style.boxShadow = '0 4px 6px rgba(0,0,0,0.15)'; };
-        btn.onmouseout = () => { btn.style.transform = 'translateY(0)'; btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'; };
-        btn.onclick = () => filterMarkers(f.type, btn);
-        filterContainer.appendChild(btn);
+
+        // Titik Warna
+        const dot = document.createElement('span');
+        dot.style.cssText = `
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: ${item.color};
+            display: inline-block;
+        `;
+
+        // Teks Label
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        label.style.cssText = `
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12px;
+            color: #4b5563;
+            font-weight: 600;
+        `;
+
+        itemDiv.appendChild(dot);
+        itemDiv.appendChild(label);
+
+        // --- EVENT CLICK UNTUK FILTER ---
+        itemDiv.onclick = () => {
+            // Logika Toggle: Kalau diklik yang sedang aktif -> Reset ke All. Kalau beda -> Filter itu.
+            if (activeFilter === item.id) {
+                activeFilter = 'all'; // Reset
+            } else {
+                activeFilter = item.id; // Set Filter
+            }
+            updateMapDisplay();
+            updateLegendUI();
+        };
+
+        navbarContainer.appendChild(itemDiv);
     });
 
     const mapEl = document.getElementById('map-container');
-    if (mapEl) mapEl.appendChild(filterContainer);
+    if (mapEl) mapEl.appendChild(navbarContainer);
 }
 
-function filterMarkers(selectedType, clickedBtn) {
-    const buttons = document.querySelectorAll('.map-filter-controls button');
-    buttons.forEach(b => {
-        b.style.background = 'white';
-        b.style.color = '#333';
+// --- 2. UPDATE TAMPILAN LEGEND (BIAR KETAHUAN MANA YG AKTIF) ---
+function updateLegendUI() {
+    const items = document.querySelectorAll('.legend-item');
+    items.forEach(item => {
+        if (activeFilter === 'all') {
+            // Kalau All, semua terang
+            item.style.opacity = '1';
+        } else {
+            // Kalau ada filter aktif, yang lain diredupkan
+            if (item.dataset.filter === activeFilter) {
+                item.style.opacity = '1';
+                item.style.transform = 'scale(1.05)';
+            } else {
+                item.style.opacity = '0.4';
+                item.style.transform = 'scale(1)';
+            }
+        }
     });
-    if (clickedBtn) {
-        clickedBtn.style.background = '#f3f4f6';
-    }
+}
 
-    allMarkers.forEach(item => {
-        const type = item.type;
-        const marker = item.marker;
+// --- 3. UPDATE MARKER DI PETA ---
+function updateMapDisplay() {
+    allMarkers.forEach(data => {
         let isVisible = false;
-        if (selectedType === 'all') {
+
+        if (activeFilter === 'all') {
             isVisible = true;
-        } else if (selectedType === 'transit') {
-            if (['train', 'brt', 'lrt'].includes(type)) isVisible = true;
-        } else if (type === selectedType) {
+        } else if (activeFilter === 'transit') {
+            if (['train', 'brt', 'lrt'].includes(data.type)) isVisible = true;
+        } else if (data.type === activeFilter) {
             isVisible = true;
         }
+
         if (isVisible) {
-            marker.addTo(map);
+            data.marker.addTo(map);
         } else {
-            marker.remove();
+            data.marker.remove();
         }
     });
 }
@@ -232,7 +289,8 @@ function initializeMarkers() {
         });
     });
 
-    createFilterControls();
+    // PANGGIL FUNGSI NAVBAR BARU
+    createInteractiveLegend();
 }
 
 map.on('load', initializeMarkers);
