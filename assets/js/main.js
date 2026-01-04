@@ -1,6 +1,5 @@
 let currentFilter = null;
 
-// --- FUNGSI RENDER KATEGORI ---
 function renderCategories() {
     const container = document.getElementById('category-grid');
     if (!container) return; 
@@ -23,7 +22,6 @@ function renderCategories() {
     `).join('');
 }
 
-// Filter routes
 function filterRoute(mode) {
     currentFilter = mode;
     const section = document.getElementById('route-list-section');
@@ -49,7 +47,7 @@ function filterRoute(mode) {
     }
 
     if (mode === 'brt') {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'n-brt');
+        filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
         titleText = 'Rute Transjakarta';
     } else if (mode === 'mikro') {
         filteredRoutes = window.appData.routes.filter(r => r.mode === 'mikro');
@@ -192,7 +190,7 @@ function getModeLabel(mode) {
         'nbrt': { text: 'Non-BRT', bg: 'bg-orange-100', color: 'text-orange-600' },
         'mikro': { text: 'Mikrotrans', bg: 'bg-blue-100', color: 'text-blue-600' },
         'rusun': { text: 'Rusun', bg: 'bg-green-100', color: 'text-green-600' },
-        'rail': { text: 'Kereta', bg: 'bg-purple-100', color: 'text-purple-600' },
+        'rail': { text: 'KRL / LRT', bg: 'bg-purple-100', color: 'text-purple-600' },
         'krl': { text: 'KRL Commuter', bg: 'bg-cyan-100', color: 'text-cyan-600' },
         'lrt': { text: 'LRT Jabodebek', bg: 'bg-emerald-100', color: 'text-emerald-600' }
     };
@@ -223,7 +221,6 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
-// --- FUNGSI RENDER TIMELINE FINAL FIX ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -255,7 +252,6 @@ function renderTimeline(stops) {
     let separatorIndex = stops.findIndex(s => s.isSeparator || s.name === '---');
     if (firstActiveIndex === -1) firstActiveIndex = 0;
 
-    // Helper functions
     const renderHalteInfo = (stop) => {
         if (!stop.halteInfo) return '';
         const { type, halte, routes, stops: halteStops } = stop.halteInfo;
@@ -337,12 +333,10 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
-            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
             dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
-            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
             dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
@@ -362,14 +356,12 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold font-sans">${codeDisplay}</span>`;
             }
 
-            // FIX POSITION: Center on vertical line
             dotHtml = `<div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
-            // FIX POSITION: Center on vertical line (w-4 = 16px, left should be -8px)
             dotHtml = `<div class="absolute -left-[8px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
@@ -377,7 +369,6 @@ function renderTimeline(stops) {
             ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md"
             : "hover:bg-gray-50 border-transparent hover:border-gray-100";
 
-        // GENERATE TRANSFERS HTML (Badge Rute)
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`; 
@@ -400,11 +391,9 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- UPDATE LOGIC TAMPILAN KARTU ---
         let cardContent = '';
 
         if (isActive) {
-            // LOGIKA AKTIF (TERDEKAT): Nama -> Badge Rute -> Label Terdekat
             cardContent = `
             <div class="flex justify-between items-start font-sans">
                 <div class="w-full">
@@ -417,7 +406,6 @@ function renderTimeline(stops) {
             </div>
             `;
         } else {
-            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Badge Rute (di luar flex)
             cardContent = `
             <div class="flex justify-between items-start font-sans">
                 <div>
@@ -430,7 +418,6 @@ function renderTimeline(stops) {
             `;
         }
 
-        // --- RENDER FINAL ---
         return `
         <div class="relative pb-4 last:pb-0 group/stop fade-in font-sans">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
@@ -443,7 +430,6 @@ function renderTimeline(stops) {
         `;
     };
 
-    // --- FIX JARAK DROPDOWN: 18px manual style ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -476,10 +462,7 @@ function renderTimeline(stops) {
     let html = '';
     const COLLAPSE_THRESHOLD = 7; 
 
-    // --- LOGIKA TAMPILAN UTAMA ---
-    
     if (separatorIndex > -1) {
-        // UNTUK KRL (Ada Separator)
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         
@@ -492,7 +475,6 @@ function renderTimeline(stops) {
         }
 
     } else {
-        // UNTUK BUS/ANGKOT (Tanpa Separator)
         html += createStopItem(stops[0], 0, stops.length, 0); 
 
         if (firstActiveIndex > 1) {
@@ -543,15 +525,12 @@ function toggleStopSection(sectionId) {
 }
 
 function renderDetail() {
-    console.log("🔍 DEBUG: Memulai renderDetail...");
-
     if (!window.appData) {
         console.error("CRITICAL ERROR: window.appData kosong!");
         return; 
     }
 
     const routeSlug = getRouteSlug();
-    console.log("🔍 DEBUG: Slug URL =", routeSlug);
 
     if (!routeSlug) { 
         console.error("ERROR: URL tidak valid.");
@@ -616,7 +595,6 @@ function renderDetail() {
     const modeInfo = getModeLabel(route.mode); 
     const metaContainer = document.getElementById('route-meta');
     if (metaContainer) {
-        // DOT REMOVED HERE
         metaContainer.innerHTML = `
             <span class="text-gray-500 font-sans">${modeInfo.text}</span>
         `;
@@ -641,7 +619,6 @@ function renderDetail() {
         if (headwayEl) {
             headwayEl.className = "flex flex-col items-center justify-center font-sans"; 
             const noteText = route.details.headwayNote || "Situasional"; 
-            // HEADWAY FONT SIZE ADJUSTED HERE (Added text-sm)
             headwayEl.innerHTML = `
                 <div class="flex items-center space-x-2">
                     <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -708,5 +685,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
-
