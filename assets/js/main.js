@@ -409,17 +409,13 @@ function renderTimeline(stops) {
             <div class="flex justify-between items-start">
                 <div class="w-full">
                     <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none">${stop.name}${stationIconsHtml}</h4>
-                    
-                    ${transfersHtml} 
-                    
-                    ${label ? `<div class="mt-3"><span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md">${label}</span></div>` : ''} 
-                </div>
+                    ${transfersHtml} ${label ? `<div class="mt-3"><span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md">${label}</span></div>` : ''} </div>
                 ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Mulai</span>' : ''}
                 ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100">Selesai</span>' : ''}
             </div>
             `;
         } else {
-            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Transfers dibawah
+            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Badge Rute (di luar flex)
             cardContent = `
             <div class="flex justify-between items-start">
                 <div>
@@ -445,7 +441,7 @@ function renderTimeline(stops) {
         `;
     };
 
-    // --- FIX JARAK DROPDOWN JADI MY-10 (40px) ---
+    // --- FIX JARAK DROPDOWN: 'mt-8 mb-16' (Sangat Lega) ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -455,7 +451,7 @@ function renderTimeline(stops) {
         const contentHidden = isExpanded ? '' : 'hidden';
 
         return `
-        <div class="collapsible-section my-10"> <button onclick="toggleStopSection('${sectionId}')" 
+        <div class="collapsible-section mt-8 mb-16"> <button onclick="toggleStopSection('${sectionId}')" 
                     class="w-full flex items-center justify-between p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
                 <span class="text-sm font-semibold text-gray-600">
                     <svg class="w-4 h-4 inline-block mr-2 transition-transform ${iconRotate}" id="icon-${sectionId}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
