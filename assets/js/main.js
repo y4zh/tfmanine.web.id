@@ -395,11 +395,12 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
+        // --- UPDATE MARGIN-LEFT: ml-8 (32px) agar konsisten ---
         return `
         <div class="relative pb-4 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              ${dotHtml}
-             <div class="ml-6 py-2 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
+             <div class="ml-8 py-2 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
                  <div class="flex justify-between items-start">
                      <div>
                          <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none">${stop.name}${stationIconsHtml}</h4>
@@ -448,30 +449,23 @@ function renderTimeline(stops) {
     const COLLAPSE_THRESHOLD = 7; 
 
     // --- REVISI LOGIKA TAMPILAN ---
-    // Logika baru: Jika ada separator, fokus HANYA pada separator itu. 
-    // Jangan sembunyikan apapun sebelum separator, kecuali benar-benar perlu.
     
     if (separatorIndex > -1) {
         // --- LOGIKA KHUSUS UNTUK RUTE DENGAN SEPARATOR (KRL LOOP) ---
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         
-        // 1. Render SEMUA stasiun sebelum separator (Jangan di-collapse otomatis)
-        // Ini memperbaiki masalah stasiun Jatinegara dkk tersembunyi
         beforeSeparator.forEach((stop, idx) => {
             html += createStopItem(stop, idx, stops.length, idx);
         });
 
-        // 2. Render stasiun setelah separator (masukkan ke dropdown)
         if (afterSeparator.length > 0) {
              html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
         }
 
     } else {
         // --- LOGIKA UNTUK RUTE NORMAL (BUS/ANGKOT) ---
-        // Tetap gunakan logika pintar untuk menyembunyikan stasiun tengah jika terlalu banyak
-        
-        html += createStopItem(stops[0], 0, stops.length, 0); // Selalu Tampilkan Awal
+        html += createStopItem(stops[0], 0, stops.length, 0); 
 
         if (firstActiveIndex > 1) {
             const beforeActive = stops.slice(1, firstActiveIndex);
@@ -644,7 +638,7 @@ function renderDetail() {
         switchDirection(0);
     }
 
-    document.title = `${route.code} - ${route.name} | TF MANINE`;
+    document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
