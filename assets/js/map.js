@@ -31,6 +31,7 @@ function getRouteColor(routeCode) {
     return '#6b7280';
 }
 
+// --- FUNGSI FORMAT ROUTE BADGE (YANG DIPERBAIKI ALIGNMENTNYA) ---
 function formatRoutesWithBadges(desc) {
     if (!desc) return '';
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
@@ -40,15 +41,30 @@ function formatRoutesWithBadges(desc) {
         return `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.5;">${desc}</p>`;
     }
 
-    let html = '<div style="display: flex; flex-direction: column; gap: 4px;">';
+    let html = '<div style="display: flex; flex-direction: column; gap: 6px;">';
     matches.forEach(match => {
         const routeCode = match[1].trim();
         const direction = match[2].trim();
         const color = getRouteColor(routeCode);
+        
+        // FIX: align-items: center (biar sejajar tengah), badge pakai flexbox juga
         html += `
-            <div style="display: flex; align-items: start; gap: 8px;">
-                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; min-width: 35px; text-align: center; margin-top: 1px;">${routeCode}</span>
-                <span style="font-size: 11px; color: #555; line-height: 1.3;">${direction}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="
+                    background-color: ${color}; 
+                    color: white; 
+                    font-size: 10px; 
+                    font-weight: 700; 
+                    padding: 4px 8px; 
+                    border-radius: 6px; 
+                    white-space: nowrap; 
+                    min-width: 36px; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                    height: 20px;
+                ">${routeCode}</span>
+                <span style="font-size: 11px; color: #4b5563; font-weight: 500; line-height: 1.2;">${direction}</span>
             </div>
         `;
     });
@@ -65,7 +81,6 @@ const ICONS = {
     busstop_area: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`
 };
 
-// --- ICON JALAN KAKI YANG BENAR (ViewBox Standar 0 0 24 24) ---
 const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
     <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/>
 </svg>`;
@@ -180,8 +195,8 @@ function initializeMarkers() {
         el.innerHTML = iconSvg;
 
         let popupContent = `
-            <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 180px; max-width: 280px;">
-                <h3 style="margin: 0 0 8px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'};">${location.name}</h3>
+            <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px; max-width: 280px; padding: 4px;">
+                <h3 style="margin: 0 0 10px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'}; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">${location.name}</h3>
         `;
 
         if (['train', 'brt', 'lrt', 'busstop', 'busstop_area'].includes(location.type)) {
@@ -192,10 +207,8 @@ function initializeMarkers() {
 
         if (location.type === 'busstop' && location.walkTime !== undefined) {
             const timeColor = location.walkTime >= 3 ? '#eab308' : '#22c55e';
-            // --- REVISI IKON JALAN KAKI ---
-            // Menggunakan min-width pada span ikon agar tidak gepeng
             popupContent += `
-                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; margin-top: 8px; background: ${timeColor}15; border-radius: 8px; border-left: 3px solid ${timeColor};">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-top: 10px; background: ${timeColor}10; border-radius: 8px; border-left: 3px solid ${timeColor};">
                     <span style="color: ${timeColor}; display: flex; align-items: center; justify-content: center; min-width: 20px;">${WALK_ICON}</span>
                     <span style="font-size: 12px; font-weight: 600; color: ${timeColor};">${location.walkTime} menit</span>
                     <span style="font-size: 12px; color: #888;">•</span>
@@ -203,6 +216,7 @@ function initializeMarkers() {
                 </div>
             `;
         }
+
         popupContent += `</div>`;
 
         const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
