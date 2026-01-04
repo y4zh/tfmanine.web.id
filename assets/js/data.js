@@ -762,7 +762,7 @@ window.appData = {
                         {
                             name: "Jatinegara",
                             transfers: [], 
-                            icons: ["KAJJ.svg", "icon-bus.svg"],
+                            icons: ["KAJJ.svg"],
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
@@ -791,7 +791,18 @@ window.appData = {
                         { name: "Gang Sentiong", transfers: [] },
                         { name: "Kramat", transfers: [] },
                         { name: "Pondok Jati", transfers: [] },
-                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] },
+                        { 
+                            name: "Jatinegara",
+                            transfers: [], 
+                            icons: ["KAJJ.svg"],
+                            halteInfo: {
+                                type: "integrasi",
+                                stops: [
+                                    { halte: "Stasiun Jatinegara", routes: ["11", "11M", "B25"] },
+                                    { halte: "Bali Mester", routes: ["5", "5B", "5C"] }
+                                ]
+                            }
+                        },
                         { name: "Klender", transfers: [] },
                         { name: "Buaran", transfers: [] },
                         { name: "Klender Baru", transfers: [] },
@@ -823,7 +834,7 @@ window.appData = {
                         {
                             name: "Jatinegara",
                             transfers: [], 
-                            icons: ["KAJJ.svg", "icon-bus.svg"],
+                            icons: ["KAJJ.svg"],
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
@@ -852,7 +863,18 @@ window.appData = {
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
                         { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
                         { name: "Matraman", transfers: [] },
-                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] },
+                        {
+                            name: "Jatinegara",
+                            transfers: [], 
+                            icons: ["KAJJ.svg"],
+                            halteInfo: {
+                                type: "integrasi",
+                                stops: [
+                                    { halte: "Stasiun Jatinegara", routes: ["11", "11M", "B25"] },
+                                    { halte: "Bali Mester", routes: ["5", "5B", "5C"] }
+                                ]
+                            }
+                        },
                         { name: "Klender", transfers: [] },
                         { name: "Buaran", transfers: [] },
                         { name: "Klender Baru", transfers: [] },
