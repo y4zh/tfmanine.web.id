@@ -223,7 +223,7 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
-// --- FUNGSI RENDER TIMELINE YANG DIREVISI ---
+// --- FUNGSI RENDER TIMELINE FINAL FIX ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -337,11 +337,13 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
-            dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
+            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
+            dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
-            dotHtml = `<div class="absolute -left-[11px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
+            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
+            dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
         } else if (isActive) {
@@ -360,17 +362,21 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold">${codeDisplay}</span>`;
             }
 
-            dotHtml = `<div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
-                       <div class="absolute -left-[19px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
+            // FIX POSITION: Center on vertical line (w-10 = 40px, left should be -20px)
+            // REMOVED SCALE ANIMATION to prevent alignment shift
+            dotHtml = `<div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
+                       <div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
-            dotHtml = `<div class="absolute -left-[9px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
+            // FIX POSITION: Center on vertical line (w-4 = 16px, left should be -8px)
+            dotHtml = `<div class="absolute -left-[8px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
+        // REMOVED SCALE on Active Card to fix Alignment
         const cardClass = isActive
-            ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md transform scale-[1.02]"
+            ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md"
             : "hover:bg-gray-50 border-transparent hover:border-gray-100";
 
         let transfersHtml = '';
@@ -395,7 +401,7 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- UPDATE MARGIN-LEFT: ml-8 (32px) agar konsisten ---
+        // FIX ALIGNMENT: ml-8 (32px) standard for ALL cards.
         return `
         <div class="relative pb-4 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
@@ -452,6 +458,7 @@ function renderTimeline(stops) {
     
     if (separatorIndex > -1) {
         // --- LOGIKA KHUSUS UNTUK RUTE DENGAN SEPARATOR (KRL LOOP) ---
+        // MENAMPILKAN SEMUA STASIUN SEBELUM SEPARATOR TANPA DROPDOWN (Jatinegara dkk muncul)
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         
@@ -459,6 +466,7 @@ function renderTimeline(stops) {
             html += createStopItem(stop, idx, stops.length, idx);
         });
 
+        // HANYA BAGIAN INI YANG JADI DROPDOWN
         if (afterSeparator.length > 0) {
              html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
         }
@@ -638,7 +646,7 @@ function renderDetail() {
         switchDirection(0);
     }
 
-    document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
+    document.title = `${route.code} - ${route.name} | TF MANINE`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
