@@ -223,7 +223,7 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
-// --- FUNGSI RENDER TIMELINE FINAL FIX ---
+// --- FUNGSI RENDER TIMELINE FINAL FIX (JARAK DIPEPETIN) ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -363,7 +363,6 @@ function renderTimeline(stops) {
             }
 
             // FIX POSITION: Center on vertical line (w-10 = 40px, left should be -20px)
-            // REMOVED SCALE ANIMATION to prevent alignment shift
             dotHtml = `<div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
@@ -374,7 +373,6 @@ function renderTimeline(stops) {
             dotHtml = `<div class="absolute -left-[8px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
-        // REMOVED SCALE on Active Card to fix Alignment
         const cardClass = isActive
             ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md"
             : "hover:bg-gray-50 border-transparent hover:border-gray-100";
@@ -401,12 +399,12 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // FIX ALIGNMENT: ml-8 (32px) standard for ALL cards.
+        // --- FIX MARGIN: Diubah dari ml-8 jadi ml-4 biar mepet ---
         return `
         <div class="relative pb-4 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              ${dotHtml}
-             <div class="ml-8 py-2 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
+             <div class="ml-4 py-2 px-4 rounded-2xl border transition-all duration-300 ${cardClass}">
                  <div class="flex justify-between items-start">
                      <div>
                          <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none">${stop.name}${stationIconsHtml}</h4>
