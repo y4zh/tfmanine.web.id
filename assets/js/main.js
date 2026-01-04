@@ -223,7 +223,7 @@ function switchDirection(index) {
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
-// --- FUNGSI RENDER TIMELINE FINAL FIX ---
+// --- FUNGSI RENDER TIMELINE UTAMA ---
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
@@ -400,12 +400,12 @@ function renderTimeline(stops) {
         const halteInfoHtml = renderHalteInfo(stop);
         const stationIconsHtml = renderStationIcons(stop);
 
-        // --- UPDATE LOGIC SUSUNAN KONTEN KARTU ---
-        let contentHtml = '';
-        
+        // --- UPDATE LOGIC TAMPILAN KARTU ---
+        let cardContent = '';
+
         if (isActive) {
-            // LOGIKA AKTIF (TERDEKAT): Nama -> Transfers -> Label Terdekat
-            contentHtml = `
+            // LOGIKA AKTIF (TERDEKAT): Nama -> Badge Rute -> Label Terdekat
+            cardContent = `
             <div class="flex justify-between items-start">
                 <div class="w-full">
                     <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none">${stop.name}${stationIconsHtml}</h4>
@@ -415,8 +415,8 @@ function renderTimeline(stops) {
             </div>
             `;
         } else {
-            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Transfers dibawah
-            contentHtml = `
+            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Badge Rute (di luar flex)
+            cardContent = `
             <div class="flex justify-between items-start">
                 <div>
                     <h4 class="text-sm md:text-base font-bold text-gray-800 leading-none">${stop.name}${stationIconsHtml}</h4>
@@ -428,20 +428,20 @@ function renderTimeline(stops) {
             `;
         }
 
-        // --- RENDER FINAL KARTU ---
+        // --- RENDER FINAL ---
         return `
         <div class="relative pb-4 last:pb-0 group/stop fade-in">
              ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
              ${dotHtml}
              <div class="ml-3 py-2 px-3 rounded-2xl border transition-all duration-300 ${cardClass}">
-                 ${contentHtml}
+                 ${cardContent}
                  ${halteInfoHtml}
              </div>
         </div>
         `;
     };
 
-    // --- UPDATE DROPDOWN: TAMBAH MARGIN MY-6 (Jarak Atas Bawah Jauh) ---
+    // --- FIX JARAK DROPDOWN: Menambahkan class 'my-6' ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -473,10 +473,10 @@ function renderTimeline(stops) {
     let html = '';
     const COLLAPSE_THRESHOLD = 7; 
 
-    // --- REVISI LOGIKA TAMPILAN ---
+    // --- LOGIKA TAMPILAN UTAMA ---
     
     if (separatorIndex > -1) {
-        // --- LOGIKA KHUSUS UNTUK RUTE DENGAN SEPARATOR (KRL LOOP) ---
+        // UNTUK KRL (Ada Separator)
         const beforeSeparator = stops.slice(0, separatorIndex);
         const afterSeparator = stops.slice(separatorIndex + 1);
         
@@ -489,7 +489,7 @@ function renderTimeline(stops) {
         }
 
     } else {
-        // --- LOGIKA UNTUK RUTE NORMAL (BUS/ANGKOT) ---
+        // UNTUK BUS/ANGKOT (Tanpa Separator)
         html += createStopItem(stops[0], 0, stops.length, 0); 
 
         if (firstActiveIndex > 1) {
