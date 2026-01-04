@@ -337,10 +337,12 @@ function renderTimeline(stops) {
 
         let dotHtml = '';
         if (isFirst) {
+            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
             dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
                 <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
             </div>`;
         } else if (isLast) {
+            // FIX POSITION: Center on vertical line (w-6 = 24px, left should be -12px)
             dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>`;
@@ -360,12 +362,14 @@ function renderTimeline(stops) {
                 contentHtml = `<span class="text-[10px] font-bold font-sans">${codeDisplay}</span>`;
             }
 
+            // FIX POSITION: Center on vertical line
             dotHtml = `<div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
                        <div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
                            ${contentHtml}
                        </div>`;
 
         } else {
+            // FIX POSITION: Center on vertical line (w-4 = 16px, left should be -8px)
             dotHtml = `<div class="absolute -left-[8px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
         }
 
@@ -413,7 +417,7 @@ function renderTimeline(stops) {
             </div>
             `;
         } else {
-            // LOGIKA TIDAK AKTIF
+            // LOGIKA TIDAK AKTIF (NORMAL): Nama -> (Badge Mulai/Selesai) -> Badge Rute (di luar flex)
             cardContent = `
             <div class="flex justify-between items-start font-sans">
                 <div>
@@ -439,7 +443,7 @@ function renderTimeline(stops) {
         `;
     };
 
-    // --- FIX JARAK DROPDOWN: 'my-10' (40px) ---
+    // --- FIX JARAK DROPDOWN: 18px manual style ---
     const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
         const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
         if (validStops.length === 0) return '';
@@ -449,7 +453,7 @@ function renderTimeline(stops) {
         const contentHidden = isExpanded ? '' : 'hidden';
 
         return `
-        <div class="collapsible-section my-10 font-sans">
+        <div class="collapsible-section font-sans" style="margin-top: 18px; margin-bottom: 18px;">
             <button onclick="toggleStopSection('${sectionId}')" 
                     class="w-full flex items-center justify-between p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
                 <span class="text-sm font-semibold text-gray-600 font-sans">
@@ -607,14 +611,15 @@ function renderDetail() {
     }
 
     document.getElementById('route-name').textContent = route.name;
-    document.getElementById('route-name').classList.add('font-sans'); // Add class to existing element
+    document.getElementById('route-name').classList.add('font-sans');
 
     const modeInfo = getModeLabel(route.mode); 
     const metaContainer = document.getElementById('route-meta');
     if (metaContainer) {
         metaContainer.innerHTML = `
             <span class="w-2 h-2 rounded-full" style="background-color: ${route.badgeColor || '#ccc'}"></span>
-            <span class="font-sans">${modeInfo.text}</span> `;
+            <span class="font-sans">${modeInfo.text}</span>
+        `;
     }
 
     if (route.details) {
@@ -626,7 +631,7 @@ function renderDetail() {
             tarifNote.textContent = route.details.tarifNote || '';
             tarifNote.classList.add('font-sans');
             if (route.details.tarifNote) {
-                tarifNote.classList.remove('hidden'); // Ensure visible if content exists
+                tarifNote.classList.remove('hidden');
             } else {
                 tarifNote.classList.add('hidden');
             }
@@ -655,7 +660,7 @@ function renderDetail() {
             opsNote.textContent = route.details.opsNote || '';
             opsNote.classList.add('font-sans');
             if (route.details.opsNote) {
-                opsNote.classList.remove('hidden'); // Ensure visible if content exists
+                opsNote.classList.remove('hidden');
             } else {
                 opsNote.classList.add('hidden');
             }
