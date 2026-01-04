@@ -728,13 +728,13 @@ window.appData = {
             ]
         },
 
-        // Rail - REVISI FULL LOOP (Cikarang - Kpb Bandan - Cikarang)
+     // Rail - UPDATE: KRL Cikarang Loop (Dropdown setelah Kpb Bandan)
         {
             id: "KRL-C",
             code: "C",
             mode: "krl",
             subtype: "krl",
-            name: "Cikarang - Kampung Bandan (Loop)",
+            name: "Cikarang - Kampung Bandan",
             badgeColor: "#26baed",
             details: {
                 tarif: "Rp 3.000 - Rp 6.000",
@@ -745,9 +745,9 @@ window.appData = {
             },
             directions: [
                 {
-                    name: "Lingkar Manggarai",
+                    name: "via Manggarai",
                     stops: [
-                        // BERANGKAT (Via Manggarai)
+                        // --- FASE 1: Cikarang s.d. Kampung Bandan (MUNCUL) ---
                         { name: "Cikarang", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -766,14 +766,8 @@ window.appData = {
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
-                                    {
-                                        halte: "Stasiun Jatinegara",
-                                        routes: ["11", "11M", "B25"]
-                                    },
-                                    {
-                                        halte: "Bali Mester",
-                                        routes: ["5", "5B", "5C"]
-                                    }
+                                    { halte: "Stasiun Jatinegara", routes: ["11", "11M", "B25"] },
+                                    { halte: "Bali Mester", routes: ["5", "5B", "5C"] }
                                 ]
                             }
                         },
@@ -787,17 +781,17 @@ window.appData = {
                         { name: "Angke", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
                         
-                        // PEMISAH (Agar rute balik masuk Dropdown)
+                        // --- PEMISAH: Semua di bawah ini masuk DROPDOWN ---
                         { name: "---", transfers: [], isSeparator: true },
 
-                        // ARAH BALIK (Via Pasar Senen)
+                        // --- FASE 2: Arah Balik ke Cikarang (TERSEMBUNYI) ---
                         { name: "Rajawali", transfers: [] },
                         { name: "Kemayoran", transfers: [] },
                         { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Gang Sentiong", transfers: [] },
                         { name: "Kramat", transfers: [] },
                         { name: "Pondok Jati", transfers: [] },
-                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] }, // Kembali ke Jatinegara
+                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Klender", transfers: [] },
                         { name: "Buaran", transfers: [] },
                         { name: "Klender Baru", transfers: [] },
@@ -812,9 +806,9 @@ window.appData = {
                     ]
                 },
                 {
-                    name: "Lingkar Pasar Senen",
+                    name: "via Pasar Senen",
                     stops: [
-                        // BERANGKAT (Via Pasar Senen)
+                        // --- FASE 1: Cikarang s.d. Kampung Bandan (MUNCUL) ---
                         { name: "Cikarang", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -833,14 +827,8 @@ window.appData = {
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
-                                    {
-                                        halte: "Stasiun Jatinegara",
-                                        routes: ["11", "11M", "B25"]
-                                    },
-                                    {
-                                        halte: "Bali Mester",
-                                        routes: ["5", "5B", "5C"]
-                                    }
+                                    { halte: "Stasiun Jatinegara", routes: ["11", "11M", "B25"] },
+                                    { halte: "Bali Mester", routes: ["5", "5B", "5C"] }
                                 ]
                             }
                         },
@@ -852,10 +840,10 @@ window.appData = {
                         { name: "Rajawali", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
 
-                        // PEMISAH (Agar rute balik masuk Dropdown)
+                        // --- PEMISAH: Semua di bawah ini masuk DROPDOWN ---
                         { name: "---", transfers: [], isSeparator: true },
 
-                        // ARAH BALIK (Via Manggarai)
+                        // --- FASE 2: Arah Balik ke Cikarang (TERSEMBUNYI) ---
                         { name: "Angke", transfers: [] },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
@@ -864,7 +852,7 @@ window.appData = {
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
                         { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], trainConnections: ["A | Basoetta", "B | Bogor"] },
                         { name: "Matraman", transfers: [] },
-                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] }, // Kembali ke Jatinegara
+                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Klender", transfers: [] },
                         { name: "Buaran", transfers: [] },
                         { name: "Klender Baru", transfers: [] },
