@@ -4,10 +4,8 @@ if (!window.mapboxgl) {
     mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsd2lsIiwiYSI6ImNtajZmZGdmMjBicmwzZm93c2ZsNnpkeDEifQ.KW_3csyevdAsjY6A9Q9OCA';
 }
 
-// Global variable untuk menyimpan referensi marker
 let allMarkers = [];
 
-// Initialize Map
 const map = new mapboxgl.Map({
     container: 'map-container',
     style: 'mapbox://styles/mapbox/streets-v12',
@@ -15,20 +13,13 @@ const map = new mapboxgl.Map({
     zoom: 14
 });
 
-// Add navigation controls
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-// Colors Configuration
 const COLORS = {
-    school: '#0072bc',       // Blue
-    train: '#FF5733',        // Orange
-    brt: '#FF5733',          // Orange
-    lrt: '#FF5733',          // Orange
-    busstop: '#22c55e',      // Green
-    busstop_area: '#4b5563'  // Gray
+    school: '#0072bc', train: '#FF5733', brt: '#FF5733', lrt: '#FF5733',
+    busstop: '#22c55e', busstop_area: '#4b5563'
 };
 
-// Route badge colors
 const ROUTE_COLORS = {
     '4F': '#b900e2', '7P': '#911d3c', '11Q': '#10c0ff', '11P': '#B2A5A3',
     'BK': '#006838', 'C': '#26baed', '11': '#2F4FA2', 'JAK': '#00b0ec'
@@ -65,23 +56,20 @@ function formatRoutesWithBadges(desc) {
     return html;
 }
 
-// Icons (SVG)
 const ICONS = {
     school: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Z"/></svg>`,
     train: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
     brt: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
     lrt: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
     busstop: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
-    busstop_area: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`
+    busstop_area: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5 2.5z"/></svg>`
 };
 
 const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM6.44 3.752A.75.75 0 0 1 7 3.5h1.445c.742 0 1.32.643 1.243 1.38l-.43 4.083a1.75 1.75 0 0 1-.088.395l-.318.906.213.242a.75.75 0 0 1 .114.175l2 4.25a.75.75 0 1 1-1.357.638l-1.956-4.154-1.68-1.921A.75.75 0 0 1 6 8.96l.138-2.613-.435.489-.464 2.786a.75.75 0 1 1-1.48-.246l.5-3a.75.75 0 0 1 .18-.375l2-2.25z"/><path d="M6.25 11.745v-1.418l1.204 1.375-.337.96a.75.75 0 0 1-.94.465A1.5 1.5 0 0 1 6.25 11.745z"/></svg>`;
 
-// --- 1. FUNGSI UNTUK MEMBUAT TOMBOL FILTER ---
 function createFilterControls() {
     const filterContainer = document.createElement('div');
     filterContainer.className = 'map-filter-controls';
-    // Style manual biar rapi & ngambang di atas peta
     filterContainer.style.cssText = `
         position: absolute;
         top: 10px;
@@ -93,8 +81,6 @@ function createFilterControls() {
         max-width: 90%;
     `;
 
-    // Definisi Kategori Filter
-    // 'type' harus sesuai dengan data.js atau 'transit' untuk gabungan
     const filters = [
         { label: 'Semua', type: 'all', color: '#333' },
         { label: 'Sekolah', type: 'school', color: COLORS.school },
@@ -120,25 +106,17 @@ function createFilterControls() {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: all 0.2s ease;
         `;
-
-        // Efek Hover & Click
         btn.onmouseover = () => { btn.style.transform = 'translateY(-1px)'; btn.style.boxShadow = '0 4px 6px rgba(0,0,0,0.15)'; };
         btn.onmouseout = () => { btn.style.transform = 'translateY(0)'; btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'; };
-        
-        // Logika Filter saat Klik
         btn.onclick = () => filterMarkers(f.type, btn);
-
         filterContainer.appendChild(btn);
     });
 
-    // Masukkan ke dalam container map
     const mapEl = document.getElementById('map-container');
     if (mapEl) mapEl.appendChild(filterContainer);
 }
 
-// --- 2. FUNGSI LOGIKA FILTER ---
 function filterMarkers(selectedType, clickedBtn) {
-    // Reset style tombol aktif (opsional, biar kelihatan mana yg aktif)
     const buttons = document.querySelectorAll('.map-filter-controls button');
     buttons.forEach(b => {
         b.style.background = 'white';
@@ -148,23 +126,17 @@ function filterMarkers(selectedType, clickedBtn) {
         clickedBtn.style.background = '#f3f4f6';
     }
 
-    // Loop semua marker yang sudah disimpan
     allMarkers.forEach(item => {
         const type = item.type;
         const marker = item.marker;
-
         let isVisible = false;
-
         if (selectedType === 'all') {
             isVisible = true;
         } else if (selectedType === 'transit') {
-            // Gabungan KRL, BRT, LRT
             if (['train', 'brt', 'lrt'].includes(type)) isVisible = true;
         } else if (type === selectedType) {
             isVisible = true;
         }
-
-        // Tampilkan atau Sembunyikan Marker
         if (isVisible) {
             marker.addTo(map);
         } else {
@@ -173,14 +145,12 @@ function filterMarkers(selectedType, clickedBtn) {
     });
 }
 
-// Initialize markers
 function initializeMarkers() {
     if (!window.appData || !window.appData.locations) {
         console.error('Data not loaded');
         return;
     }
 
-    // Bersihkan array marker lama jika ada
     allMarkers = [];
 
     window.appData.locations.forEach(location => {
@@ -219,9 +189,11 @@ function initializeMarkers() {
 
         if (location.type === 'busstop' && location.walkTime !== undefined) {
             const timeColor = location.walkTime >= 3 ? '#eab308' : '#22c55e';
+            // --- PERBAIKAN IKON DI SINI ---
+            // Saya tambahkan padding-left dan memastikan display flex agar ikon di tengah
             popupContent += `
                 <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; margin-top: 8px; background: ${timeColor}15; border-radius: 8px; border-left: 3px solid ${timeColor};">
-                    <span style="color: ${timeColor}; display: flex; align-items: center;">${WALK_ICON}</span>
+                    <span style="color: ${timeColor}; display: flex; align-items: center; justify-content: center; width: 16px; height: 16px;">${WALK_ICON}</span>
                     <span style="font-size: 12px; font-weight: 600; color: ${timeColor};">${location.walkTime} menit</span>
                     <span style="font-size: 12px; color: #888;">•</span>
                     <span style="font-size: 12px; color: #666;">${location.distance} meter</span>
@@ -232,20 +204,17 @@ function initializeMarkers() {
 
         const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
 
-        // Buat Marker
         const marker = new mapboxgl.Marker(el)
             .setLngLat(location.coords)
             .setPopup(popup)
             .addTo(map);
 
-        // --- PENTING: SIMPAN MARKER KE ARRAY UNTUK FILTER ---
         allMarkers.push({
             type: location.type,
             marker: marker
         });
     });
 
-    // --- PANGGIL FUNGSI PEMBUAT TOMBOL FILTER ---
     createFilterControls();
 }
 
