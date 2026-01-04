@@ -451,7 +451,7 @@ function renderTimeline(stops) {
         const contentHidden = isExpanded ? '' : 'hidden';
 
         return `
-        <div class="collapsible-section" style="margin-top: 40px; margin-bottom: 40px;">
+        <div class="collapsible-section" style="margin-top: 20px; margin-bottom: 20px;">
             <button onclick="toggleStopSection('${sectionId}')" 
                     class="w-full flex items-center justify-between p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
                 <span class="text-sm font-semibold text-gray-600">
@@ -688,4 +688,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
 
