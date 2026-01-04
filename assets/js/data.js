@@ -838,7 +838,7 @@ window.appData = {
                     ]
                 }
             ]
-         },
+        },
         {
             id: "LRT-BK",
             code: "BK",
