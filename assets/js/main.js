@@ -49,7 +49,7 @@ function filterRoute(mode) {
     }
 
     if (mode === 'brt') {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
+        filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'n-brt');
         titleText = 'Rute Transjakarta';
     } else if (mode === 'mikro') {
         filteredRoutes = window.appData.routes.filter(r => r.mode === 'mikro');
@@ -189,10 +189,10 @@ function getRouteData(slug) {
 function getModeLabel(mode) {
     const labels = {
         'brt': { text: 'BRT', bg: 'bg-red-100', color: 'text-red-600' },
-        'nbrt': { text: 'Non-BRT', bg: 'bg-orange-100', color: 'text-orange-600' },
+        'nbrt': { text: 'Angkutan Umum Integrasi', bg: 'bg-orange-100', color: 'text-orange-600' },
         'mikro': { text: 'Mikrotrans', bg: 'bg-blue-100', color: 'text-blue-600' },
         'rusun': { text: 'Rusun', bg: 'bg-green-100', color: 'text-green-600' },
-        'rail': { text: 'KRL / LRT', bg: 'bg-purple-100', color: 'text-purple-600' },
+        'rail': { text: 'Kereta', bg: 'bg-purple-100', color: 'text-purple-600' },
         'krl': { text: 'KRL Commuter', bg: 'bg-cyan-100', color: 'text-cyan-600' },
         'lrt': { text: 'LRT Jabodebek', bg: 'bg-emerald-100', color: 'text-emerald-600' }
     };
@@ -708,3 +708,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
