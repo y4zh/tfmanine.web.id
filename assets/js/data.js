@@ -737,7 +737,7 @@ window.appData = {
             ]
         },
 
-        // Rail
+        // Rail - UPDATE REVISI CIKARANG LINE (Point to Point: Cikarang - Kpb Bandan)
         {
             id: "KRL-C",
             code: "C",
@@ -746,9 +746,9 @@ window.appData = {
             name: "Cikarang - Kampung Bandan",
             badgeColor: "#26baed",
             details: {
-                tarif: "Rp 3.000 - Rp 13.000",
+                tarif: "Rp 3.000 - Rp 5.000",
                 ops: "04.00 - 24.00",
-                headway: "17-30 Menit",
+                headway: "15-30 Menit",
                 headwayNote: "Situasional",
                 heroImage: "assets/images/fotokrl.jpg"
             },
@@ -793,43 +793,7 @@ window.appData = {
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Angke", transfers: [] },
-                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
-                        { name: "---", transfers: [], isSeparator: true },
-                        { name: "Rajawali", transfers: [] },
-                        { name: "Kemayoran", transfers: [] },
-                        { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
-                        { name: "Gang Sentiong", transfers: [] },
-                        { name: "Kramat", transfers: [] },
-                        { name: "Pondok Jati", transfers: [] },
-                        {
-                            name: "Jatinegara",
-                            transfers: [], 
-                            icons: ["KAJJ.svg", "icon-bus.svg"],
-                            halteInfo: {
-                                type: "integrasi",
-                                stops: [
-                                    {
-                                        halte: "Stasiun Jatinegara",
-                                        routes: ["11", "11M", "B25"]
-                                    },
-                                    {
-                                        halte: "Bali Mester",
-                                        routes: ["5", "5B", "5C"]
-                                    }
-                                ]
-                            }
-                        },
-                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
-                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
-                        { name: "Klender Baru", transfers: ["JAK 85"] },
-                        { name: "Cakung", transfers: [] },
-                        { name: "Kranji", transfers: [] },
-                        { name: "Bekasi", transfers: [] },
-                        { name: "Bekasi Timur", transfers: [] },
-                        { name: "Tambun", transfers: [] },
-                        { name: "Cibitung", transfers: [] },
-                        { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: [] }
+                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] }
                     ]
                 },
                 {
@@ -870,49 +834,11 @@ window.appData = {
                         { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Kemayoran", transfers: [] },
                         { name: "Rajawali", transfers: [] },
-                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
-                        { name: "---", transfers: [], isSeparator: true },
-                        { name: "Angke", transfers: [] },
-                        { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
-                        { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
-                        { name: "Karet", transfers: [] },
-                        { name: "BNI City", transfers: [] },
-                        { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
-                        { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], trainConnections: ["A | Basoetta", "B | Bogor"] },
-                        { name: "Matraman", transfers: [], halteInfo: { type: "integrasi", halte: ["Matraman Baru"], routes: ["5", "5C", "B25"] } },
-                        {
-                            name: "Jatinegara",
-                            transfers: [], 
-                            icons: ["KAJJ.svg", "icon-bus.svg"],
-                            halteInfo: {
-                                type: "integrasi",
-                                stops: [
-                                    {
-                                        halte: "Stasiun Jatinegara",
-                                        routes: ["11", "11M", "B25"]
-                                    },
-                                    {
-                                        halte: "Bali Mester",
-                                        routes: ["5", "5B", "5C"]
-                                    }
-                                ]
-                            }
-                        },
-                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
-                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
-                        { name: "Klender Baru", transfers: ["JAK 85"] },
-                        { name: "Cakung", transfers: [] },
-                        { name: "Kranji", transfers: [] },
-                        { name: "Bekasi", transfers: [] },
-                        { name: "Bekasi Timur", transfers: [] },
-                        { name: "Tambun", transfers: [] },
-                        { name: "Cibitung", transfers: [] },
-                        { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: [] }
+                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] }
                     ]
                 }
             ]
-        },
+         },
         {
             id: "LRT-BK",
             code: "BK",
