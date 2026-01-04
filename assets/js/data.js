@@ -4,7 +4,7 @@ window.appData = {
         { name: "MAN 9 Jakarta", type: "school", coords: [106.910491, -6.241088], desc: "Jl. Hj Dogol No 54, Pondok Bambu" },
 
         // Transit stations - Orange markers
-        { name: "Stasiun Buaran", type: "train", coords: [106.9231, -6.2153], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI" },
+        { name: "Stasiun Buaran", type: "train", coords: [106.9231, -6.2153], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI)" },
         { name: "Halte Simpang Buaran", type: "brt", coords: [106.9242, -6.2158], desc: "11 (Pulo Gebang - Kampung Melayu)" },
         { name: "LRT Jatibening Baru", type: "lrt", coords: [106.9265, -6.2570], desc: "BK (Lin Bekasi)" },
 
@@ -132,16 +132,7 @@ window.appData = {
                     stops: [
                         { name: "Kampung Melayu", transfers: ["5", "5C", "7", "11", "B25"] },
                         { name: "Jatinegara", transfers: ["5", "5B", "5C", "11", "B25"] },
-                         { 
-                            name: "Stasiun Jatinegara", 
-                            transfers: ["11M", "B25"], 
-                            icons: ["icon-train.svg","KAJJ.svg"],
-                            halteInfo: {
-                                type: "stasiun",
-                                halte: ["Jatinegara"],
-                                routes: ["C | Cikarang"]
-                            }
-                         },
+                        { name: "Stasiun Jatinegara", transfers: ["11M", "B25", "C | Cikarang"], icons: ["icon-train.svg"] },
                         { name: "Flyover Jatinegara", transfers: ["4K", "10", "B25"] },
                         { name: "Pasar Enjo", transfers: ["11M"] },
                         { name: "Flyover Cipinang", transfers: ["11M"] },
@@ -151,9 +142,9 @@ window.appData = {
                             transfers: ["11M", "C | Cikarang"], 
                             icons: ["icon-train.svg"],
                             halteInfo: {
-                                type: "stasiun",
-                                halte: ["Klender"],
-                                routes: ["C | Cikarang"]
+                                type: "integrasi",
+                                halte: ["Stasiun Klender"],
+                                routes: ["11", "11M", "C | Cikarang"]
                             }
                         },
                         { name: "Klender", transfers: ["11M"] },
@@ -166,9 +157,9 @@ window.appData = {
                             isActive: true, 
                             label: "Terdekat",
                             halteInfo: {
-                                type: "stasiun",
-                                halte: ["Buaran"],
-                                routes: ["C | Cikarang"]
+                                type: "integrasi",
+                                halte: ["Simpang Buaran"],
+                                routes: ["11", "11M", "C | Cikarang"]
                             }
                         },
                         { name: "Flyover Pondok Kopi", transfers: ["11M"] },
@@ -737,16 +728,16 @@ window.appData = {
             ]
         },
 
-        // Rail - UPDATE REVISI CIKARANG LINE (Point to Point: Cikarang - Kpb Bandan)
+        // Rail - REVISI FULL LOOP (Cikarang - Kpb Bandan - Cikarang)
         {
             id: "KRL-C",
             code: "C",
             mode: "krl",
             subtype: "krl",
-            name: "Cikarang - Kampung Bandan",
+            name: "Cikarang - Kampung Bandan (Loop)",
             badgeColor: "#26baed",
             details: {
-                tarif: "Rp 3.000 - Rp 5.000",
+                tarif: "Rp 3.000 - Rp 6.000",
                 ops: "04.00 - 24.00",
                 headway: "15-30 Menit",
                 headwayNote: "Situasional",
@@ -754,8 +745,9 @@ window.appData = {
             },
             directions: [
                 {
-                    name: "Via Manggarai",
+                    name: "Lingkar Manggarai",
                     stops: [
+                        // BERANGKAT (Via Manggarai)
                         { name: "Cikarang", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -793,12 +785,36 @@ window.appData = {
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Angke", transfers: [] },
-                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] }
+                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
+                        
+                        // PEMISAH (Agar rute balik masuk Dropdown)
+                        { name: "---", transfers: [], isSeparator: true },
+
+                        // ARAH BALIK (Via Pasar Senen)
+                        { name: "Rajawali", transfers: [] },
+                        { name: "Kemayoran", transfers: [] },
+                        { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
+                        { name: "Gang Sentiong", transfers: [] },
+                        { name: "Kramat", transfers: [] },
+                        { name: "Pondok Jati", transfers: [] },
+                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] }, // Kembali ke Jatinegara
+                        { name: "Klender", transfers: [] },
+                        { name: "Buaran", transfers: [] },
+                        { name: "Klender Baru", transfers: [] },
+                        { name: "Cakung", transfers: [] },
+                        { name: "Kranji", transfers: [] },
+                        { name: "Bekasi", transfers: [] },
+                        { name: "Bekasi Timur", transfers: [] },
+                        { name: "Tambun", transfers: [] },
+                        { name: "Cibitung", transfers: [] },
+                        { name: "Metland Telaga Murni", transfers: [] },
+                        { name: "Cikarang", transfers: [] }
                     ]
                 },
                 {
-                    name: "Via Pasar Senen",
+                    name: "Lingkar Pasar Senen",
                     stops: [
+                        // BERANGKAT (Via Pasar Senen)
                         { name: "Cikarang", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -834,7 +850,32 @@ window.appData = {
                         { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
                         { name: "Kemayoran", transfers: [] },
                         { name: "Rajawali", transfers: [] },
-                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] }
+                        { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
+
+                        // PEMISAH (Agar rute balik masuk Dropdown)
+                        { name: "---", transfers: [], isSeparator: true },
+
+                        // ARAH BALIK (Via Manggarai)
+                        { name: "Angke", transfers: [] },
+                        { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
+                        { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
+                        { name: "Karet", transfers: [] },
+                        { name: "BNI City", transfers: [] },
+                        { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
+                        { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], trainConnections: ["A | Basoetta", "B | Bogor"] },
+                        { name: "Matraman", transfers: [] },
+                        { name: "Jatinegara", transfers: [], icons: ["KAJJ.svg"] }, // Kembali ke Jatinegara
+                        { name: "Klender", transfers: [] },
+                        { name: "Buaran", transfers: [] },
+                        { name: "Klender Baru", transfers: [] },
+                        { name: "Cakung", transfers: [] },
+                        { name: "Kranji", transfers: [] },
+                        { name: "Bekasi", transfers: [] },
+                        { name: "Bekasi Timur", transfers: [] },
+                        { name: "Tambun", transfers: [] },
+                        { name: "Cibitung", transfers: [] },
+                        { name: "Metland Telaga Murni", transfers: [] },
+                        { name: "Cikarang", transfers: [] }
                     ]
                 }
             ]
@@ -909,68 +950,66 @@ window.appData = {
 
 // Route Colors for Badges
 window.routeColors = {
-    // Mikrotrans
-    "JAK": "#00b0ec",
+    // Mikrotrans
+    "JAK": "#00b0ec",
 
-    // N-BRT / Feeder
-    "4F": "#b900e2",
-    "7P": "#911d3c",
-    "11Q": "#10c0ff",
-    "11P": "#B2A5A3", "2F": "#B2A5A3", "10B": "#B2A5A3", "11C": "#B2A5A3", "11M": "#B2A5A3", "11R": "#B2A5A3", "11B": "#B2A5A3", "4E": "#B2A5A3",
+    // N-BRT / Feeder
+    "4F": "#b900e2",
+    "7P": "#911d3c",
+    "11Q": "#10c0ff",
+    "11P": "#B2A5A3", "2F": "#B2A5A3", "10B": "#B2A5A3", "11C": "#B2A5A3", "11M": "#B2A5A3", "11R": "#B2A5A3", "11B": "#B2A5A3", "4E": "#B2A5A3",
 
-    // BRT Transjakarta
-    "1": "#d02127",
-    "1B": "#2AA8A4",
-    "4": "#502d5f",
-    "4D": "#E58BBA",
-    "4K": "#9626b5",
-    "5": "#BC5827",
-    "5B": "#905B3A",
-    "5C": "#9cd2c6",
-    "5M": "#ff5400",
-    "5N": "#BC5827",
-    "6": "#2ca74a",
-    "6A": "#76C18A",
-    "6B": "#99C175",
-    "6H": "#75358C",
-    "6K": "#4A8F4D",
-    "6M": "#7B3669",
-    "7": "#e2275b",
-    "7D": "#53bbb9",
-    "7W": "#a5405a",
-    "7Q": "#c45438",
-    "9": "#43a09a",
-    "9A": "#8D9F3D",
-    "9C": "#3C9F68",
-    "9D": "#4DB748",
-    "9N": "#783d3f",
-    "10": "#8f1a1e",
-    "11": "#2F4FA2",
-    "11D": "#a7bae0",
-    "11W": "#2d55a0",
-    "13B": "#972489",
-    "13E": "#761C86",
-    "L13E": "#761C86",
-    "P11": "#783378",
-    "B11": "#D07C28",
-    "B21": "#3BB59C",
-    "B25": "#A9C498",
-    "D11": "#669043",
-    "2B": "#266e9a",
-    "BK | Lin Bekasi": "#006838",
-    "C | Lin Cikarang": "#26baed",
+    // BRT Transjakarta
+    "1": "#d02127",
+    "1B": "#2AA8A4",
+    "4": "#502d5f",
+    "4D": "#E58BBA",
+    "4K": "#9626b5",
+    "5": "#BC5827",
+    "5B": "#905B3A",
+    "5C": "#9cd2c6",
+    "5M": "#ff5400",
+    "5N": "#BC5827",
+    "6": "#2ca74a",
+    "6A": "#76C18A",
+    "6B": "#99C175",
+    "6H": "#75358C",
+    "6K": "#4A8F4D",
+    "6M": "#7B3669",
+    "7": "#e2275b",
+    "7D": "#53bbb9",
+    "7W": "#a5405a",
+    "7Q": "#c45438",
+    "9": "#43a09a",
+    "9A": "#8D9F3D",
+    "9C": "#3C9F68",
+    "9D": "#4DB748",
+    "9N": "#783d3f",
+    "10": "#8f1a1e",
+    "11": "#2F4FA2",
+    "11D": "#a7bae0",
+    "11W": "#2d55a0",
+    "13B": "#972489",
+    "13E": "#761C86",
+    "L13E": "#761C86",
+    "P11": "#783378",
+    "B11": "#D07C28",
+    "B21": "#3BB59C",
+    "B25": "#A9C498",
+    "D11": "#669043",
+    "2B": "#266e9a",
 
-    // KRL Train Lines
-    "A | Basoetta": "#262262",      // Lin Bandara Soetta
-    "B | Bogor": "#ec2329",      // Lin Bogor/Nambo
-    "C | Cikarang": "#26baed",      // Lin Cikarang
-    "T | Tangerang": "#c25f28",      // Lin Tangerang
-    "R | Rangkasbitung": "#99ca3e",      // Lin Rangkasbitung
-    "TP | Tanjung Priok": "#ef509a",     // Lin Tanjung Priok
-    "CB | Cibubur": "#21409a",     // Lin Cibubur
-    "BK | Bekasi": "#006838",     // Lin Bekasi (LRT)
-    "MRT": "#ca2047",    // MRT Lin Utara Selatan
-    "KRL": "#26baed",     // Generic KRL
-    "LW | Walahar" : "#b6b7b7",
-    "LJ | Jatiluhur" : "#404040"
+    // KRL Train Lines
+    "A | Basoetta": "#262262",      // Lin Bandara Soetta
+    "B | Bogor": "#ec2329",       // Lin Bogor/Nambo
+    "C | Cikarang": "#26baed",       // Lin Cikarang
+    "T | Tangerang": "#c25f28",       // Lin Tangerang
+    "R | Rangkasbitung": "#99ca3e",       // Lin Rangkasbitung
+    "TP | Tanjung Priok": "#ef509a",      // Lin Tanjung Priok
+    "CB | Cibubur": "#21409a",      // Lin Cibubur
+    "BK | Bekasi": "#006838",      // Lin Bekasi (LRT)
+    "MRT": "#ca2047",    // MRT Lin Utara Selatan
+    "KRL": "#26baed",     // Generic KRL
+    "LW | Walahar" : "#b6b7b7",
+    "LJ | Jatiluhur" : "#404040"
 };
