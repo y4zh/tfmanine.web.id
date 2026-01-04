@@ -1,6 +1,7 @@
 if (!window.mapboxgl) {
     console.error('Mapbox GL JS not loaded');
 } else {
+    // Pastikan token ini sesuai dengan akun Mapbox Anda
     mapboxgl.accessToken = 'pk.eyJ1Ijoid2lsd2lsIiwiYSI6ImNtajZmZGdmMjBicmwzZm93c2ZsNnpkeDEifQ.KW_3csyevdAsjY6A9Q9OCA';
 }
 
@@ -8,14 +9,14 @@ if (!window.mapboxgl) {
 const map = new mapboxgl.Map({
     container: 'map-container',
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [106.910491, -6.241088], // MAN 9 Jakarta (updated coordinates)
+    center: [106.910491, -6.241088], // MAN 9 Jakarta
     zoom: 14
 });
 
 // Add navigation controls
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-// Colors
+// Colors Configuration
 const COLORS = {
     school: '#0072bc',       // Blue - School
     train: '#FF5733',        // Orange - KRL
@@ -33,65 +34,48 @@ const ROUTE_COLORS = {
     '11P': '#B2A5A3',
     'BK': '#006838',
     'C': '#26baed',
-    '11' : '#2F4FA2',
+    '11': '#2F4FA2',
     'JAK': '#00b0ec'  // Default for all JAK routes
 };
 
-// Get route color
+// Helper: Get route color
 function getRouteColor(routeCode) {
     if (ROUTE_COLORS[routeCode]) {
         return ROUTE_COLORS[routeCode];
     }
-    // Check if it starts with JAK
-    if (routeCode.toUpperCase().startsWith('JAK')) {
+    // Check if it starts with JAK (case insensitive safe)
+    if (routeCode && routeCode.toUpperCase().startsWith('JAK')) {
         return ROUTE_COLORS['JAK'];
     }
     return '#6b7280'; // Default gray
 }
 
-// Parse description to extract routes and format them with badges
+// Helper: Parse description to extract routes and format them with badges
 function formatRoutesWithBadges(desc) {
     if (!desc) return '';
 
-    // Regex to capture: Code (e.g., "11", "JAK 85", "C") followed by Description in parentheses
-    // Updated to be more flexible for different formats
+    // Regex untuk menangkap pola "KODE (Keterangan)"
+    // Contoh: "C (Lin Cikarang...)" atau "11 (Pulo Gebang...)" atau "JAK 85 (Bintara)"
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
     const matches = [...desc.matchAll(routePattern)];
 
+    // Jika tidak ada pola kurung (), cek apakah dipisah koma (fallback)
     if (matches.length === 0) {
-        // Fallback: If no parentheses format, try to split by comma for simple lists
-        // This handles cases where description might just be "JAK 85, JAK 26" without parentheses details
-        if (desc.includes(',') || /^[A-Z0-9\s]+$/.test(desc)) {
-             const potentialRoutes = desc.split(',').map(s => s.trim());
-             let html = '<div style="display: flex; flex-wrap: wrap; gap: 4px;">';
-             potentialRoutes.forEach(r => {
-                 // heuristic: if short (likely a code), badge it. if long, keep text.
-                 if (r.length < 10) {
-                     const color = getRouteColor(r);
-                     html += `<span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap;">${r}</span>`;
-                 } else {
-                     html += `<span style="font-size: 11px; color: #555;">${r}</span>`;
-                 }
-             });
-             html += '</div>';
-             return html;
-        }
-
-        // No recognized pattern, return plain text
+        // Jika formatnya teks biasa panjang, return sebagai paragraf
         return `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.5;">${desc}</p>`;
     }
 
     let html = '<div style="display: flex; flex-direction: column; gap: 4px;">';
 
     matches.forEach(match => {
-        const routeCode = match[1].trim();
-        const direction = match[2].trim();
+        const routeCode = match[1].trim(); // Contoh: "C", "11", "JAK 85"
+        const direction = match[2].trim(); // Contoh: "Lin Cikarang...", "Pulo Gebang..."
         const color = getRouteColor(routeCode);
 
         html += `
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; min-width: 30px; text-align: center;">${routeCode}</span>
-                <span style="font-size: 11px; color: #555;">${direction}</span>
+            <div style="display: flex; align-items: start; gap: 8px;">
+                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; min-width: 35px; text-align: center; margin-top: 1px;">${routeCode}</span>
+                <span style="font-size: 11px; color: #555; line-height: 1.3;">${direction}</span>
             </div>
         `;
     });
@@ -100,7 +84,7 @@ function formatRoutesWithBadges(desc) {
     return html;
 }
 
-// Icons for each type
+// Icons for each type (SVG)
 const ICONS = {
     school: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
         <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/>
@@ -129,10 +113,10 @@ const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14
     <path d="M6.25 11.745v-1.418l1.204 1.375-.337.96a.75.75 0 0 1-.94.465A1.5 1.5 0 0 1 6.25 11.745z"/>
 </svg>`;
 
-// Add markers for all locations
+// Function to initialize markers
 function initializeMarkers() {
     if (!window.appData || !window.appData.locations) {
-        console.error('Data not loaded');
+        console.error('Data not loaded from data.js');
         return;
     }
 
@@ -164,16 +148,18 @@ function initializeMarkers() {
         el.innerHTML = iconSvg;
 
         // Build popup content
+        // Menggunakan font-family yang konsisten
         let popupContent = `
             <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 180px; max-width: 280px;">
                 <h3 style="margin: 0 0 8px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'};">${location.name}</h3>
         `;
 
-        // Format routes with colored badges for ALL transport types now (train, brt, lrt, busstop)
-        // Previously this was restricted to just busstop/busstop_area
-        if (['train', 'brt', 'lrt', 'busstop', 'busstop_area'].includes(location.type)) {
+        // --- BAGIAN INI YANG DIPERBAIKI ---
+        // Cek tipe lokasi. Jika termasuk busstop, area, train, brt, atau lrt, maka gunakan format BADGE.
+        if (['busstop', 'busstop_area', 'train', 'brt', 'lrt'].includes(location.type)) {
             popupContent += formatRoutesWithBadges(location.desc);
         } else {
+            // Fallback untuk tipe lain (misal school)
             popupContent += `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4;">${location.desc}</p>`;
         }
 
