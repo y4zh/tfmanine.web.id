@@ -152,16 +152,14 @@ window.appData = {
                         { name: "Buaran", transfers: ["11M"] },
                         { 
                             name: "Simpang Buaran", 
-                            transfers: ["11M", "C | Cikarang"], 
+                            transfers: ["11M"], 
                             icons: ["icon-train.svg"], 
                             isActive: true, 
                             label: "Terdekat",
                             halteInfo: {
                                 type: "stasiun",
-                                halte: ["Stasiun Buaran"],
-                                routes: ["C | Cikarang"]
-                            }
-                        },
+                                { halte: ["Stasiun Buaran"], routes: ["C | Cikarang"] },
+                                { halte: ["Flyover Radin Inten 1 & 2"], routes: ["11Q", "11P", "JAK 39"] },
                         { name: "Flyover Pondok Kopi", transfers: ["11M"] },
                         { name: "Penggilingan", transfers: ["11D", "11M"] },
                         { name: "Walikota Jakarta Timur", transfers: ["11D", "11M"] },
