@@ -139,12 +139,12 @@ window.appData = {
                         { name: "Cipinang", transfers: ["11M"] },
                         { 
                             name: "Stasiun Klender", 
-                            transfers: ["11M", "C | Cikarang"], 
+                            transfers: ["11M"], 
                             icons: ["icon-train.svg"],
                             halteInfo: {
-                                type: "integrasi",
+                                type: "stasiun",
                                 halte: ["Stasiun Klender"],
-                                routes: ["11", "11M", "C | Cikarang"]
+                                routes: ["C | Cikarang"]
                             }
                         },
                         { name: "Klender", transfers: ["11M"] },
