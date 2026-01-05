@@ -516,8 +516,8 @@ window.appData = {
             name: "Kampung Melayu - Duren Sawit",
             badgeColor: "#00b0ec",
             details: {
-                tarif: "Rp 0",
-                headway: "4-7 Menit (situasional)",
+                tarif: "Rp 0 (Wajib Kartu)",
+                headway: "4-7 Menit",
                 ops: "05.00 - 22.00",
                 heroImage: "assets/images/fotojak02.jpg"
             },
@@ -620,8 +620,8 @@ window.appData = {
             name: "Bintara - Cipinang Indah",
             badgeColor: "#00b0ec",
             details: {
-                tarif: "Rp 0",
-                headway: "3-7 Menit (situasional)",
+                tarif: "Rp 0 (Wajib Kartu)",
+                headway: "3-7 Menit",
                 ops: "05.00 - 22.00",
                 heroImage: "assets/images/fotojak85.jpg"
             },
@@ -773,7 +773,7 @@ window.appData = {
                         },
                         { name: "Matraman", transfers: [], halteInfo: { type: "integrasi", halte: ["Matraman Baru"], routes: ["5", "5C", "B25"] } },
                         { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
-                        { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
+                        { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "CB", "BK"] },
                         { name: "BNI City", transfers: ["A | Basoetta"], icons: ["KAB.svg"] },
                         { name: "Karet", transfers: [] },
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
@@ -860,7 +860,7 @@ window.appData = {
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
                         { name: "Karet", transfers: [] },
                         { name: "BNI City", transfers: ["A | Basoetta"], icons: ["KAB.svg"] },
-                        { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "BK"] },
+                        { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT","CB","BK"] },
                         { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
                         { name: "Matraman", transfers: [] },
                         {
@@ -936,23 +936,26 @@ window.appData = {
                 "**Brizzi** - Bank BRI",
                 "**TapCash** - Bank BNI",
                 "**JakCard** - Bank DKI",
-                "Saldo minimum **Rp 5.000,-**"
+                "Saldo minimum : **Rp 5.000,-** untuk Transjakarta dan KRL Commuterline, **Rp 10.000,-** untuk LRT Jabodebek"
             ]
         },
         {
             title: "Alternatif Pembayaran Digital",
             steps: [
-                "Gunakan **QRIS Tap** pada E-wallet yang mendukung.",
-                "Saldo minimum : **Rp 5.000,-**"
+                "Pakai **QRIS Tap** pada E-wallet yang mendukung. (Tersedia pada moda tertentu)",
+                "Untuk LRT Jabodebek bisa memesan tiket melalui aplikasi **KAI Access**",
+                "dan KRL Commuterline, bisa memesan melalui aplikasi **C Access** atau **Gojek | GoTransit**",
+                
             ]
         },
         {
-            title: "Pantau Lokasi Bus Transjakarta",
+            title: "Pantau Posisi Moda Transportasi",
             steps: [
-                "Download aplikasi **TJ: Transjakarta** di Play Store / App Store.",
+                "Transjakarta : **TJ: Transjakarta**",
+                "KRL Commuterline : **C Access**
                 "atau bisa gunakan **Google Maps**",
-                "Gunakan fitur tracking untuk melihat posisi bus secara real-time.",
-                "Cek estimasi waktu kedatangan bus di halte terdekat."
+                "Klik pada ikon Bus/Kereta untuk melihat posisi bus/kereta secara real-time.",
+                "Cek estimasi waktu kedatangan bus di stasiun/halte terdekat."
             ]
         }
     ]
