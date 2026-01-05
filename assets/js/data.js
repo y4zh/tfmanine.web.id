@@ -157,9 +157,9 @@ window.appData = {
                             isActive: true, 
                             label: "Terdekat",
                             halteInfo: {
-                                type: "integrasi",
-                                halte: ["Simpang Buaran"],
-                                routes: ["11", "11M", "C | Cikarang"]
+                                type: "stasiun",
+                                halte: ["Stasiun Buaran"],
+                                routes: ["C | Cikarang"]
                             }
                         },
                         { name: "Flyover Pondok Kopi", transfers: ["11M"] },
