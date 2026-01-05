@@ -944,15 +944,14 @@ window.appData = {
             steps: [
                 "Pakai **QRIS Tap** pada E-wallet yang mendukung. (Tersedia pada moda tertentu)",
                 "Untuk LRT Jabodebek bisa memesan tiket melalui aplikasi **KAI Access**",
-                "dan KRL Commuterline, bisa memesan melalui aplikasi **C Access** atau **Gojek | GoTransit**",
-                
+                "dan KRL Commuterline, bisa memesan melalui aplikasi **C Access** atau **Gojek | GoTransit**"
             ]
         },
         {
             title: "Pantau Posisi Moda Transportasi",
             steps: [
                 "Transjakarta : **TJ: Transjakarta**",
-                "KRL Commuterline : **C Access**
+                "KRL Commuterline : **C Access**",
                 "atau bisa gunakan **Google Maps**",
                 "Klik pada ikon Bus/Kereta untuk melihat posisi bus/kereta secara real-time.",
                 "Cek estimasi waktu kedatangan bus di stasiun/halte terdekat."
