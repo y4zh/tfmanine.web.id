@@ -36,7 +36,7 @@ window.appData = {
         { name: "Simpang Kalimalang", type: "busstop_area", coords: [106.90506349194635, -6.245521799914609], desc: "4F (Pulo Gadung)" },
         { name: "Simpang Pahlawan Revolusi Kalimalang", type: "busstop_area", coords: [106.90576553436132, -6.245570375952437], desc: "JAK 35 (Pangkalan Jati), JAK 85 (Cipinang Indah)" },
         { name: "RS Harum", type: "busstop_area", coords: [106.90958643116758, -6.2478209476815705], desc: "4F (Pinang Ranti), 7P (Cawang Cililitan), JAK 35 (Rawamangun), JAK 84 (Kampung Melayu), JAK 85 (Cipinang Indah)" },
-        { name: "Pangkalan Jati 1", type: "busstop_area", coords: [106.90837009540422, -6.246799348031465], desc: "7P (Pondok Kelapa), JAK 35 (Pangkalan Jati), JAK 84 (Kapin), JAK 85 (Cipinang Indah)" },
+        { name: "Pangkalan Jati 1", type: "busstop_area", coords: [106.90837009540422, -6.246799348031465], desc: "4F (Pinang Ranti), 7P (Pondok Kelapa), JAK 35 (Pangkalan Jati), JAK 84 (Kapin), JAK 85 (Cipinang Indah)" },
         { name: "Pangkalan Jati 2", type: "busstop_area", coords: [106.90776904285194, -6.247255961428696], desc: "7P (Cawang Cililitan), JAK 35 (Rawamangun), JAK 84 (Kampung Melayu)" },
         { name: "Taman Pangkalan Jati Kalimalang", type: "busstop_area", coords: [106.90529804904226, -6.245996225625063], desc: "7P (Pondok Kelapa), JAK 35 (Rawamangun), JAK 84 (Kapin), JAK 85 (Bintara)" },
         { name: "Pospol Makasar", type: "busstop_area", coords: [106.9062444217672, -6.246899738244128], desc: "4F (Pulo Gadung), 7P (Cawang Cililitan), JAK 35 (Rawamangun), JAK 84 (Kampung Melayu), JAK 85 (Cipinang Indah)" },
@@ -109,7 +109,10 @@ window.appData = {
         { name: "Komplek Dolog Jaya", type: "busstop_area", coords: [106.915706645257, -6.247930681075355], desc: "7P (Pondok Kelapa), JAK 84 (Kapin)" },
         { name: "Sbr. Komplek Dolog Jaya", type: "busstop_area", coords: [106.91592444743038, -6.248116979037641], desc: "7P (Cawang Cililitan), JAK 84 (Kampung Melayu)" },
         { name: "Laut Banda", type: "busstop_area", coords: [106.9134265245079, -6.233538245403255], desc: "JAK 02 (Duren Sawit), JAK 26 (Rawamangun)" },
-        { name: "Kel. Duren Sawit", type: "busstop_area", coords: [106.91419513267068, -6.230806710151325], desc: "JAK 02 (Duren Sawit), JAK 26 (Rawamangun)" }
+        { name: "Kel. Duren Sawit", type: "busstop_area", coords: [106.91419513267068, -6.230806710151325], desc: "JAK 02 (Duren Sawit), JAK 26 (Rawamangun)" },
+        { name: "Jln. Kejaksaan Pondok Bambu", type: "busstop_area", coords: [106.89955922802385, -6.238066506244174], desc: "JAK 02 (Kampung Melayu)" },
+        { name: "Sbr. Pansoshan Anak Putra Utama I", type: "busstop_area", coords: [106.91836641050227, -6.236969063707152], desc: "JAK 85 (Bintara)" },
+        { name: "Sbr. Puri Swadaya", type: "busstop_area", coords: [106.91959754443457,-6.237111712515233], desc: "JAK 85 (Bintara)" },
     ],
     routes: [
         // BRT
@@ -274,8 +277,8 @@ window.appData = {
                         { name: "Simpang Pondok Bambu Batas 4", transfers: ["JAK 02"] },
                         { name: "Sbr. Jln. Damai", transfers: [] },
                         { name: "Jl. Masjid Al Wustho", transfers: ["JAK 35"] },
-                        { name: "Pangkalan Jati 1", transfers: ["JAK 35", "JAK 84"], isActive: true, label: "Terdekat" },
-                        { name: "RS Harum", transfers: ["7P", "JAK 35", "JAK 84"], isActive: true },
+                        { name: "Pangkalan Jati 1", transfers: ["JAK 35", "JAK 84","JAK 85"], isActive: true, label: "Terdekat" },
+                        { name: "RS Harum", transfers: ["7P", "JAK 35", "JAK 84","JAK 85"], isActive: true },
                         { name: "Pangkalan Jati", transfers: ["JAK 35"] },
                         { name: "Perumahan TNI AU 1", transfers: ["JAK 35"] },
                         { name: "Sbr. Jln. Pangkalan Jati VI", transfers: [] },
@@ -936,7 +939,7 @@ window.appData = {
                 "**Brizzi** - Bank BRI",
                 "**TapCash** - Bank BNI",
                 "**JakCard** - Bank DKI",
-                "Saldo minimum : **Rp 5.000,-** untuk Transjakarta dan KRL Commuterline, **Rp 10.000,-** untuk LRT Jabodebek"
+                "Saldo minimum : **Rp 5.000,-** untuk Transjakarta dan KRL Commuterline. **Rp 10.000,-** untuk LRT Jabodebek"
             ]
         },
         {
