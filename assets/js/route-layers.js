@@ -33,38 +33,30 @@ const ROUTE_DATA_MAPPING = {
 
 async function initRouteMap(map, routeCode) {
     if (!routeCode) return;
-    
-    const config = ROUTE_DATA_MAPPING[routeCode.toUpperCase()];
+    const config = ROUTE_DATA_MAPPING[routeCode.toUpperCase().replace(/-/g, '.')];
     if (!config) return;
 
-    const linePath = `assets/data/${config.line}`;
-    const stopPath = `assets/data/${config.stops}`;
-
     try {
-        const response = await fetch(linePath);
+        const response = await fetch(`assets/data/${config.line}`);
         if (!response.ok) return;
         const geojsonData = await response.json();
 
         if (map.getSource('route-line')) {
-            map.removeLayer('stop-points');
-            map.removeLayer('line-main');
-            map.removeLayer('line-casing');
+            if (map.getLayer('stop-points')) map.removeLayer('stop-points');
+            if (map.getLayer('line-main')) map.removeLayer('line-main');
+            if (map.getLayer('line-casing')) map.removeLayer('line-casing');
             map.removeSource('route-line');
             map.removeSource('route-stops');
         }
 
         map.addSource('route-line', { type: 'geojson', data: geojsonData });
-        map.addSource('route-stops', { type: 'geojson', data: stopPath });
+        map.addSource('route-stops', { type: 'geojson', data: `assets/data/${config.stops}` });
 
         map.addLayer({
             id: 'line-casing',
             type: 'line',
             source: 'route-line',
-            paint: {
-                'line-color': '#FFFFFF',
-                'line-width': 6,
-                'line-opacity': 0.8
-            }
+            paint: { 'line-color': '#FFFFFF', 'line-width': 6, 'line-opacity': 0.8 }
         });
 
         map.addLayer({
@@ -72,10 +64,7 @@ async function initRouteMap(map, routeCode) {
             type: 'line',
             source: 'route-line',
             layout: { 'line-join': 'round', 'line-cap': 'round' },
-            paint: {
-                'line-color': config.color,
-                'line-width': 4
-            }
+            paint: { 'line-color': config.color, 'line-width': 4 }
         });
 
         map.addLayer({
@@ -83,27 +72,31 @@ async function initRouteMap(map, routeCode) {
             type: 'circle',
             source: 'route-stops',
             paint: {
-                'circle-radius': 4,
+                'circle-radius': 5,
                 'circle-color': '#FFFFFF',
                 'circle-stroke-width': 2,
                 'circle-stroke-color': config.color
             }
         });
 
-        const bounds = new mapboxgl.LngLatBounds();
-        geojsonData.features.forEach(feature => {
-            if (feature.geometry.type === 'MultiLineString') {
-                feature.geometry.coordinates.forEach(line => {
-                    line.forEach(coord => bounds.extend(coord));
-                });
-            } else if (feature.geometry.type === 'LineString') {
-                feature.geometry.coordinates.forEach(coord => bounds.extend(coord));
-            }
+        map.on('click', 'stop-points', (e) => {
+            const name = e.features[0].properties.stop_name;
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(`<p class="font-bold text-sm">${name}</p>`)
+                .addTo(map);
         });
 
-        map.fitBounds(bounds, { padding: 50, duration: 2000 });
+        map.on('mouseenter', 'stop-points', () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', 'stop-points', () => { map.getCanvas().style.cursor = ''; });
 
-    } catch (err) {
-        console.error(err);
-    }
+        const bounds = new mapboxgl.LngLatBounds();
+        geojsonData.features.forEach(f => {
+            const c = f.geometry.coordinates;
+            if (f.geometry.type === 'MultiLineString') c.forEach(l => l.forEach(pt => bounds.extend(pt)));
+            else c.forEach(pt => bounds.extend(pt));
+        });
+        map.fitBounds(bounds, { padding: 40, duration: 1500 });
+
+    } catch (err) { console.error(err); }
 }
