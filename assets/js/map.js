@@ -5,13 +5,14 @@ if (!window.mapboxgl) {
 }
 
 let allMarkers = [];
-let activeFilter = 'all'; // State untuk melacak filter yang sedang aktif
+let activeFilter = 'all';
 
 const map = new mapboxgl.Map({
     container: 'map-container',
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [106.910491, -6.241088], // MAN 9 Jakarta
-    zoom: 14
+    center: [106.910491, -6.241088],
+    zoom: 14,
+    attributionControl: false
 });
 
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -22,8 +23,8 @@ const COLORS = {
 };
 
 const ROUTE_COLORS = {
-    '4F': '#b900e2', '7P': '#911d3c', '11Q': '#10c0ff', '11P': '#B2A5A3',
-    'BK': '#006838', 'C': '#26baed', '11': '#2F4FA2', 'JAK': '#00b0ec'
+    '4F': '#553C62', '7P': '#916131', '11Q': '#504F92', '11P': '#717092',
+    'BK': '#006838', 'C': '#26baed', '11': '#2F4FA2', 'JAK': '#00609C'
 };
 
 function getRouteColor(routeCode) {
@@ -32,7 +33,6 @@ function getRouteColor(routeCode) {
     return '#6b7280';
 }
 
-// --- FUNGSI FORMAT BADGE DENGAN ALIGNMENT TENGAH ---
 function formatRoutesWithBadges(desc) {
     if (!desc) return '';
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
@@ -50,20 +50,7 @@ function formatRoutesWithBadges(desc) {
         
         html += `
             <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="
-                    background-color: ${color}; 
-                    color: white; 
-                    font-size: 10px; 
-                    font-weight: 700; 
-                    padding: 4px 8px; 
-                    border-radius: 6px; 
-                    white-space: nowrap; 
-                    min-width: 36px; 
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center;
-                    height: 20px;
-                ">${routeCode}</span>
+                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; white-space: nowrap; min-width: 36px; display: flex; align-items: center; justify-content: center; height: 20px;">${routeCode}</span>
                 <span style="font-size: 11px; color: #4b5563; font-weight: 500; line-height: 1.2;">${direction}</span>
             </div>
         `;
@@ -81,47 +68,16 @@ const ICONS = {
     busstop_area: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`
 };
 
-const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/>
-</svg>`;
+const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/></svg>`;
 
-// --- 1. FUNGSI NAVBAR FILTER (POSISI DIPERBAIKI) ---
 function createInteractiveLegend() {
-    // Hapus legend lama jika ada
     const oldLegend = document.querySelector('.map-legend-navbar');
     if (oldLegend) oldLegend.remove();
 
     const navbarContainer = document.createElement('div');
     navbarContainer.className = 'map-legend-navbar';
-    
-    // Style Fix: Bottom naik ke 40px biar ga nabrak, z-index tinggi
-    navbarContainer.style.cssText = `
-        position: absolute;
-        bottom: 40px; 
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 20;
-        background: white;
-        padding: 8px 12px;
-        border-radius: 99px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        width: max-content;
-        max-width: 90%;
-        overflow-x: auto;
-        white-space: nowrap;
-        scrollbar-width: none; 
-        -webkit-overflow-scrolling: touch;
-    `;
-    
-    // Hide scrollbar Webkit
-    const style = document.createElement('style');
-    style.innerHTML = `.map-legend-navbar::-webkit-scrollbar { display: none; }`;
-    document.head.appendChild(style);
+    navbarContainer.style.cssText = `position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 20; background: white; padding: 8px 12px; border-radius: 99px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; gap: 12px; align-items: center; width: max-content; max-width: 90%; overflow-x: auto; white-space: nowrap; scrollbar-width: none;`;
 
-    // Data Item Filter
     const legendItems = [
         { id: 'school', label: 'Sekolah', color: COLORS.school },
         { id: 'transit', label: 'Transit', color: COLORS.train },
@@ -133,173 +89,77 @@ function createInteractiveLegend() {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'legend-item';
         itemDiv.dataset.filter = item.id;
-        
-        // Style Item
-        itemDiv.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            opacity: 1;
-            flex-shrink: 0; 
-            padding: 4px 8px;
-            border-radius: 20px;
-        `;
+        itemDiv.style.cssText = `display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; padding: 4px 8px; border-radius: 20px;`;
 
         const dot = document.createElement('span');
-        dot.style.cssText = `
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: ${item.color};
-            display: inline-block;
-        `;
+        dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background-color: ${item.color};`;
 
         const label = document.createElement('span');
         label.textContent = item.label;
-        label.style.cssText = `
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 11px;
-            color: #374151;
-            font-weight: 600;
-        `;
+        label.style.cssText = `font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; color: #374151; font-weight: 600;`;
 
         itemDiv.appendChild(dot);
         itemDiv.appendChild(label);
 
         itemDiv.onclick = () => {
-            if (activeFilter === item.id) {
-                activeFilter = 'all';
-            } else {
-                activeFilter = item.id;
-            }
+            activeFilter = (activeFilter === item.id) ? 'all' : item.id;
             updateMapDisplay();
             updateLegendUI();
         };
-
         navbarContainer.appendChild(itemDiv);
     });
 
-    const mapEl = document.getElementById('map-container');
-    // Pastikan container relative agar absolute positioning jalan benar
-    if (mapEl) {
-        mapEl.style.position = 'relative'; 
-        mapEl.appendChild(navbarContainer);
-    }
+    document.getElementById('map-container')?.appendChild(navbarContainer);
 }
 
-// --- 2. UPDATE TAMPILAN FILTER (Highlight Aktif) ---
 function updateLegendUI() {
-    const items = document.querySelectorAll('.legend-item');
-    items.forEach(item => {
+    document.querySelectorAll('.legend-item').forEach(item => {
         if (activeFilter === 'all') {
             item.style.opacity = '1';
             item.style.backgroundColor = 'transparent';
         } else {
-            if (item.dataset.filter === activeFilter) {
-                item.style.opacity = '1';
-                item.style.backgroundColor = '#f3f4f6'; // Highlight background
-            } else {
-                item.style.opacity = '0.4';
-                item.style.backgroundColor = 'transparent';
-            }
+            const isActive = item.dataset.filter === activeFilter;
+            item.style.opacity = isActive ? '1' : '0.4';
+            item.style.backgroundColor = isActive ? '#f3f4f6' : 'transparent';
         }
     });
 }
 
-// --- 3. UPDATE MARKER DI PETA ---
 function updateMapDisplay() {
     allMarkers.forEach(data => {
         let isVisible = false;
+        if (activeFilter === 'all') isVisible = true;
+        else if (activeFilter === 'transit') isVisible = ['train', 'brt', 'lrt'].includes(data.type);
+        else isVisible = data.type === activeFilter;
 
-        if (activeFilter === 'all') {
-            isVisible = true;
-        } else if (activeFilter === 'transit') {
-            if (['train', 'brt', 'lrt'].includes(data.type)) isVisible = true;
-        } else if (data.type === activeFilter) {
-            isVisible = true;
-        }
-
-        if (isVisible) {
-            data.marker.addTo(map);
-        } else {
-            data.marker.remove();
-        }
+        isVisible ? data.marker.addTo(map) : data.marker.remove();
     });
 }
 
-// --- 4. INITIALIZE MARKERS & POPUP ---
 function initializeMarkers() {
-    if (!window.appData || !window.appData.locations) {
-        console.error('Data not loaded');
-        return;
-    }
-
+    if (!window.appData?.locations) return;
     allMarkers = [];
 
     window.appData.locations.forEach(location => {
         const markerColor = COLORS[location.type] || '#4b5563';
-        const iconSvg = ICONS[location.type] || ICONS.busstop_area;
         const isAreaStop = location.type === 'busstop_area';
-        const markerSize = isAreaStop ? 24 : 32;
-        const borderWidth = isAreaStop ? 2 : 3;
-
         const el = document.createElement('div');
         el.className = 'custom-marker';
-        el.style.cssText = `
-            width: ${markerSize}px;
-            height: ${markerSize}px;
-            background-color: ${markerColor};
-            border-radius: 50%;
-            border: ${borderWidth}px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        `;
-        el.innerHTML = iconSvg;
+        el.style.cssText = `width: ${isAreaStop ? 24 : 32}px; height: ${isAreaStop ? 24 : 32}px; background-color: ${markerColor}; border-radius: 50%; border: ${isAreaStop ? 2 : 3}px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center;`;
+        el.innerHTML = ICONS[location.type] || ICONS.busstop_area;
 
-        let popupContent = `
-            <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px; max-width: 280px; padding: 4px;">
-                <h3 style="margin: 0 0 10px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'}; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">${location.name}</h3>
-        `;
-
-        if (['train', 'brt', 'lrt', 'busstop', 'busstop_area'].includes(location.type)) {
-            popupContent += formatRoutesWithBadges(location.desc);
-        } else {
-            popupContent += `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4;">${location.desc}</p>`;
-        }
+        let popupContent = `<div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px; padding: 4px;"><h3 style="margin: 0 0 10px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'}; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">${location.name}</h3>`;
+        popupContent += ['train', 'brt', 'lrt', 'busstop', 'busstop_area'].includes(location.type) ? formatRoutesWithBadges(location.desc) : `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4;">${location.desc}</p>`;
 
         if (location.type === 'busstop' && location.walkTime !== undefined) {
             const timeColor = location.walkTime >= 3 ? '#eab308' : '#22c55e';
-            popupContent += `
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-top: 10px; background: ${timeColor}10; border-radius: 8px; border-left: 3px solid ${timeColor};">
-                    <span style="color: ${timeColor}; display: flex; align-items: center; justify-content: center; min-width: 20px;">${WALK_ICON}</span>
-                    <span style="font-size: 12px; font-weight: 600; color: ${timeColor};">${location.walkTime} menit</span>
-                    <span style="font-size: 12px; color: #888;">•</span>
-                    <span style="font-size: 12px; color: #666;">${location.distance} meter</span>
-                </div>
-            `;
+            popupContent += `<div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-top: 10px; background: ${timeColor}10; border-radius: 8px; border-left: 3px solid ${timeColor};"><span style="color: ${timeColor};">${WALK_ICON}</span><span style="font-size: 12px; font-weight: 600; color: ${timeColor};">${location.walkTime} menit</span><span style="font-size: 12px; color: #666;">• ${location.distance} meter</span></div>`;
         }
-
         popupContent += `</div>`;
 
-        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
-
-        const marker = new mapboxgl.Marker(el)
-            .setLngLat(location.coords)
-            .setPopup(popup)
-            .addTo(map);
-
-        allMarkers.push({
-            type: location.type,
-            marker: marker
-        });
+        const marker = new mapboxgl.Marker(el).setLngLat(location.coords).setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent)).addTo(map);
+        allMarkers.push({ type: location.type, marker: marker });
     });
-
-    // Panggil Navbar Filter Baru
     createInteractiveLegend();
 }
 
