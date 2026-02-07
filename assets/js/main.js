@@ -113,24 +113,21 @@ function initGuides() {
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden font-sans">
             <button onclick="toggleAccordion(${index})" class="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
                 <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold text-sm">${index + 1}</span>
                     <span class="font-semibold text-gray-800 font-sans">${guide.title}</span>
                 </div>
                 <svg id="accordion-icon-${index}" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div id="accordion-content-${index}" class="accordion-content">
-                <div class="px-4 pb-4 pt-2 border-t border-gray-100">
-                    <ol class="space-y-3 font-data font-sans">
-                        ${guide.steps.map((step, stepIndex) => `
-                            <li class="flex items-start space-x-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-bold">${stepIndex + 1}</span>
-                                <span class="text-gray-700 text-sm leading-relaxed">${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</span>
-                            </li>
-                        `).join('')}
-                    </ol>
-                </div>
+            <div id="accordion-content-${index}" class="accordion-content hidden px-4 pb-4 pt-2 border-t border-gray-100">
+                <ol class="space-y-3 font-data font-sans">
+                    ${guide.steps.map((step, stepIndex) => `
+                        <li class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-bold">${stepIndex + 1}</span>
+                            <span class="text-gray-700 text-sm leading-relaxed">${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</span>
+                        </li>
+                    `).join('')}
+                </ol>
             </div>
         </div>
     `).join('');
@@ -140,8 +137,8 @@ function toggleAccordion(index) {
     const content = document.getElementById(`accordion-content-${index}`);
     const icon = document.getElementById(`accordion-icon-${index}`);
     if (content && icon) {
-        content.classList.toggle('open');
-        icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
     }
 }
 
@@ -205,13 +202,37 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const color = isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300');
         
+        // Logika Transit Route Colors
+        let transfersHtml = '';
+        if (stop.transfers && stop.transfers.length > 0) {
+            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`;
+            stop.transfers.forEach(t => {
+                let badgeColor = "#6b7280"; // Default Gray 
+                if (window.routeColors) {
+                    if (window.routeColors[t]) badgeColor = window.routeColors[t];
+                    else if (t.startsWith("JAK")) badgeColor = window.routeColors["JAK"];
+                    else if (t.includes("KRL") || t.includes("Commuter")) badgeColor = window.routeColors["KRL"];
+                }
+                transfersHtml += `<span class="px-2 py-0.5 rounded text-[9px] font-bold text-white font-sans" style="background-color: ${badgeColor}">${t}</span>`;
+            });
+            transfersHtml += `</div>`;
+        }
+
+        // Logika Label "Terdekat"
+        let labelHtml = '';
+        if (stop.label || stop.isActive) {
+            const labelText = stop.label || "TERDEKAT";
+            labelHtml = `<div class="mt-1"><span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md font-sans">${labelText}</span></div>`;
+        }
+
         return `
         <div class="relative pb-6 last:pb-0 flex items-start group font-sans">
             <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-100 group-last:hidden"></div>
             <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} shadow-sm mt-1 flex-shrink-0"></div>
             <div class="ml-4 flex-1">
                 <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
-                ${stop.transfers ? `<div class="flex flex-wrap gap-1 mt-1">${stop.transfers.map(t => `<span class="px-2 py-0.5 bg-gray-100 text-[9px] font-bold text-gray-500 rounded uppercase">${t}</span>`).join('')}</div>` : ''}
+                ${transfersHtml}
+                ${labelHtml}
             </div>
         </div>`;
     }).join('');
@@ -237,11 +258,27 @@ function renderDetail() {
         badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
     }
 
-    if (route.directions) switchDirection(0);
+    // Update Teks Tombol Arah secara Dinamis 
+    if (route.directions && route.directions.length > 0) {
+        route.directions.forEach((dir, i) => {
+            const btn = document.getElementById(`btn-dir-${i}`);
+            if (btn) {
+                btn.textContent = dir.name;
+                btn.classList.remove('hidden');
+            }
+        });
+        if (route.directions.length < 2) {
+            const btn1 = document.getElementById(`btn-dir-1`);
+            if (btn1) btn1.classList.add('hidden');
+        }
+        switchDirection(0);
+    }
+    
     document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('category-grid')) renderCategories();
     if (document.getElementById('guides-container')) initGuides();
     if (document.getElementById('map-container')) renderDetail();
 });
