@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=PT+Sans:wght@400;700&display=swap');
+
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .font-data {
@@ -7,41 +10,42 @@ body {
 }
 
 .mapboxgl-popup-content {
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 12px 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .custom-marker {
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .custom-marker:hover {
-    transform: scale(1.1);
-    z-index: 10;
+    transform: scale(1.2) translateY(-4px);
+    z-index: 50;
 }
 
 .fade-in {
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .category-btn {
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 114, 188, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px -5px rgba(0, 114, 188, 0.2);
 }
 
 .category-btn.active {
     background: linear-gradient(135deg, #0072bc 0%, #005a94 100%);
-    color: white;
+    border-color: transparent;
 }
 
 .category-btn.active span {
@@ -53,18 +57,33 @@ body {
 }
 
 .route-card:hover {
-    transform: translateX(8px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transform: translateX(6px);
+    border-color: #0072bc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.route-card:active {
+    transform: scale(0.98);
 }
 
 .accordion-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .accordion-content.open {
-    max-height: 500px;
+    max-height: 1000px;
+}
+
+#map-container {
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+}
+
+.mapboxgl-ctrl-logo, 
+.mapboxgl-ctrl-attrib {
+    display: none !important;
 }
 
 .pulse-dot {
@@ -72,6 +91,16 @@ body {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
