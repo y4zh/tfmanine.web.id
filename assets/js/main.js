@@ -41,10 +41,7 @@ function filterRoute(mode) {
     let filteredRoutes = [];
     let titleText = 'Daftar Rute';
 
-    if (!window.appData) {
-        console.error("Database routes belum dimuat!");
-        return;
-    }
+    if (!window.appData) return;
 
     if (mode === 'brt') {
         filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
@@ -63,8 +60,6 @@ function filterRoute(mode) {
     } else if (mode === 'lrt') {
         filteredRoutes = window.appData.routes.filter(r => r.mode === 'lrt');
         titleText = 'LRT Jabodebek';
-    } else {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === mode);
     }
 
     title.textContent = titleText;
@@ -106,12 +101,8 @@ function filterRoute(mode) {
 
 function clearFilter() {
     currentFilter = null;
-    const section = document.getElementById('route-list-section');
-    if (section) section.classList.add('hidden');
-
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.classList.remove('active', 'border-primary');
-    });
+    document.getElementById('route-list-section')?.classList.add('hidden');
+    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
 }
 
 function initGuides() {
@@ -148,7 +139,6 @@ function initGuides() {
 function toggleAccordion(index) {
     const content = document.getElementById(`accordion-content-${index}`);
     const icon = document.getElementById(`accordion-icon-${index}`);
-
     if (content && icon) {
         content.classList.toggle('open');
         icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
@@ -159,19 +149,14 @@ function openDetail(routeId) {
     if (!window.appData) return;
     const route = window.appData.routes.find(r => r.id === routeId);
     if (route) {
-        const slug = route.code.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '');
+        const slug = route.code.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '').replace(/\./g, '-');
         window.location.href = 'route-detail.html?rute=' + slug;
     }
 }
 
-function goBack() {
-    window.location.href = '/';
-}
+function goBack() { window.location.href = '/'; }
 
 function getRouteSlug() {
-    const pathMatch = window.location.pathname.match(/\/rute\/([a-zA-Z0-9-]+)/);
-    if (pathMatch) return pathMatch[1];
-
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('rute');
 }
@@ -179,196 +164,84 @@ function getRouteSlug() {
 function getRouteData(slug) {
     if (!slug || !window.appData) return null;
     return window.appData.routes.find(route => {
-        const routeSlug = route.code.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '');
+        const routeSlug = route.code.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '').replace(/\./g, '-');
         return routeSlug === slug.toLowerCase();
     });
 }
 
 function getModeLabel(mode) {
     const labels = {
-        'brt': { text: 'BRT', bg: 'bg-red-100', color: 'text-red-600' },
-        'nbrt': { text: 'Angkutan Umum Integrasi', bg: 'bg-orange-100', color: 'text-orange-600' },
-        'mikro': { text: 'Mikrotrans', bg: 'bg-blue-100', color: 'text-blue-600' },
-        'rusun': { text: 'Rusun', bg: 'bg-green-100', color: 'text-green-600' },
-        'rail': { text: 'KRL / LRT', bg: 'bg-purple-100', color: 'text-purple-600' },
-        'krl': { text: 'KRL Commuter', bg: 'bg-cyan-100', color: 'text-cyan-600' },
-        'lrt': { text: 'LRT Jabodebek', bg: 'bg-emerald-100', color: 'text-emerald-600' }
+        'brt': { text: 'BRT' },
+        'nbrt': { text: 'Angkutan Umum Integrasi' },
+        'mikro': { text: 'Mikrotrans' },
+        'rusun': { text: 'Rusun' },
+        'krl': { text: 'KRL Commuter' },
+        'lrt': { text: 'LRT Jabodebek' }
     };
-    return labels[mode] || { text: mode, bg: 'bg-gray-100', color: 'text-gray-600' };
+    return labels[mode] || { text: mode };
 }
 
 let currentRouteDetail = null;
-let currentDirectionIndex = 0;
 
 function switchDirection(index) {
-    if (!currentRouteDetail || !currentRouteDetail.directions || !currentRouteDetail.directions[index]) return;
-
-    currentDirectionIndex = index;
-
-    const directions = currentRouteDetail.directions;
-    directions.forEach((dir, i) => {
-        const btn = document.getElementById(`btn-dir-${i}`);
-        if (btn) {
-            if (i === index) {
-                btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 shadow-sm bg-white text-primary ring-1 ring-black/5 scale-[1.02] font-sans";
-                btn.classList.remove('text-gray-500', 'hover:bg-white/50');
-            } else {
-                btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-medium text-gray-500 hover:bg-white/50 transition-all duration-300 font-sans";
-            }
+    if (!currentRouteDetail || !currentRouteDetail.directions?.[index]) return;
+    document.querySelectorAll('[id^="btn-dir-"]').forEach((btn, i) => {
+        if (i === index) {
+            btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold shadow-sm bg-white text-primary ring-1 ring-black/5 transition-all duration-300";
+        } else {
+            btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-medium text-gray-500 hover:bg-white/50 transition-all duration-300";
         }
     });
-
     renderTimeline(currentRouteDetail.directions[index].stops);
 }
 
 function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
-    if (!container) return;
-
-    if (!stops || stops.length === 0) {
-        container.innerHTML = '<p class="text-gray-500 text-center py-4 font-sans">Data pemberhentian tidak tersedia.</p>';
-        return;
-    }
+    if (!container || !stops) return;
 
     container.innerHTML = stops.map((stop, idx) => {
         if (stop.name === '---') return '<div class="h-px bg-gray-100 my-4 ml-4"></div>';
-        
         const isFirst = idx === 0;
         const isLast = idx === stops.length - 1;
         const color = isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300');
         
-        let transfersHtml = '';
-        if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`;
-            stop.transfers.forEach(t => {
-                let badgeColor = "#6b7280";
-                if (window.routeColors) {
-                    if (window.routeColors[t]) badgeColor = window.routeColors[t];
-                    else if (t.startsWith("JAK")) badgeColor = window.routeColors["JAK"];
-                    else if (t.includes("KRL")) badgeColor = window.routeColors["KRL"];
-                }
-                transfersHtml += `<span class="px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm font-sans" style="background-color: ${badgeColor}">${t}</span>`;
-            });
-            transfersHtml += `</div>`;
-        }
-
         return `
         <div class="relative pb-6 last:pb-0 flex items-start group font-sans">
             <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-100 group-last:hidden"></div>
             <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} shadow-sm mt-1 flex-shrink-0"></div>
             <div class="ml-4 flex-1">
                 <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
-                ${transfersHtml}
+                ${stop.transfers ? `<div class="flex flex-wrap gap-1 mt-1">${stop.transfers.map(t => `<span class="px-2 py-0.5 bg-gray-100 text-[9px] font-bold text-gray-500 rounded uppercase">${t}</span>`).join('')}</div>` : ''}
             </div>
         </div>`;
     }).join('');
 }
 
 function renderDetail() {
-    if (!window.appData) {
-        console.error("CRITICAL ERROR: window.appData kosong!");
-        return; 
-    }
-
     const routeSlug = getRouteSlug();
-    if (!routeSlug) { 
-        console.error("ERROR: URL tidak valid.");
-        return; 
-    }
-
     const route = getRouteData(routeSlug);
-    if (!route) { 
-        console.error("ERROR: Data rute not found for slug:", routeSlug);
-        return; 
-    }
+    if (!route) return;
 
-    currentRouteDetail = route; 
-
-    // Bagian Badge Rute
-    const badgeContainer = document.getElementById('route-badge-container');
-    if (badgeContainer) {
-        if (route.code.startsWith('JAK ')) {
-            const number = route.code.replace('JAK ', '');
-            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex flex-col items-center justify-center text-white font-bold border-2 border-white font-sans" style="background-color: ${route.badgeColor || '#0072bc'}">
-                <span class="text-xs leading-none font-sans">JAK</span>
-                <span class="text-2xl leading-tight font-sans">${number}</span>
-            </div>`;
-        } else {
-            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold border-2 border-white font-sans" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
-        }
-    }
-
-    // Bagian Info Teks
+    currentRouteDetail = route;
     document.getElementById('route-name').textContent = route.name;
-    document.getElementById('route-name').classList.add('font-sans');
+    document.getElementById('route-tarif').textContent = route.details.tarif;
+    document.getElementById('route-headway').textContent = route.details.headway;
+    document.getElementById('route-ops').textContent = route.details.ops;
+    document.getElementById('route-meta').textContent = getModeLabel(route.mode).text;
 
-    const modeInfo = getModeLabel(route.mode); 
-    const metaContainer = document.getElementById('route-meta');
-    if (metaContainer) {
-        metaContainer.innerHTML = `
-            <span class="text-gray-500 font-sans">${modeInfo.text}</span>
-        `;
+    const badgeContainer = document.getElementById('route-badge-container');
+    if (route.code.startsWith('JAK ')) {
+        const num = route.code.replace('JAK ', '');
+        badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex flex-col items-center justify-center text-white font-bold" style="background-color: ${route.badgeColor || '#0072bc'}"><span class="text-xs">JAK</span><span class="text-2xl">${num}</span></div>`;
+    } else {
+        badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
     }
 
-    if (route.details) {
-        document.getElementById('route-tarif').textContent = route.details.tarif || '--';
-        document.getElementById('route-tarif').classList.add('font-sans');
-
-        const tarifNote = document.getElementById('route-tarif-note');
-        if (tarifNote) {
-            tarifNote.textContent = route.details.tarifNote || '';
-            tarifNote.classList.add('font-sans');
-            if (route.details.tarifNote) tarifNote.classList.remove('hidden');
-            else tarifNote.classList.add('hidden');
-        }
-
-        const headwayEl = document.getElementById('route-headway');
-        if (headwayEl) {
-            headwayEl.className = "flex flex-col items-center justify-center font-sans"; 
-            const noteText = route.details.headwayNote || "Situasional"; 
-            headwayEl.innerHTML = `
-                <div class="flex items-center space-x-2">
-                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="text-sm font-bold text-gray-900 font-sans">${route.details.headway || '--'}</span>
-                </div>
-                <span class="text-xs font-medium text-gray-500 mt-1 font-sans">${noteText}</span>
-            `;
-        }
-
-        document.getElementById('route-ops').textContent = route.details.ops || '--';
-        document.getElementById('route-ops').classList.add('font-sans');
-
-        const opsNote = document.getElementById('route-ops-note');
-        if (opsNote) {
-            opsNote.textContent = route.details.opsNote || '';
-            opsNote.classList.add('font-sans');
-            if (route.details.opsNote) opsNote.classList.remove('hidden');
-            else opsNote.classList.add('hidden');
-        }
-    }
-
-    // Bagian Tombol Arah
-    if (route.directions && route.directions.length > 0) {
-        route.directions.forEach((dir, i) => {
-            const btn = document.getElementById(`btn-dir-${i}`);
-            if (btn) {
-                btn.textContent = dir.name;
-                btn.classList.remove('hidden');
-            }
-        });
-        if (route.directions.length < 2) {
-            const btn1 = document.getElementById(`btn-dir-1`);
-            if (btn1) btn1.classList.add('hidden');
-        }
-        switchDirection(0);
-    }
-
+    if (route.directions) switchDirection(0);
     document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('guides-container')) {
-        initGuides();
-        const urlParams = new URLSearchParams(window.location.search);
+    if (document.getElementById('guides-container')) initGuides();
+    if (document.getElementById('map-container')) renderDetail();
+});
