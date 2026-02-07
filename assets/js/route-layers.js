@@ -39,7 +39,6 @@ const ROUTE_DATA_MAPPING = {
 async function initRouteMap(map, routeCode) {
     if (!routeCode) return;
 
-    // FIX BUG: Normalisasi agar bisa baca spasi (JAK 02) atau titik (JAK.02)
     const normalizedCode = routeCode.toUpperCase().replace(/[\s-]/g, '.');
     const config = ROUTE_DATA_MAPPING[normalizedCode];
     
@@ -50,7 +49,6 @@ async function initRouteMap(map, routeCode) {
         if (!response.ok) return;
         const geojsonData = await response.json();
 
-        // Hapus rute lama jika ada
         if (map.getSource('route-line')) {
             if (map.getLayer('stop-points')) map.removeLayer('stop-points');
             if (map.getLayer('line-main')) map.removeLayer('line-main');
@@ -89,19 +87,17 @@ async function initRouteMap(map, routeCode) {
             }
         });
 
-        // Popup saat titik halte diklik
         map.on('click', 'stop-points', (e) => {
             const name = e.features[0].properties.stop_name;
             new mapboxgl.Popup()
                 .setLngLat(e.lngLat)
-                .setHTML(`<p class="font-bold text-sm">${name}</p>`)
+                .setHTML(`<p style="font-family: 'Plus Jakarta Sans', sans-serif;" class="font-bold text-sm text-gray-800">${name}</p>`)
                 .addTo(map);
         });
 
         map.on('mouseenter', 'stop-points', () => { map.getCanvas().style.cursor = 'pointer'; });
         map.on('mouseleave', 'stop-points', () => { map.getCanvas().style.cursor = ''; });
 
-        // Zoom otomatis ke seluruh rute
         const bounds = new mapboxgl.LngLatBounds();
         geojsonData.features.forEach(f => {
             const c = f.geometry.coordinates;
