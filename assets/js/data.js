@@ -1,19 +1,13 @@
 window.appData = {
     locations: [
-        // School - Blue marker
         { name: "MAN 9 Jakarta", type: "school", coords: [106.910491, -6.241088], desc: "Jl. Hj Dogol No 54, Pondok Bambu" },
-
-        // Transit stations - Orange markers
-        { name: "Stasiun Buaran", type: "train", coords: [106.9232049366804, -6.215499349296717], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI)" },
-        { name: "Simpang Buaran", type: "brt", coords: [106.9243316143217, -6.2159234027650445], desc: "11 (Pulo Gebang - Kampung Melayu), 11M (Rusun Rawa Bebek - Bukit Duri)" },
-        { name: "Stasiun Jati Bening Baru", type: "lrt", coords: [106.92781695600796, -6.257618166172584], desc: "BK (Lin Bekasi | Dukuh Atas - Jati Mulya)" },
-        { name: "Stasiun Klender", type: "train", coords: [106.89937206810781, -6.213175339993197], desc: "C (Lin Cikarang - Kampung Bandan via PSE/MRI)" },
-        // Bus stops near MAN 9 - Green markers with walking time info
-        { name: "Rusun Pondok Bambu", type: "busstop", coords: [106.910853, -6.241690], desc: "11P (Walikota Jakarta Timur), JAK 85 (Bintara)", walkTime: 1, distance: 50 },
+        { name: "Stasiun Buaran", type: "train", coords: [106.9232049366804, -6.215499349296717], desc: "C (Lin Cikarang)" },
+        { name: "Simpang Buaran", type: "brt", coords: [106.9243316143217, -6.2159234027650445], desc: "11 (Kampung Melayu)" },
+        { name: "Stasiun Jati Bening Baru", type: "lrt", coords: [106.92781695600796, -6.257618166172584], desc: "BK (Lin Bekasi)" },
+        { name: "Rusun Pondok Bambu", type: "busstop", coords: [106.910853, -6.241690], desc: "11P (Walikota Jaktim), JAK 85 (Bintara)", walkTime: 1, distance: 50 },
         { name: "Puskesmas Duren Sawit", type: "busstop", coords: [106.910906, -6.241853], desc: "JAK 85 (Cipinang Indah)", walkTime: 2, distance: 80 },
-        { name: "Jln. Teluk Mandar 1", type: "busstop", coords: [106.909881, -6.238719], desc: "11P (Walikota Jakarta Timur), JAK 02 (Duren Sawit), JAK 85 (Bintara)", walkTime: 5, distance: 400 },
-        { name: "Jln. Teluk Mandar 2", type: "busstop", coords: [106.910088, -6.238954], desc: "11P (Rusun Pondok Bambu), JAK 02 (Kampung Melayu), JAK 85 (Bintara)", walkTime: 4, distance: 350 },
-
+        { name: "Jln. Teluk Mandar 1", type: "busstop", coords: [106.909881, -6.238719], desc: "JAK 02 (Duren Sawit), JAK 85 (Bintara)", walkTime: 5, distance: 400 },
+        { name: "Jln. Teluk Mandar 2", type: "busstop", coords: [106.910088, -6.238954], desc: "JAK 02 (Kampung Melayu), JAK 85 (Bintara)", walkTime: 4, distance: 350 }
         // Area Pahlawan Revolusi - Kalimalang
         { name: "Yayasan Perguruan Rakyat 1", type: "busstop_area", coords: [106.89865261169159, -6.22863383065942], desc: "4F (Pinang Ranti), JAK 42 (Pondok Kelapa)" },
         { name: "Yayasan Perguruan Rakyat 2", type: "busstop_area", coords: [106.8986294347656, -6.228387594821946], desc: "4F (Pulo Gadung), JAK 42 (Kampung Melayu), JAK 74 (Cipinang Muara)" },
