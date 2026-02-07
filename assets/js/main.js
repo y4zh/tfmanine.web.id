@@ -225,303 +225,43 @@ function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container) return;
 
-    if (currentRouteDetail && currentRouteDetail.routeMapImage) {
-        container.classList.remove('pl-6', 'md:pl-4');
-        const dirContainer = container.previousElementSibling; 
-        if (dirContainer && dirContainer.classList.contains('flex') && dirContainer.classList.contains('items-center')) {
-            dirContainer.style.display = 'none';
-        }
-
-        container.innerHTML = `
-            <div class="flex flex-col items-center font-sans">
-                <img src="${currentRouteDetail.routeMapImage}" alt="Peta Rute" class="w-full h-auto rounded-2xl shadow-lg border border-gray-100">
-                <p class="mt-2 text-sm text-gray-400 font-sans">Peta rute resmi Transjakarta</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.classList.add('pl-6', 'md:pl-4');
-
     if (!stops || stops.length === 0) {
         container.innerHTML = '<p class="text-gray-500 text-center py-4 font-sans">Data pemberhentian tidak tersedia.</p>';
         return;
     }
 
-    let firstActiveIndex = stops.findIndex(s => s.isActive);
-    let separatorIndex = stops.findIndex(s => s.isSeparator || s.name === '---');
-    if (firstActiveIndex === -1) firstActiveIndex = 0;
-
-    const renderHalteInfo = (stop) => {
-        if (!stop.halteInfo) return '';
-        const { type, halte, routes, stops: halteStops } = stop.halteInfo;
-        const typeLabel = type === 'integrasi' ? 'Integrasi Halte' : (type === 'stasiun' ? 'Integrasi' : 'Halte Terdekat');
-        let halteHtml = '';
-
-        if (halteStops && Array.isArray(halteStops)) {
-            halteHtml = halteStops.map(stopItem => {
-                const routeBadges = stopItem.routes.map(r => {
-                    let color = "#6b7280";
-                    if (window.routeColors) {
-                        if (window.routeColors[r]) color = window.routeColors[r];
-                        else if (r.startsWith("JAK")) color = window.routeColors["JAK"];
-                    }
-                    return `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white font-sans" style="background-color: ${color}">${r}</span>`;
-                }).join('');
-                return `<div class="flex flex-wrap items-center gap-1 font-sans"><span class="text-gray-700 font-medium font-sans">${stopItem.halte}</span> ${routeBadges}</div>`;
-            }).join('');
-        } else if (halte && routes) {
-            halteHtml = halte.map(h => {
-                const routeBadges = routes.map(r => {
-                    let color = "#6b7280";
-                    if (window.routeColors) {
-                        if (window.routeColors[r]) color = window.routeColors[r];
-                        else if (r.startsWith("JAK")) color = window.routeColors["JAK"];
-                    }
-                    return `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white font-sans" style="background-color: ${color}">${r}</span>`;
-                }).join('');
-                return `<div class="flex flex-wrap items-center gap-1 font-sans"><span class="text-gray-700 font-medium font-sans">${h}</span> ${routeBadges}</div>`;
-            }).join('');
-        }
-
-        let stationIntegrationHtml = '';
-        if (stop.stationIntegration) {
-            const { station, trainLines } = stop.stationIntegration;
-            const trainBadges = trainLines.map(line => {
-                let color = window.routeColors?.[line] || "#6b7280";
-                return `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white font-sans" style="background-color: ${color}">${line}</span>`;
-            }).join('');
-            stationIntegrationHtml = `
-            <div class="mt-2 pt-2 border-t border-gray-200">
-                <span class="text-[10px] font-semibold text-gray-500 uppercase font-sans">Integrasi Stasiun:</span>
-                <div class="flex flex-wrap items-center gap-1 mt-1 font-sans">
-                    <span class="text-gray-700 font-medium font-sans">${station}</span> ${trainBadges}
-                </div>
-            </div>`;
-        }
-
-        return `
-        <div class="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-100 font-sans">
-            <span class="text-[10px] font-semibold text-gray-500 uppercase font-sans">${typeLabel}:</span>
-            <div class="space-y-1 mt-1 text-xs">
-                ${halteHtml}
-            </div>
-            ${stationIntegrationHtml}
-        </div>`;
-    };
-
-    const renderStationIcons = (stop) => {
-        let iconsHtml = '';
-        if (stop.icons && stop.icons.length > 0) {
-            iconsHtml += stop.icons.map(icon =>
-                `<img src="assets/images/${icon}" alt="${icon.replace('.svg', '')}" class="h-5 w-5 inline-block ml-1">`
-            ).join('');
-        }
-        if (stop.halteInfo) {
-            iconsHtml += `<img src="assets/images/icon-bus.svg" alt="bus" class="h-5 w-5 inline-block ml-1">`;
-        }
-        return iconsHtml;
-    };
-
-    const createStopItem = (stop, idx, totalStops, globalIdx) => {
-        if (stop.isSeparator || stop.name === '---') return '';
-
-        const isFirst = globalIdx === 0;
-        const isLast = globalIdx === totalStops - 1;
-        const isActive = stop.isActive;
-        const label = stop.label || (isActive ? "TERDEKAT" : null);
-
-        let dotHtml = '';
-        if (isFirst) {
-            dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-blue-500 shadow-sm z-10 flex items-center justify-center">
-                <div class="h-1.5 w-1.5 rounded-full bg-white"></div>
-            </div>`;
-        } else if (isLast) {
-            dotHtml = `<div class="absolute -left-[12px] top-3 h-6 w-6 rounded-full border-4 border-white bg-red-500 shadow-sm z-10 flex items-center justify-center">
-               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            </div>`;
-        } else if (isActive) {
-            let codeDisplay = currentRouteDetail.code || '';
-            let contentHtml = '';
-
-            if (codeDisplay.startsWith('JAK')) {
-                const num = codeDisplay.replace(/JAK/i, '').trim();
-                contentHtml = `
-                    <div class="flex flex-col items-center justify-center leading-none">
-                        <span class="text-[7px] font-bold opacity-90 mb-[1px] font-sans">JAK</span>
-                        <span class="text-[11px] font-bold font-sans">${num}</span>
-                    </div>
-                `;
-            } else {
-                contentHtml = `<span class="text-[10px] font-bold font-sans">${codeDisplay}</span>`;
-            }
-
-            dotHtml = `<div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 animate-pulse"></div>
-                       <div class="absolute -left-[20px] top-[-2px] h-10 w-10 rounded-full border-4 border-white bg-primary shadow-md z-10 flex items-center justify-center text-white">
-                           ${contentHtml}
-                       </div>`;
-
-        } else {
-            dotHtml = `<div class="absolute -left-[8px] top-4 h-4 w-4 rounded-full border-2 border-white bg-gray-300 shadow-sm z-10 group-hover/stop:bg-gray-400 transition-colors"></div>`;
-        }
-
-        const cardClass = isActive
-            ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 shadow-md"
-            : "hover:bg-gray-50 border-transparent hover:border-gray-100";
-
+    container.innerHTML = stops.map((stop, idx) => {
+        if (stop.name === '---') return '<div class="h-px bg-gray-100 my-4 ml-4"></div>';
+        
+        const isFirst = idx === 0;
+        const isLast = idx === stops.length - 1;
+        const color = isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300');
+        
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-2">`; 
+            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`;
             stop.transfers.forEach(t => {
-                let color = "#6b7280";
+                let badgeColor = "#6b7280";
                 if (window.routeColors) {
-                    if (window.routeColors[t]) color = window.routeColors[t];
-                    else if (t.startsWith("JAK")) color = window.routeColors["JAK"];
-                    else if (t.includes("KRL") || t.includes("Commuter")) color = window.routeColors["KRL"];
-                    else {
-                        const key = Object.keys(window.routeColors).find(k => t.includes(k));
-                        if (key) color = window.routeColors[key];
-                    }
+                    if (window.routeColors[t]) badgeColor = window.routeColors[t];
+                    else if (t.startsWith("JAK")) badgeColor = window.routeColors["JAK"];
+                    else if (t.includes("KRL")) badgeColor = window.routeColors["KRL"];
                 }
-                transfersHtml += `<span class="px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-sm font-sans" style="background-color: ${color}">${t}</span>`;
+                transfersHtml += `<span class="px-2 py-0.5 rounded text-[9px] font-bold text-white shadow-sm font-sans" style="background-color: ${badgeColor}">${t}</span>`;
             });
             transfersHtml += `</div>`;
         }
 
-        const halteInfoHtml = renderHalteInfo(stop);
-        const stationIconsHtml = renderStationIcons(stop);
-
-        let cardContent = '';
-
-        if (isActive) {
-            cardContent = `
-            <div class="flex justify-between items-start font-sans">
-                <div class="w-full">
-                    <h4 class="text-sm md:text-base font-bold text-gray-800 ${isActive ? 'text-primary' : ''} leading-none font-sans">${stop.name}${stationIconsHtml}</h4>
-                    ${transfersHtml} 
-                    ${label ? `<div class="mt-3"><span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md font-sans">${label}</span></div>` : ''} 
-                </div>
-                ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full font-sans">Mulai</span>' : ''}
-                ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100 font-sans">Selesai</span>' : ''}
-            </div>
-            `;
-        } else {
-            cardContent = `
-            <div class="flex justify-between items-start font-sans">
-                <div>
-                    <h4 class="text-sm md:text-base font-bold text-gray-800 leading-none font-sans">${stop.name}${stationIconsHtml}</h4>
-                </div>
-                ${isFirst ? '<span class="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-full font-sans">Mulai</span>' : ''}
-                ${isLast ? '<span class="text-[10px] font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full border border-red-100 font-sans">Selesai</span>' : ''}
-            </div>
-            ${transfersHtml}
-            `;
-        }
-
         return `
-        <div class="relative pb-4 last:pb-0 group/stop fade-in font-sans">
-             ${!isLast ? '<div class="absolute left-[-1px] top-2 bottom-[-10px] w-0.5 bg-gray-200 group-hover/stop:bg-gray-300 transition-colors"></div>' : ''}
-             ${dotHtml}
-             <div class="ml-3 py-2 px-3 rounded-2xl border transition-all duration-300 ${cardClass}">
-                 ${cardContent}
-                 ${halteInfoHtml}
-             </div>
-        </div>
-        `;
-    };
-
-    const createCollapsibleSection = (sectionStops, sectionId, label, startIndex, isExpanded = false) => {
-        const validStops = sectionStops.filter(s => !s.isSeparator && s.name !== '---');
-        if (validStops.length === 0) return '';
-
-        const count = validStops.length;
-        const iconRotate = isExpanded ? 'rotate-180' : '';
-        const contentHidden = isExpanded ? '' : 'hidden';
-
-        return `
-        <div class="collapsible-section font-sans" style="margin-top: 18px; margin-bottom: 18px;">
-            <button onclick="toggleStopSection('${sectionId}')" 
-                    class="w-full flex items-center justify-between p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
-                <span class="text-sm font-semibold text-gray-600 font-sans">
-                    <svg class="w-4 h-4 inline-block mr-2 transition-transform ${iconRotate}" id="icon-${sectionId}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                    ${label.replace('{count}', count)}
-                </span>
-                <span class="text-xs text-gray-500 font-sans">${count} pemberhentian</span>
-            </button>
-            <div id="section-${sectionId}" class="mt-2 pl-2 ${contentHidden}">
-                ${validStops.map((stop, idx) => {
-                    const realIndex = startIndex + idx; 
-                    return createStopItem(stop, idx, stops.length, realIndex);
-                }).join('')}
+        <div class="relative pb-6 last:pb-0 flex items-start group font-sans">
+            <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-100 group-last:hidden"></div>
+            <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} shadow-sm mt-1 flex-shrink-0"></div>
+            <div class="ml-4 flex-1">
+                <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
+                ${transfersHtml}
             </div>
         </div>`;
-    };
-
-    let html = '';
-    const COLLAPSE_THRESHOLD = 7; 
-
-    if (separatorIndex > -1) {
-        const beforeSeparator = stops.slice(0, separatorIndex);
-        const afterSeparator = stops.slice(separatorIndex + 1);
-        
-        beforeSeparator.forEach((stop, idx) => {
-            html += createStopItem(stop, idx, stops.length, idx);
-        });
-
-        if (afterSeparator.length > 0) {
-             html += createCollapsibleSection(afterSeparator, 'after-separator', 'Lihat {count} Pemberhentian Selanjutnya', separatorIndex + 1);
-        }
-
-    } else {
-        html += createStopItem(stops[0], 0, stops.length, 0); 
-
-        if (firstActiveIndex > 1) {
-            const beforeActive = stops.slice(1, firstActiveIndex);
-            if (beforeActive.length <= COLLAPSE_THRESHOLD) {
-                beforeActive.forEach((stop, bIdx) => {
-                    html += createStopItem(stop, bIdx, stops.length, 1 + bIdx);
-                });
-            } else {
-                html += createCollapsibleSection(beforeActive, 'before-active', 'Lihat {count} Pemberhentian Sebelumnya', 1);
-            }
-        }
-
-        const activeStart = Math.max(1, firstActiveIndex);
-        const activeEnd = Math.min(stops.length - 1, firstActiveIndex + 3);
-        
-        for (let i = activeStart; i < activeEnd; i++) {
-            html += createStopItem(stops[i], i, stops.length, i);
-        }
-
-        if (activeEnd < stops.length - 1) {
-            const afterActive = stops.slice(activeEnd, -1); 
-            if (afterActive.length <= COLLAPSE_THRESHOLD) {
-                afterActive.forEach((stop, aIdx) => {
-                    html += createStopItem(stop, aIdx, stops.length, activeEnd + aIdx);
-                });
-            } else {
-                html += createCollapsibleSection(afterActive, 'after-active', 'Lihat {count} Pemberhentian Sesudahnya', activeEnd);
-            }
-        }
-
-        if (stops.length > 1) {
-            html += createStopItem(stops[stops.length - 1], stops.length - 1, stops.length, stops.length - 1);
-        }
-    }
-
-    container.innerHTML = html;
-}
-
-function toggleStopSection(sectionId) {
-    const section = document.getElementById(`section-${sectionId}`);
-    const icon = document.getElementById(`icon-${sectionId}`);
-
-    if (section && icon) {
-        section.classList.toggle('hidden');
-        icon.classList.toggle('rotate-180');
-    }
+    }).join('');
 }
 
 function renderDetail() {
@@ -531,14 +271,12 @@ function renderDetail() {
     }
 
     const routeSlug = getRouteSlug();
-
     if (!routeSlug) { 
         console.error("ERROR: URL tidak valid.");
         return; 
     }
 
     const route = getRouteData(routeSlug);
-    
     if (!route) { 
         console.error("ERROR: Data rute not found for slug:", routeSlug);
         return; 
@@ -546,36 +284,7 @@ function renderDetail() {
 
     currentRouteDetail = route; 
 
-    const heroImg = document.getElementById('hero-image');
-    if (heroImg && route.details && route.details.heroImage) heroImg.src = route.details.heroImage;
-
-    const heroContainer = document.getElementById('hero-image-container');
-    const heroInfoCard = document.getElementById('hero-info-card');
-
-    if (route.code === '11P' || route.hideHeroImage) {
-        if (heroContainer) heroContainer.style.display = 'none';
-        if (heroInfoCard) {
-            heroInfoCard.classList.remove('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
-            heroInfoCard.classList.add('relative', 'w-full', 'mt-4');
-        }
-        const parentSection = heroInfoCard?.closest('.relative.mb-32.z-10');
-        if (parentSection) {
-            parentSection.classList.remove('mb-32');
-            parentSection.classList.add('mb-8');
-        }
-    } else {
-        if (heroContainer) heroContainer.style.display = 'block';
-        if (heroInfoCard) {
-            heroInfoCard.classList.add('absolute', '-bottom-24', 'left-4', 'right-4', 'md:left-8', 'md:right-8');
-            heroInfoCard.classList.remove('relative', 'w-full', 'mt-4');
-        }
-        const parentSection = heroInfoCard?.closest('.relative.mb-8.z-10');
-        if (parentSection) {
-            parentSection.classList.remove('mb-8');
-            parentSection.classList.add('mb-32');
-        }
-    }
-
+    // Bagian Badge Rute
     const badgeContainer = document.getElementById('route-badge-container');
     if (badgeContainer) {
         if (route.code.startsWith('JAK ')) {
@@ -589,6 +298,7 @@ function renderDetail() {
         }
     }
 
+    // Bagian Info Teks
     document.getElementById('route-name').textContent = route.name;
     document.getElementById('route-name').classList.add('font-sans');
 
@@ -608,11 +318,8 @@ function renderDetail() {
         if (tarifNote) {
             tarifNote.textContent = route.details.tarifNote || '';
             tarifNote.classList.add('font-sans');
-            if (route.details.tarifNote) {
-                tarifNote.classList.remove('hidden');
-            } else {
-                tarifNote.classList.add('hidden');
-            }
+            if (route.details.tarifNote) tarifNote.classList.remove('hidden');
+            else tarifNote.classList.add('hidden');
         }
 
         const headwayEl = document.getElementById('route-headway');
@@ -637,14 +344,12 @@ function renderDetail() {
         if (opsNote) {
             opsNote.textContent = route.details.opsNote || '';
             opsNote.classList.add('font-sans');
-            if (route.details.opsNote) {
-                opsNote.classList.remove('hidden');
-            } else {
-                opsNote.classList.add('hidden');
-            }
+            if (route.details.opsNote) opsNote.classList.remove('hidden');
+            else opsNote.classList.add('hidden');
         }
     }
 
+    // Bagian Tombol Arah
     if (route.directions && route.directions.length > 0) {
         route.directions.forEach((dir, i) => {
             const btn = document.getElementById(`btn-dir-${i}`);
@@ -660,28 +365,10 @@ function renderDetail() {
         switchDirection(0);
     }
 
-    document.title = `${route.code} - ${route.name} | Trabsportasi MAN 9 Jakarta`;
+    document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('guides-container')) {
         initGuides();
         const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
-        if (mode) {
-            setTimeout(() => { filterRoute(mode); }, 100);
-        }
-        if (window.location.pathname.endsWith('index.html')) {
-            const cleanUrl = window.location.pathname.replace('index.html', '');
-            window.history.replaceState({}, document.title, cleanUrl || '/');
-        }
-    }
-    if (document.getElementById('hero-image')) {
-        renderDetail();
-        const routeSlug = getRouteSlug();
-        if (routeSlug && window.location.search.includes('rute=')) {
-            const cleanUrl = '/rute/' + routeSlug;
-            window.history.replaceState({}, document.title, cleanUrl);
-        }
-    }
-});
