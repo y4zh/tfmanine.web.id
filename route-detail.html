@@ -154,13 +154,15 @@
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
         map.on('load', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const routeSlug = urlParams.get('rute');
-            if (routeSlug) {
-                const code = routeSlug.toUpperCase().replace(/-/g, '.');
-                initRouteMap(map, code);
+            const slug = new URLSearchParams(window.location.search).get('rute');
+            if (slug) {
+                const route = window.appData.routes.find(r => r.code.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '-') === slug);
+                if (route) {
+                    initRouteMap(map, route.code);
+                }
             }
         });
     </script>
 </body>
 </html>
+
