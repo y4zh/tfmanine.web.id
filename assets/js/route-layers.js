@@ -1,39 +1,48 @@
 const ROUTE_DATA_MAPPING = {
+    '11': {
+        line: 'Transjakarta - 11 Pulo Gebang - Kampung Melayu.geojson',
+        stops: 'Transjakarta - 11 Pulo Gebang - Kampung Melayu - Stops.geojson',
+        color: '#2F4FA2'
+    },
     '4F': {
         line: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung.geojson',
         stops: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung - Stops.geojson',
-        color: '#553C62'
+        color: '#b900e2'
     },
     '7P': {
         line: 'Transjakarta - 7P Pondok Kelapa - Cawang Cililitan.geojson',
         stops: 'Transjakarta - 7P Pondok Kelapa - Cawang Cililitan - Stops.geojson',
-        color: '#916131'
+        color: '#911d3c'
     },
     '11Q': {
         line: 'Transjakarta - 11Q Kampung Melayu - Pulo Gebang via BKT.geojson',
         stops: 'Transjakarta - 11Q Kampung Melayu - Pulo Gebang via BKT - Stops.geojson',
-        color: '#504F92'
+        color: '#10c0ff'
     },
     '11P': {
         line: 'Transjakarta - 11P Rusun Pondok Bambu - Walikota Jakarta Timur.geojson',
         stops: 'Transjakarta - 11P Rusun Pondok Bambu - Walikota Jakarta Timur - Stops.geojson',
-        color: '#717092'
+        color: '#B2A5A3'
     },
     'JAK.02': {
         line: 'Transjakarta - JAK.02 Kampung Melayu - Duren Sawit.geojson',
         stops: 'Transjakarta - JAK.02 Kampung Melayu - Duren Sawit - Stops.geojson',
-        color: '#00609C'
+        color: '#00b0ec'
     },
     'JAK.85': {
         line: 'Transjakarta - JAK.85 Bintara - Cipinang Indah.geojson',
         stops: 'Transjakarta - JAK.85 Bintara - Cipinang Indah - Stops.geojson',
-        color: '#00609C'
+        color: '#00b0ec'
     }
 };
 
 async function initRouteMap(map, routeCode) {
     if (!routeCode) return;
-    const config = ROUTE_DATA_MAPPING[routeCode.toUpperCase().replace(/-/g, '.')];
+
+    // FIX BUG: Normalisasi agar bisa baca spasi (JAK 02) atau titik (JAK.02)
+    const normalizedCode = routeCode.toUpperCase().replace(/[\s-]/g, '.');
+    const config = ROUTE_DATA_MAPPING[normalizedCode];
+    
     if (!config) return;
 
     try {
@@ -41,6 +50,7 @@ async function initRouteMap(map, routeCode) {
         if (!response.ok) return;
         const geojsonData = await response.json();
 
+        // Hapus rute lama jika ada
         if (map.getSource('route-line')) {
             if (map.getLayer('stop-points')) map.removeLayer('stop-points');
             if (map.getLayer('line-main')) map.removeLayer('line-main');
@@ -79,6 +89,7 @@ async function initRouteMap(map, routeCode) {
             }
         });
 
+        // Popup saat titik halte diklik
         map.on('click', 'stop-points', (e) => {
             const name = e.features[0].properties.stop_name;
             new mapboxgl.Popup()
@@ -90,13 +101,17 @@ async function initRouteMap(map, routeCode) {
         map.on('mouseenter', 'stop-points', () => { map.getCanvas().style.cursor = 'pointer'; });
         map.on('mouseleave', 'stop-points', () => { map.getCanvas().style.cursor = ''; });
 
+        // Zoom otomatis ke seluruh rute
         const bounds = new mapboxgl.LngLatBounds();
         geojsonData.features.forEach(f => {
             const c = f.geometry.coordinates;
-            if (f.geometry.type === 'MultiLineString') c.forEach(l => l.forEach(pt => bounds.extend(pt)));
-            else c.forEach(pt => bounds.extend(pt));
+            if (f.geometry.type === 'MultiLineString') {
+                c.forEach(line => line.forEach(pt => bounds.extend(pt)));
+            } else if (f.geometry.type === 'LineString') {
+                c.forEach(pt => bounds.extend(pt));
+            }
         });
         map.fitBounds(bounds, { padding: 40, duration: 1500 });
 
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Gagal memuat peta rute:", err); }
 }
