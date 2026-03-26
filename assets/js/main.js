@@ -1,4 +1,5 @@
 let currentFilter = null;
+let currentSearchQuery = "";
 
 function renderCategories() {
     const container = document.getElementById('category-grid');
@@ -24,46 +25,64 @@ function renderCategories() {
 
 function filterRoute(mode) {
     currentFilter = mode;
+    currentSearchQuery = ""; 
+    
+    const searchInput = document.getElementById('route-search');
+    if(searchInput) searchInput.value = "";
+
     const section = document.getElementById('route-list-section');
+    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
+
+    const activeBtn = document.querySelector(`[data-mode="${mode}"]`);
+    if (activeBtn) activeBtn.classList.add('active', 'border-primary');
+
+    section.classList.remove('hidden');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    updateRouteListUI();
+}
+
+function updateRouteListUI() {
     const container = document.getElementById('route-list');
     const title = document.getElementById('route-list-title');
     const count = document.getElementById('route-count');
-
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.classList.remove('active', 'border-primary');
-    });
-
-    const activeBtn = document.querySelector(`[data-mode="${mode}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active', 'border-primary');
-    }
-
-    let filteredRoutes = [];
-    let titleText = 'Daftar Rute';
-
+    
     if (!window.appData) return;
 
-    if (mode === 'brt') {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
-        titleText = 'Rute Transjakarta';
-    } else if (mode === 'mikro') {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === 'mikro');
+    let filteredRoutes = window.appData.routes;
+
+    if (currentFilter === 'brt') {
+        filteredRoutes = filteredRoutes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
+        if(title) title.textContent = 'Rute Transjakarta';
+    } else if (currentFilter === 'mikro') {
+        filteredRoutes = filteredRoutes.filter(r => r.mode === 'mikro');
         filteredRoutes.sort((a, b) => {
             if (a.subtype === 'rusun' && b.subtype !== 'rusun') return -1;
             if (a.subtype !== 'rusun' && b.subtype === 'rusun') return 1;
             return 0;
         });
-        titleText = 'Rute Mikrotrans & Rusun';
-    } else if (mode === 'krl') {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === 'krl');
-        titleText = 'KRL Commuter Line';
-    } else if (mode === 'lrt') {
-        filteredRoutes = window.appData.routes.filter(r => r.mode === 'lrt');
-        titleText = 'LRT Jabodebek';
+        if(title) title.textContent = 'Rute Mikrotrans & Rusun';
+    } else if (currentFilter === 'krl') {
+        filteredRoutes = filteredRoutes.filter(r => r.mode === 'krl');
+        if(title) title.textContent = 'KRL Commuter Line';
+    } else if (currentFilter === 'lrt') {
+        filteredRoutes = filteredRoutes.filter(r => r.mode === 'lrt');
+        if(title) title.textContent = 'LRT Jabodebek';
     }
 
-    title.textContent = titleText;
-    count.textContent = `(${filteredRoutes.length} rute)`;
+    if (currentSearchQuery) {
+        filteredRoutes = filteredRoutes.filter(r => {
+            const searchTarget = `${r.code} ${r.name}`.toLowerCase();
+            return searchTarget.includes(currentSearchQuery);
+        });
+    }
+
+    if(count) count.textContent = `(${filteredRoutes.length} rute)`;
+
+    if (filteredRoutes.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 bg-white rounded-xl border border-gray-100"><p class="text-gray-500 font-sans font-medium">Rute tidak ditemukan</p></div>`;
+        return;
+    }
 
     const formatBadge = (code, color) => {
         if (code.startsWith('JAK ')) {
@@ -77,7 +96,7 @@ function filterRoute(mode) {
     };
 
     container.innerHTML = filteredRoutes.map(route => `
-        <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 font-sans" onclick="openDetail('${route.id}')">
+        <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 mb-3" onclick="openDetail('${route.id}')">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     ${formatBadge(route.code, route.badgeColor || '#0072bc')}
@@ -94,13 +113,13 @@ function filterRoute(mode) {
             </div>
         </div>
     `).join('');
-
-    section.classList.remove('hidden');
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function clearFilter() {
     currentFilter = null;
+    currentSearchQuery = "";
+    const searchInput = document.getElementById('route-search');
+    if(searchInput) searchInput.value = "";
     document.getElementById('route-list-section')?.classList.add('hidden');
     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
 }
@@ -110,7 +129,7 @@ function initGuides() {
     if (!container || !window.appData) return;
 
     container.innerHTML = window.appData.guides.map((guide, index) => `
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden font-sans">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden font-sans mb-3">
             <button onclick="toggleAccordion(${index})" class="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
                 <div class="flex items-center space-x-3">
                     <span class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold text-sm">${index + 1}</span>
@@ -120,17 +139,10 @@ function initGuides() {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div id="accordion-content-${index}" class="accordion-content">
-                <div class="px-4 pb-4 pt-2 border-t border-gray-100">
-                    <ol class="space-y-3 font-data font-sans">
-                        ${guide.steps.map((step, stepIndex) => `
-                            <li class="flex items-start space-x-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-bold">${stepIndex + 1}</span>
-                                <span class="text-gray-700 text-sm leading-relaxed">${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</span>
-                            </li>
-                        `).join('')}
-                    </ol>
-                </div>
+            <div id="accordion-content-${index}" class="accordion-content hidden px-4 pb-4 pt-2 border-t border-gray-100">
+                <ol class="space-y-3 font-data font-sans list-decimal list-inside text-sm text-gray-600">
+                    ${guide.steps.map((step) => `<li>${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</li>`).join('')}
+                </ol>
             </div>
         </div>
     `).join('');
@@ -140,8 +152,8 @@ function toggleAccordion(index) {
     const content = document.getElementById(`accordion-content-${index}`);
     const icon = document.getElementById(`accordion-icon-${index}`);
     if (content && icon) {
-        content.classList.toggle('open');
-        icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
     }
 }
 
@@ -209,7 +221,7 @@ function renderTimeline(stops) {
         if (stop.transfers && stop.transfers.length > 0) {
             transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`;
             stop.transfers.forEach(t => {
-                let badgeColor = "#6b7280"; // Default Gray
+                let badgeColor = "#6b7280"; 
                 if (window.routeColors) {
                     if (window.routeColors[t]) badgeColor = window.routeColors[t];
                     else if (t.startsWith("JAK")) badgeColor = window.routeColors["JAK"];
@@ -223,7 +235,7 @@ function renderTimeline(stops) {
         let labelHtml = '';
         if (stop.label || stop.isActive) {
             const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-wider rounded-md font-sans">${labelText}</span>`;
+            labelHtml = `<span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase rounded-md font-sans">${labelText}</span>`;
         }
 
         return `
@@ -231,7 +243,7 @@ function renderTimeline(stops) {
             <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-100 group-last:hidden"></div>
             <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} shadow-sm mt-1 flex-shrink-0"></div>
             <div class="ml-4 flex-1">
-                <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                <div class="flex items-center gap-2 mb-0.5">
                     <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
                     ${labelHtml}
                 </div>
@@ -248,9 +260,9 @@ function renderDetail() {
 
     currentRouteDetail = route;
     document.getElementById('route-name').textContent = route.name;
-    document.getElementById('route-tarif').textContent = route.details.tarif;
-    document.getElementById('route-headway').textContent = route.details.headway;
-    document.getElementById('route-ops').textContent = route.details.ops;
+    document.getElementById('route-tarif').textContent = route.details.tarif || '--';
+    document.getElementById('route-headway').textContent = route.details.headway || '--';
+    document.getElementById('route-ops').textContent = route.details.ops || '--';
     document.getElementById('route-meta').textContent = getModeLabel(route.mode).text;
 
     const badgeContainer = document.getElementById('route-badge-container');
@@ -275,11 +287,20 @@ function renderDetail() {
         }
         switchDirection(0);
     }
-
+    
     document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('category-grid')) renderCategories();
     if (document.getElementById('guides-container')) initGuides();
     if (document.getElementById('map-container')) renderDetail();
+
+    const searchInput = document.getElementById('route-search');
+    if(searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            currentSearchQuery = e.target.value.toLowerCase();
+            updateRouteListUI();
+        });
+    }
 });
