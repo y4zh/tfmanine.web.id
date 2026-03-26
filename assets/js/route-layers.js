@@ -6,7 +6,7 @@ const ROUTE_DATA_MAPPING = {
     },
     '4F': {
         line: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung.geojson',
-        stops: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung - Stops.geojson',
+        stops: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung Stops.geojson', // <-- NAMA FILE SUDAH DISAMAKAN DGN GITHUB (Tanpa strip sebelum Stops)
         color: '#b900e2'
     },
     '7P': {
@@ -40,13 +40,16 @@ async function initRouteMap(map, routeCode) {
     if (!routeCode) return;
 
     const normalizedCode = routeCode.toUpperCase().replace(/[\s-]/g, '.');
-    const config = ROUTE_DATA_MAPPING[normalizedCode];
+    const config = ROUTE_DATA_MAPPING[normalizedCode] || ROUTE_DATA_MAPPING[routeCode.toUpperCase()];
     
     if (!config) return;
 
     try {
         const response = await fetch(`assets/data/${config.line}`);
-        if (!response.ok) return;
+        if (!response.ok) {
+            console.error("Gagal load file rute:", config.line);
+            return;
+        }
         const geojsonData = await response.json();
 
         if (map.getSource('route-line')) {
@@ -58,7 +61,17 @@ async function initRouteMap(map, routeCode) {
         }
 
         map.addSource('route-line', { type: 'geojson', data: geojsonData });
-        map.addSource('route-stops', { type: 'geojson', data: `assets/data/${config.stops}` });
+        
+        // Cek file stops, kalau error map tetap muncul rutenya
+        const stopsPath = `assets/data/${config.stops}`;
+        const stopsResponse = await fetch(stopsPath);
+        if (stopsResponse.ok) {
+            const stopsData = await stopsResponse.json();
+            map.addSource('route-stops', { type: 'geojson', data: stopsData });
+        } else {
+            console.warn("File Halte tidak ditemukan:", stopsPath);
+            map.addSource('route-stops', { type: 'geojson', data: { type: "FeatureCollection", features: [] } });
+        }
 
         map.addLayer({
             id: 'line-casing',
@@ -80,7 +93,12 @@ async function initRouteMap(map, routeCode) {
             type: 'circle',
             source: 'route-stops',
             paint: {
-                'circle-radius': 5,
+                'circle-radius': [
+                    "interpolate", ["linear"], ["zoom"],
+                    10, 2,
+                    14, 5,
+                    18, 10
+                ],
                 'circle-color': '#FFFFFF',
                 'circle-stroke-width': 2,
                 'circle-stroke-color': config.color
