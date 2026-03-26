@@ -212,14 +212,20 @@ function renderTimeline(stops) {
     if (!container || !stops) return;
 
     container.innerHTML = stops.map((stop, idx) => {
-        if (stop.name === '---') return '<div class="h-px bg-gray-100 my-4 ml-4"></div>';
+        // Handle separator dropdown KRL
+        if (stop.name === '---' || stop.isSeparator) {
+            return `<div class="h-px bg-gray-200 my-6 ml-4 relative"><span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-xs text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
+        }
+
         const isFirst = idx === 0;
         const isLast = idx === stops.length - 1;
         const color = isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300');
         
         let transfersHtml = '';
+        
+        // 1. Regular Transfers (Array of Strings)
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`;
+            transfersHtml += `<div class="flex flex-wrap gap-1 mt-1">`;
             stop.transfers.forEach(t => {
                 let badgeColor = "#6b7280"; 
                 if (window.routeColors) {
@@ -232,19 +238,78 @@ function renderTimeline(stops) {
             transfersHtml += `</div>`;
         }
 
+        // 2. Halte Integration Logic (Transjakarta, LRT, dll)
+        if (stop.halteInfo) {
+            transfersHtml += `<div class="mt-2 pl-3 border-l-2 border-primary/20 space-y-1.5">`;
+            
+            if (stop.halteInfo.stops) {
+                // Multi-halte integrasi
+                stop.halteInfo.stops.forEach(h => {
+                    transfersHtml += `<div class="flex flex-col gap-1">`;
+                    transfersHtml += `<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>Integrasi ${h.halte}</span>`;
+                    if (h.routes) {
+                        transfersHtml += `<div class="flex flex-wrap gap-1">`;
+                        h.routes.forEach(r => {
+                            let rColor = window.routeColors?.[r] || (r.startsWith("JAK") ? window.routeColors?.["JAK"] : "#6b7280");
+                            transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${rColor}">${r}</span>`;
+                        });
+                        transfersHtml += `</div>`;
+                    }
+                    transfersHtml += `</div>`;
+                });
+            } else if (stop.halteInfo.halte) {
+                // Single-halte integrasi
+                transfersHtml += `<div class="flex flex-col gap-1">`;
+                transfersHtml += `<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>Integrasi ${stop.halteInfo.halte[0]}</span>`;
+                if (stop.halteInfo.routes) {
+                    transfersHtml += `<div class="flex flex-wrap gap-1">`;
+                    stop.halteInfo.routes.forEach(r => {
+                        let rColor = window.routeColors?.[r] || (r.startsWith("JAK") ? window.routeColors?.["JAK"] : "#6b7280");
+                        transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${rColor}">${r}</span>`;
+                    });
+                    transfersHtml += `</div>`;
+                }
+                transfersHtml += `</div>`;
+            }
+            transfersHtml += `</div>`;
+        }
+
+        // 3. Station Integration Logic (Kereta Lain / MRT)
+        if (stop.stationIntegration) {
+            transfersHtml += `<div class="mt-2 pl-3 border-l-2 border-orange-400/30 space-y-1">`;
+            transfersHtml += `<span class="text-[10px] text-orange-600 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Stasiun ${stop.stationIntegration.station}</span>`;
+            if (stop.stationIntegration.trainLines) {
+                 transfersHtml += `<div class="flex flex-wrap gap-1 mt-0.5">`;
+                 stop.stationIntegration.trainLines.forEach(tl => {
+                     let tColor = window.routeColors?.[tl] || "#4b5563";
+                     transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${tColor}">${tl}</span>`;
+                 });
+                 transfersHtml += `</div>`;
+            }
+            transfersHtml += `</div>`;
+        }
+
+        // Icons Renderer (MRT, KRL, LRT, dll)
+        let iconsHtml = '';
+        if (stop.icons && stop.icons.length > 0) {
+            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-4 h-4 object-contain inline-block bg-white rounded-full border border-gray-100 shadow-sm p-0.5" alt="icon">`).join('');
+        }
+
+        // TERDEKAT Label
         let labelHtml = '';
         if (stop.label || stop.isActive) {
             const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[9px] font-bold uppercase rounded-md font-sans">${labelText}</span>`;
+            labelHtml = `<span class="inline-flex items-center px-1.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-200 text-[8px] font-extrabold uppercase rounded shadow-sm font-sans tracking-wide leading-none">${labelText}</span>`;
         }
 
         return `
         <div class="relative pb-6 last:pb-0 flex items-start group font-sans">
             <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-100 group-last:hidden"></div>
             <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} shadow-sm mt-1 flex-shrink-0"></div>
-            <div class="ml-4 flex-1">
-                <div class="flex items-center gap-2 mb-0.5">
+            <div class="ml-4 flex-1 pt-0.5">
+                <div class="flex flex-wrap items-center gap-1.5 mb-1">
                     <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
+                    <div class="flex items-center gap-1">${iconsHtml}</div>
                     ${labelHtml}
                 </div>
                 ${transfersHtml}
@@ -273,17 +338,27 @@ function renderDetail() {
         badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
     }
 
+    // FIX: Sembunyikan Header Tabs jika hanya ada 1 arah / Full Route
+    const btnContainer = document.getElementById('btn-dir-0').parentElement;
+    
     if (route.directions && route.directions.length > 0) {
-        route.directions.forEach((dir, i) => {
-            const btn = document.getElementById(`btn-dir-${i}`);
-            if (btn) {
-                btn.textContent = dir.name;
-                btn.classList.remove('hidden');
+        if (route.directions.length === 1) {
+            // Sembunyikan kotak tab seluruhnya
+            if(btnContainer) btnContainer.classList.add('hidden');
+        } else {
+            if(btnContainer) btnContainer.classList.remove('hidden');
+            route.directions.forEach((dir, i) => {
+                const btn = document.getElementById(`btn-dir-${i}`);
+                if (btn) {
+                    btn.textContent = dir.name;
+                    btn.classList.remove('hidden');
+                }
+            });
+            // Sembunyikan jika tidak ada tab 2
+            if (route.directions.length < 2) {
+                const btn1 = document.getElementById(`btn-dir-1`);
+                if (btn1) btn1.classList.add('hidden');
             }
-        });
-        if (route.directions.length < 2) {
-            const btn1 = document.getElementById(`btn-dir-1`);
-            if (btn1) btn1.classList.add('hidden');
         }
         switchDirection(0);
     }
