@@ -9,7 +9,7 @@
     <meta property="og:title" content="Transportasi MAN 9 Jakarta">
     <meta property="og:description" content="Peta interaktif transportasi umum di sekitar MAN 9 Jakarta yang memudahkan pengguna menjelajahi rute Transjakarta dan Mikrotrans.">
     <meta property="og:url" content="https://tfmanine.web.id">
-    <meta property="og:image" content="https://tfmanine.web.id/assets/images/thumbnail.png">
+    <meta property="og:image" content="https://tfmanine.web.id/assets/images/tfmanine.web.id_20260326_195500_0000.png">
     <meta property="og:type" content="website">
 
     <link rel="icon" type="image/svg+xml" href="assets/images/sublogo.svg">
@@ -126,7 +126,7 @@
             </div>
             <div class="border-t border-gray-700 mt-6 pt-4 text-center">
                 <p class="text-xs text-gray-500">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
-                <p class="text-xs text-gray-500">v1.4.1 (Beta version)</p>
+                <p class="text-xs text-gray-500">v1.4.2 (Stable version)</p>
             </div>
         </div>
     </footer>
@@ -148,7 +148,6 @@
         map.on('load', () => {
             const slug = new URLSearchParams(window.location.search).get('rute');
             if (slug && window.appData && window.appData.routes) {
-                // Logika pencarian data yang sangat aman agar rute "JAK 02" atau "4F" pasti terbaca
                 const route = window.appData.routes.find(r => 
                     r.code.toLowerCase().replace(/[\s.]+/g, '-') === slug.toLowerCase().replace(/[\s.]+/g, '-')
                 );
