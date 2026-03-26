@@ -17,19 +17,11 @@ const map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-const COLORS = {
-    school: '#0072bc', train: '#FF5733', brt: '#FF5733', lrt: '#FF5733',
-    busstop: '#22c55e', busstop_area: '#4b5563'
-};
+const COLORS = { school: '#0072bc', train: '#FF5733', brt: '#FF5733', lrt: '#FF5733', busstop: '#22c55e', busstop_area: '#4b5563' };
 
-const ROUTE_COLORS = {
-    '4F': '#553C62', '7P': '#916131', '11Q': '#504F92', '11P': '#717092',
-    'BK': '#006838', 'C': '#26baed', '11': '#2F4FA2', 'JAK': '#00609C'
-};
-
-function getRouteColor(routeCode) {
-    if (ROUTE_COLORS[routeCode]) return ROUTE_COLORS[routeCode];
-    if (routeCode && routeCode.toUpperCase().startsWith('JAK')) return ROUTE_COLORS['JAK'];
+function getRouteColor(code) {
+    if (window.routeColors && window.routeColors[code]) return window.routeColors[code];
+    if (code && code.startsWith('JAK')) return window.routeColors['JAK'];
     return '#6b7280';
 }
 
@@ -37,130 +29,87 @@ function formatRoutesWithBadges(desc) {
     if (!desc) return '';
     const routePattern = /([A-Z0-9]+(?:\s?[A-Z0-9]+)?)\s*\(([^)]+)\)/gi;
     const matches = [...desc.matchAll(routePattern)];
-
-    if (matches.length === 0) {
-        return `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.5;">${desc}</p>`;
-    }
-
+    if (matches.length === 0) return `<p style="margin: 0; font-size: 12px; color: #666;">${desc}</p>`;
     let html = '<div style="display: flex; flex-direction: column; gap: 6px;">';
-    matches.forEach(match => {
-        const routeCode = match[1].trim();
-        const direction = match[2].trim();
-        const color = getRouteColor(routeCode);
-        
-        html += `
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; white-space: nowrap; min-width: 36px; display: flex; align-items: center; justify-content: center; height: 20px;">${routeCode}</span>
-                <span style="font-size: 11px; color: #4b5563; font-weight: 500; line-height: 1.2;">${direction}</span>
-            </div>
-        `;
+    matches.forEach(m => {
+        const color = getRouteColor(m[1].trim());
+        html += `<div style="display: flex; align-items: center; gap: 8px;"><span style="background-color: ${color}; color: white; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; min-width: 36px; display: flex; align-items: center; justify-content: center; height: 20px;">${m[1].trim()}</span><span style="font-size: 11px; color: #4b5563;">${m[2].trim()}</span></div>`;
     });
-    html += '</div>';
-    return html;
+    return html + '</div>';
 }
 
-const ICONS = {
-    school: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5Z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Z"/></svg>`,
-    train: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
-    brt: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></svg>`,
-    lrt: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8 2 4 2.5 4 6v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
-    busstop: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
-    busstop_area: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`
-};
-
-const WALK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/></svg>`;
+function updateDisplay() {
+    allMarkers.forEach(m => {
+        let show = activeFilter === 'all';
+        if (activeFilter === 'transit') show = ['train', 'brt', 'lrt'].includes(m.type);
+        else if (m.type === activeFilter) show = true;
+        show ? m.marker.addTo(map) : m.marker.remove();
+    });
+}
 
 function createInteractiveLegend() {
     const oldLegend = document.querySelector('.map-legend-navbar');
     if (oldLegend) oldLegend.remove();
 
-    const navbarContainer = document.createElement('div');
-    navbarContainer.className = 'map-legend-navbar';
-    navbarContainer.style.cssText = `position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 20; background: white; padding: 8px 12px; border-radius: 99px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; gap: 12px; align-items: center; width: max-content; max-width: 90%; overflow-x: auto; white-space: nowrap; scrollbar-width: none;`;
-
-    const legendItems = [
+    const nav = document.createElement('div');
+    nav.className = 'map-legend-navbar';
+    nav.style.cssText = `position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 20; background: white; padding: 8px 12px; border-radius: 99px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; gap: 12px; align-items: center; width: max-content; max-width: 90%; overflow-x: auto;`;
+    
+    const items = [
         { id: 'school', label: 'Sekolah', color: COLORS.school },
         { id: 'transit', label: 'Transit', color: COLORS.train },
-        { id: 'busstop', label: 'Bus Stop Terdekat', color: COLORS.busstop },
-        { id: 'busstop_area', label: 'Bus Stop Sekitar', color: COLORS.busstop_area }
+        { id: 'busstop', label: 'Halte', color: COLORS.busstop },
+        { id: 'busstop_area', label: 'Sekitar', color: COLORS.busstop_area }
     ];
-
-    legendItems.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'legend-item';
-        itemDiv.dataset.filter = item.id;
-        itemDiv.style.cssText = `display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; padding: 4px 8px; border-radius: 20px;`;
-
-        const dot = document.createElement('span');
-        dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background-color: ${item.color};`;
-
-        const label = document.createElement('span');
-        label.textContent = item.label;
-        label.style.cssText = `font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; color: #374151; font-weight: 600;`;
-
-        itemDiv.appendChild(dot);
-        itemDiv.appendChild(label);
-
-        itemDiv.onclick = () => {
+    
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'legend-item';
+        div.dataset.filter = item.id;
+        div.style.cssText = `display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; transition: all 0.2s;`;
+        div.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: ${item.color};"></span>${item.label}`;
+        div.onclick = () => {
             activeFilter = (activeFilter === item.id) ? 'all' : item.id;
-            updateMapDisplay();
-            updateLegendUI();
+            document.querySelectorAll('.legend-item').forEach(i => {
+                i.style.opacity = (activeFilter === 'all' || i.dataset.filter === activeFilter) ? '1' : '0.4';
+                i.style.backgroundColor = (activeFilter !== 'all' && i.dataset.filter === activeFilter) ? '#f3f4f6' : 'transparent';
+            });
+            updateDisplay();
         };
-        navbarContainer.appendChild(itemDiv);
+        nav.appendChild(div);
     });
-
-    document.getElementById('map-container')?.appendChild(navbarContainer);
+    
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer) mapContainer.appendChild(nav);
 }
 
-function updateLegendUI() {
-    document.querySelectorAll('.legend-item').forEach(item => {
-        if (activeFilter === 'all') {
-            item.style.opacity = '1';
-            item.style.backgroundColor = 'transparent';
-        } else {
-            const isActive = item.dataset.filter === activeFilter;
-            item.style.opacity = isActive ? '1' : '0.4';
-            item.style.backgroundColor = isActive ? '#f3f4f6' : 'transparent';
-        }
-    });
-}
-
-function updateMapDisplay() {
-    allMarkers.forEach(data => {
-        let isVisible = false;
-        if (activeFilter === 'all') isVisible = true;
-        else if (activeFilter === 'transit') isVisible = ['train', 'brt', 'lrt'].includes(data.type);
-        else isVisible = data.type === activeFilter;
-
-        isVisible ? data.marker.addTo(map) : data.marker.remove();
-    });
-}
-
-function initializeMarkers() {
-    if (!window.appData?.locations) return;
-    allMarkers = [];
-
-    window.appData.locations.forEach(location => {
-        const markerColor = COLORS[location.type] || '#4b5563';
-        const isAreaStop = location.type === 'busstop_area';
+function initMarkers() {
+    if (!window.appData) {
+        console.error("Data.js belum dimuat.");
+        return;
+    }
+    window.appData.locations.forEach(loc => {
+        const isArea = loc.type === 'busstop_area';
         const el = document.createElement('div');
         el.className = 'custom-marker';
-        el.style.cssText = `width: ${isAreaStop ? 24 : 32}px; height: ${isAreaStop ? 24 : 32}px; background-color: ${markerColor}; border-radius: 50%; border: ${isAreaStop ? 2 : 3}px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center;`;
-        el.innerHTML = ICONS[location.type] || ICONS.busstop_area;
-
-        let popupContent = `<div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px; padding: 4px;"><h3 style="margin: 0 0 10px 0; font-weight: 700; color: ${markerColor}; font-size: ${isAreaStop ? '13px' : '14px'}; border-bottom: 1px solid #f3f4f6; padding-bottom: 6px;">${location.name}</h3>`;
-        popupContent += ['train', 'brt', 'lrt', 'busstop', 'busstop_area'].includes(location.type) ? formatRoutesWithBadges(location.desc) : `<p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4;">${location.desc}</p>`;
-
-        if (location.type === 'busstop' && location.walkTime !== undefined) {
-            const timeColor = location.walkTime >= 3 ? '#eab308' : '#22c55e';
-            popupContent += `<div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-top: 10px; background: ${timeColor}10; border-radius: 8px; border-left: 3px solid ${timeColor};"><span style="color: ${timeColor};">${WALK_ICON}</span><span style="font-size: 12px; font-weight: 600; color: ${timeColor};">${location.walkTime} menit</span><span style="font-size: 12px; color: #666;">• ${location.distance} meter</span></div>`;
-        }
-        popupContent += `</div>`;
-
-        const marker = new mapboxgl.Marker(el).setLngLat(location.coords).setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent)).addTo(map);
-        allMarkers.push({ type: location.type, marker: marker });
+        el.style.cssText = `width: ${isArea ? 24 : 32}px; height: ${isArea ? 24 : 32}px; background: ${COLORS[loc.type] || '#4b5563'}; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer;`;
+        
+        let iconHtml = '<img src="assets/images/icon-bus.svg" class="w-4 h-4">';
+        if (loc.type === 'school') iconHtml = '<img src="assets/images/sublogo.svg" class="w-5 h-5">';
+        else if (loc.type === 'train' || loc.type === 'lrt') iconHtml = '<img src="assets/images/icon-train.svg" class="w-4 h-4">';
+        
+        el.innerHTML = iconHtml;
+        
+        const marker = new mapboxgl.Marker(el).setLngLat(loc.coords).setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`<div style="padding: 4px;"><h3 style="margin: 0 0 8px 0; font-weight: 700; font-size: 14px;">${loc.name}</h3>${formatRoutesWithBadges(loc.desc)}</div>`)).addTo(map);
+        allMarkers.push({ type: loc.type, marker: marker });
     });
+    
+    // Munculkan legend setelah markers dibuat
     createInteractiveLegend();
 }
 
-map.on('load', initializeMarkers);
+if (map.loaded()) {
+    initMarkers();
+} else {
+    map.on('load', initMarkers);
+}
