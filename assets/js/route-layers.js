@@ -6,7 +6,7 @@ const ROUTE_DATA_MAPPING = {
     },
     '4F': {
         line: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung.geojson',
-        stops: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung Stops.geojson', // <-- NAMA FILE SUDAH DISAMAKAN DGN GITHUB (Tanpa strip sebelum Stops)
+        stops: 'Transjakarta - 4F Pinang Ranti - Pulo Gadung - Stops.geojson',
         color: '#b900e2'
     },
     '7P': {
@@ -46,10 +46,7 @@ async function initRouteMap(map, routeCode) {
 
     try {
         const response = await fetch(`assets/data/${config.line}`);
-        if (!response.ok) {
-            console.error("Gagal load file rute:", config.line);
-            return;
-        }
+        if (!response.ok) return;
         const geojsonData = await response.json();
 
         if (map.getSource('route-line')) {
@@ -61,17 +58,7 @@ async function initRouteMap(map, routeCode) {
         }
 
         map.addSource('route-line', { type: 'geojson', data: geojsonData });
-        
-        // Cek file stops, kalau error map tetap muncul rutenya
-        const stopsPath = `assets/data/${config.stops}`;
-        const stopsResponse = await fetch(stopsPath);
-        if (stopsResponse.ok) {
-            const stopsData = await stopsResponse.json();
-            map.addSource('route-stops', { type: 'geojson', data: stopsData });
-        } else {
-            console.warn("File Halte tidak ditemukan:", stopsPath);
-            map.addSource('route-stops', { type: 'geojson', data: { type: "FeatureCollection", features: [] } });
-        }
+        map.addSource('route-stops', { type: 'geojson', data: `assets/data/${config.stops}` });
 
         map.addLayer({
             id: 'line-casing',
@@ -104,6 +91,11 @@ async function initRouteMap(map, routeCode) {
                 'circle-stroke-color': config.color
             }
         });
+
+        // BUG FIX: Pindahkan stop layer ke paling atas agar tidak tertimpa garis
+        if (map.getLayer('stop-points')) {
+            map.moveLayer('stop-points');
+        }
 
         map.on('click', 'stop-points', (e) => {
             const name = e.features[0].properties.stop_name;
