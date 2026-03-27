@@ -1,5 +1,7 @@
 let currentFilter = null;
 let currentSearchQuery = "";
+let currentRouteDetail = null;
+let currentDirectionIndex = 0; // State untuk navigasi rute
 
 function renderCategories() {
     const container = document.getElementById('category-grid');
@@ -129,39 +131,6 @@ function clearFilter() {
     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
 }
 
-function initGuides() {
-    const container = document.getElementById('guides-container');
-    if (!container || !window.appData) return;
-
-    container.innerHTML = window.appData.guides.map((guide, index) => `
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden font-sans mb-3">
-            <button onclick="toggleAccordion(${index})" class="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
-                <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold text-sm">${index + 1}</span>
-                    <span class="font-semibold text-gray-800 font-sans">${guide.title}</span>
-                </div>
-                <svg id="accordion-icon-${index}" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-            </button>
-            <div id="accordion-content-${index}" class="accordion-content hidden px-4 pb-4 pt-2 border-t border-gray-100">
-                <ol class="space-y-3 font-data font-sans list-decimal list-inside text-sm text-gray-600">
-                    ${guide.steps.map((step) => `<li>${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</li>`).join('')}
-                </ol>
-            </div>
-        </div>
-    `).join('');
-}
-
-function toggleAccordion(index) {
-    const content = document.getElementById(`accordion-content-${index}`);
-    const icon = document.getElementById(`accordion-icon-${index}`);
-    if (content && icon) {
-        content.classList.toggle('hidden');
-        icon.classList.toggle('rotate-180');
-    }
-}
-
 function openDetail(routeId) {
     if (!window.appData) return;
     const route = window.appData.routes.find(r => r.id === routeId);
@@ -172,6 +141,11 @@ function openDetail(routeId) {
 }
 
 function goBack() { window.location.href = '/'; }
+
+function getRouteSlug() {
+    const urlParams = newSearchParams(window.location.search);
+    return urlParams.get('rute');
+}
 
 function getRouteSlug() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -198,18 +172,30 @@ function getModeLabel(mode) {
     return labels[mode] || { text: mode };
 }
 
-let currentRouteDetail = null;
+// LOGIKA TUKAR ARAH DAN UPDATE KARTU DI BAWAH PETA
+function toggleDirection() {
+    if (!currentRouteDetail || !currentRouteDetail.directions) return;
+    if (currentRouteDetail.directions.length < 2) return;
+    
+    currentDirectionIndex = currentDirectionIndex === 0 ? 1 : 0;
+    updateDirectionCard();
+}
 
-function switchDirection(index) {
-    if (!currentRouteDetail || !currentRouteDetail.directions || !currentRouteDetail.directions[index]) return;
-    document.querySelectorAll('[id^="btn-dir-"]').forEach((btn, i) => {
-        if (i === index) {
-            btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold shadow-sm bg-white text-primary ring-1 ring-black/5 transition-all duration-300";
-        } else {
-            btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold text-gray-500 hover:bg-white/50 transition-all duration-300";
-        }
-    });
-    renderTimeline(currentRouteDetail.directions[index].stops);
+function updateDirectionCard() {
+    if (!currentRouteDetail || !currentRouteDetail.directions) return;
+    const currentDir = currentRouteDetail.directions[currentDirectionIndex];
+    if (!currentDir || !currentDir.stops || currentDir.stops.length === 0) return;
+
+    const stops = currentDir.stops;
+    const startStop = stops[0].name;
+    const endStop = stops[stops.length - 1].name;
+
+    const startEl = document.getElementById('route-start');
+    const endEl = document.getElementById('route-end');
+    if (startEl) startEl.textContent = startStop;
+    if (endEl) endEl.textContent = endStop;
+
+    renderTimeline(stops);
 }
 
 function renderTimeline(stops) {
@@ -230,52 +216,49 @@ function renderTimeline(stops) {
 
     container.innerHTML = stops.map((stop, idx) => {
         if (stop.name === '---' || stop.isSeparator) {
-            return `<div class="h-px bg-gray-200 my-6 ml-4 relative"><span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-xs text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
+            return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
 
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        // Node Class & Style (Titik Halte)
-        let nodeClass = isTerdekat 
-            ? `border-[4px] bg-white w-5 h-5 -ml-[2px] z-10 shadow-sm` 
-            : `border-[3px] bg-white w-4 h-4 border-gray-300 z-10`;
-        let nodeStyle = isTerdekat ? `border-color: ${mainRouteColor};` : ``;
+        // Garis dan titik desain baru (solid, putih di tengah, border color sesuai rute)
+        let lineHtml = isLast ? '' : `<div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>`;
         
-        // Line Class & Style (Garis Rute)
-        let lineClass = isLast ? 'hidden' : `absolute left-[7px] top-4 bottom-[-24px] w-[3px] z-0`;
-        let lineStyle = isTerdekat ? `background-color: ${mainRouteColor};` : `background-color: #e5e7eb;`;
+        let nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
 
-        // 1. Label TERDEKAT di paling kanan
+        if (isTerdekat) {
+            nodeHtml = `
+            <div class="relative w-[12px] h-[12px] mt-1.5 shrink-0 z-10 flex items-center justify-center">
+                <div class="absolute w-5 h-5 rounded-full animate-ping" style="background-color: ${mainRouteColor}40;"></div>
+                <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white relative" style="border-color: ${mainRouteColor};"></div>
+            </div>`;
+        }
+
+        // Label Terdekat
         let labelHtml = '';
         if (isTerdekat) {
             const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="ml-auto flex-shrink-0 px-2.5 py-1 bg-blue-50 text-primary text-[10px] font-bold rounded-md shadow-sm font-sans tracking-wide leading-none border border-blue-200 uppercase">${labelText}</span>`;
+            labelHtml = `<span class="ml-2 px-2 py-0.5 bg-blue-50 text-primary text-[9px] font-bold rounded shadow-sm font-sans tracking-wider border border-blue-200 uppercase">${labelText}</span>`;
         }
 
-        // 2. Render Icon
+        // Ikon SVG murni (tanpa lingkaran background)
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
-            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-6 h-6 object-contain inline-block" alt="icon">`).join('');
+            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-5 h-5 object-contain inline-block ml-1.5" alt="icon">`).join('');
         }
 
-        // 3. Regular Transfer (DIUBAH JADI BOLD)
+        // Transfer Badge
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml += `<div class="flex flex-wrap gap-1 mt-1.5">`;
+            transfersHtml += `<div class="flex flex-wrap gap-1.5 mt-1">`;
             stop.transfers.forEach(t => {
-                let badgeColor = "#6b7280"; 
-                if (window.routeColors) {
-                    if (window.routeColors[t]) badgeColor = window.routeColors[t];
-                    else if (t.startsWith("JAK")) badgeColor = window.routeColors["JAK"];
-                    else if (t.includes("KRL") || t.includes("Commuter")) badgeColor = window.routeColors["KRL"];
-                }
-                transfersHtml += `<span class="px-2 py-1 rounded text-[10px] font-bold text-white font-sans tracking-wide shadow-sm" style="background-color: ${badgeColor}">${t}</span>`;
+                transfersHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans tracking-wide shadow-sm" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
             });
             transfersHtml += `</div>`;
         }
 
-        // 4. Integrasi Halte (Transjakarta/Mikrotrans) (DIUBAH JADI BOLD)
+        // Integrasi Halte CLone Sianteng
         let halteInfoHtml = '';
         if (stop.halteInfo) {
             halteInfoHtml += `<div class="mt-2.5">`;
@@ -287,7 +270,7 @@ function renderTimeline(stops) {
                     halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
                     if (h.routes) {
                         h.routes.forEach(r => {
-                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
+                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
                         });
                     }
                     halteInfoHtml += `</div>`;
@@ -297,7 +280,7 @@ function renderTimeline(stops) {
                 halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${stop.halteInfo.halte[0]}</span>`;
                 if (stop.halteInfo.routes) {
                     stop.halteInfo.routes.forEach(r => {
-                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
+                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
                     });
                 }
                 halteInfoHtml += `</div>`;
@@ -305,7 +288,7 @@ function renderTimeline(stops) {
             halteInfoHtml += `</div>`;
         }
 
-        // 5. Integrasi Stasiun (KRL/LRT/MRT) (DIUBAH JADI BOLD)
+        // Integrasi Stasiun Clone Sianteng
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
             stationIntegrationHtml += `<div class="mt-2.5">`;
@@ -314,7 +297,7 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `<span class="font-bold text-gray-800 text-[13px]">Stasiun ${stop.stationIntegration.station}</span>`;
             if (stop.stationIntegration.trainLines) {
                 stop.stationIntegration.trainLines.forEach(tl => {
-                    stationIntegrationHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(tl)}">${tl}</span>`;
+                    stationIntegrationHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(tl)}">${tl}</span>`;
                 });
             }
             stationIntegrationHtml += `</div>`;
@@ -322,19 +305,13 @@ function renderTimeline(stops) {
         }
 
         return `
-        <div class="relative pb-8 last:pb-0 flex items-start font-sans">
-            <div class="${lineClass}" style="${lineStyle}"></div>
-            
-            <div class="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
-                <div class="rounded-full ${nodeClass}" style="${nodeStyle}"></div>
-            </div>
-
-            <div class="ml-4 flex-1 w-full min-w-0">
-                <div class="flex items-start justify-between gap-2 w-full pr-1">
-                    <div class="flex items-center gap-1.5 pt-0.5">
-                        <h4 class="text-[15px] font-bold ${isTerdekat ? 'text-gray-900' : 'text-gray-800'} leading-tight font-sans">${stop.name}</h4>
-                        <div class="flex items-center gap-1">${iconsHtml}</div>
-                    </div>
+        <div class="relative pb-6 flex items-start font-sans">
+            ${lineHtml}
+            ${nodeHtml}
+            <div class="ml-4 flex-1 min-w-0 pb-1">
+                <div class="flex items-center flex-wrap gap-1">
+                    <h4 class="text-[14px] font-bold text-gray-800 leading-snug">${stop.name}</h4>
+                    ${iconsHtml}
                     ${labelHtml}
                 </div>
                 ${transfersHtml}
@@ -352,49 +329,43 @@ function renderDetail() {
 
     currentRouteDetail = route;
     
-    const routeNameEl = document.getElementById('route-name');
-    const routeTarifEl = document.getElementById('route-tarif');
-    const routeHeadwayEl = document.getElementById('route-headway');
-    const routeOpsEl = document.getElementById('route-ops');
-    const routeMetaEl = document.getElementById('route-meta');
+    // Set Header Data
+    document.getElementById('header-code').textContent = route.code;
     
-    if(routeNameEl) routeNameEl.textContent = route.name;
-    if(routeTarifEl) routeTarifEl.textContent = route.details.tarif || '--';
-    if(routeHeadwayEl) routeHeadwayEl.textContent = route.details.headway || '--';
-    if(routeOpsEl) routeOpsEl.textContent = route.details.ops || '--';
-    if(routeMetaEl) routeMetaEl.textContent = getModeLabel(route.mode).text;
+    // Set Info Bar Data (Warna dan Konten)
+    const mainColor = route.badgeColor || '#0072bc';
+    const infoBar = document.getElementById('route-info-bar');
+    if (infoBar) infoBar.style.backgroundColor = mainColor;
 
-    const badgeContainer = document.getElementById('route-badge-container');
-    if (badgeContainer) {
-        if (route.code.startsWith('JAK ')) {
-            const num = route.code.replace('JAK ', '');
-            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex flex-col items-center justify-center text-white font-bold" style="background-color: ${route.badgeColor || '#0072bc'}"><span class="text-xs">JAK</span><span class="text-2xl">${num}</span></div>`;
+    const opsEl = document.getElementById('info-ops');
+    if (opsEl) opsEl.textContent = `OPERASIONAL • ${route.details.ops || '--'}`;
+
+    const detailsEl = document.getElementById('info-details');
+    if (detailsEl) {
+        const modeText = getModeLabel(route.mode).text.toUpperCase();
+        const headwayText = route.details.headway ? ` • ${route.details.headway}` : '';
+        const tarifText = route.details.tarif ? ` • TARIF ${route.details.tarif}` : '';
+        detailsEl.textContent = `KORIDOR ${route.code} ${headwayText} ${tarifText}`;
+    }
+
+    // Set Card Destination
+    const endIcon = document.getElementById('route-end-icon');
+    const endDot = document.getElementById('route-end-dot');
+    if (endIcon) endIcon.style.borderColor = mainColor;
+    if (endDot) endDot.style.backgroundColor = mainColor;
+
+    // Show/Hide Swap Button
+    const swapBtn = document.getElementById('btn-swap-dir');
+    if (swapBtn) {
+        if (route.directions && route.directions.length > 1) {
+            swapBtn.classList.remove('hidden');
         } else {
-            badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
+            swapBtn.classList.add('hidden');
         }
     }
 
-    const btnContainer = document.getElementById('btn-dir-0')?.parentElement;
-    
-    if (route.directions && route.directions.length > 0) {
-        if (route.directions.length === 1) {
-            if(btnContainer) btnContainer.classList.add('hidden');
-        } else {
-            if(btnContainer) btnContainer.classList.remove('hidden');
-            route.directions.forEach((dir, i) => {
-                const btn = document.getElementById(`btn-dir-${i}`);
-                if (btn) {
-                    btn.textContent = dir.name;
-                    btn.classList.remove('hidden');
-                }
-            });
-            if (route.directions.length < 2) {
-                const btn1 = document.getElementById(`btn-dir-1`);
-                if (btn1) btn1.classList.add('hidden');
-            }
-        }
-        switchDirection(0);
-    }
+    currentDirectionIndex = 0;
+    updateDirectionCard();
     
     document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
