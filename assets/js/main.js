@@ -249,7 +249,6 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        // Garis penghubung dan titik selalu sesuai warna rute asli
         let lineHtml = isLast ? '' : `<div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>`;
         let nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
 
@@ -261,20 +260,17 @@ function renderTimeline(stops) {
             </div>`;
         }
 
-        // 1. Label TERDEKAT diletakkan mentok KANAN menggunakan ml-auto
         let labelHtml = '';
         if (isTerdekat) {
             const labelText = stop.label || "TERDEKAT";
             labelHtml = `<span class="ml-auto px-2.5 py-1 bg-blue-600 text-white text-[9px] font-bold rounded-md shadow-sm font-sans tracking-widest uppercase border border-blue-700 shrink-0">${labelText}</span>`;
         }
 
-        // Ikon SVG murni (tanpa lingkaran background)
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
             iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-6 h-6 object-contain inline-block ml-1.5" alt="icon">`).join('');
         }
 
-        // Transfer Badge
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
             transfersHtml += `<div class="flex flex-wrap gap-1.5 mt-1.5">`;
@@ -284,11 +280,13 @@ function renderTimeline(stops) {
             transfersHtml += `</div>`;
         }
 
-        // Integrasi Halte Format Bersih
         let halteInfoHtml = '';
         if (stop.halteInfo) {
             halteInfoHtml += `<div class="mt-2.5">`;
-            halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI HALTE :</div>`;
+            
+            // LOGIKA BARU: Cek apakah tipe data adalah 'stasiun'
+            let sectionHeader = stop.halteInfo.type === 'stasiun' ? 'INTEGRASI STASIUN :' : 'INTEGRASI HALTE :';
+            halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">${sectionHeader}</div>`;
             
             if (stop.halteInfo.stops) {
                 stop.halteInfo.stops.forEach((h) => {
@@ -314,7 +312,6 @@ function renderTimeline(stops) {
             halteInfoHtml += `</div>`;
         }
 
-        // Integrasi Stasiun Format Bersih
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
             stationIntegrationHtml += `<div class="mt-2.5">`;
@@ -330,8 +327,6 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `</div>`;
         }
 
-        // Wrapper Konten
-        // Jika Terdekat, beri kotak biru shadow. Jika bukan, biarkan transparan.
         let contentClass = "ml-4 flex-1 min-w-0 pb-1";
         if (isTerdekat) {
             contentClass = "ml-3 flex-1 min-w-0 pb-1 bg-blue-50 border border-blue-100 shadow-[0_2px_12px_-4px_rgba(0,114,188,0.3)] rounded-xl p-3 -mt-2 relative z-10";
@@ -364,26 +359,22 @@ function renderDetail() {
 
     currentRouteDetail = route;
     
-    // Header & Kode Rute
     const headerCodeEl = document.getElementById('header-code');
     if (headerCodeEl) headerCodeEl.textContent = route.code;
     
     const mainColor = route.badgeColor || '#0072bc';
     
-    // Mengganti Isi Bar Informasi secara langsung agar sesuai desain
     const infoBar = document.getElementById('route-info-bar');
     if (infoBar) {
         infoBar.className = "w-full text-white px-4 py-5 relative z-10 bg-primary transition-colors duration-300 shadow-md";
-        infoBar.style.backgroundColor = ""; // Reset inline agar CSS bg-primary bekerja
+        infoBar.style.backgroundColor = ""; 
 
-        // Menambahkan Promo Rp2.000 khusus TJ
         const isTJ = route.mode === 'brt' || route.mode === 'nbrt';
         let tarifPromoHtml = '';
         if (isTJ) {
             tarifPromoHtml = `<span class="block mt-1 text-[10px] text-blue-100 font-bold bg-black/20 w-max px-1.5 py-0.5 rounded shadow-sm">Rp 2.000,- (05.00-07.00)</span>`;
         }
 
-        // Format Kotak Kode Rute
         let codeHtml = '';
         if (route.code.startsWith('JAK')) {
             const num = route.code.replace('JAK', '').trim();
@@ -438,7 +429,6 @@ function renderDetail() {
         `;
     }
 
-    // Set Arah Map & Swap Button
     const endIcon = document.getElementById('route-end-icon');
     const endDot = document.getElementById('route-end-dot');
     if (endIcon) endIcon.style.borderColor = mainColor;
