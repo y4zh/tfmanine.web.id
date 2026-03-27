@@ -206,7 +206,7 @@ function switchDirection(index) {
         if (i === index) {
             btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold shadow-sm bg-white text-primary ring-1 ring-black/5 transition-all duration-300";
         } else {
-            btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-medium text-gray-500 hover:bg-white/50 transition-all duration-300";
+            btn.className = "flex-1 py-3 px-4 rounded-xl text-sm font-bold text-gray-500 hover:bg-white/50 transition-all duration-300";
         }
     });
     renderTimeline(currentRouteDetail.directions[index].stops);
@@ -236,11 +236,13 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
+        // Node Class & Style (Titik Halte)
         let nodeClass = isTerdekat 
             ? `border-[4px] bg-white w-5 h-5 -ml-[2px] z-10 shadow-sm` 
             : `border-[3px] bg-white w-4 h-4 border-gray-300 z-10`;
         let nodeStyle = isTerdekat ? `border-color: ${mainRouteColor};` : ``;
         
+        // Line Class & Style (Garis Rute)
         let lineClass = isLast ? 'hidden' : `absolute left-[7px] top-4 bottom-[-24px] w-[3px] z-0`;
         let lineStyle = isTerdekat ? `background-color: ${mainRouteColor};` : `background-color: #e5e7eb;`;
 
@@ -251,23 +253,29 @@ function renderTimeline(stops) {
             labelHtml = `<span class="ml-auto flex-shrink-0 px-2.5 py-1 bg-blue-50 text-primary text-[10px] font-bold rounded-md shadow-sm font-sans tracking-wide leading-none border border-blue-200 uppercase">${labelText}</span>`;
         }
 
-        // 2. Render Icon (Polosan & Gedein dikit)
+        // 2. Render Icon
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
             iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-6 h-6 object-contain inline-block" alt="icon">`).join('');
         }
 
-        // 3. Regular Transfer
+        // 3. Regular Transfer (DIUBAH JADI BOLD)
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
             transfersHtml += `<div class="flex flex-wrap gap-1 mt-1.5">`;
             stop.transfers.forEach(t => {
-                transfersHtml += `<span class="px-2 py-1 rounded text-[10px] font-medium text-white font-sans tracking-wide shadow-sm" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
+                let badgeColor = "#6b7280"; 
+                if (window.routeColors) {
+                    if (window.routeColors[t]) badgeColor = window.routeColors[t];
+                    else if (t.startsWith("JAK")) badgeColor = window.routeColors["JAK"];
+                    else if (t.includes("KRL") || t.includes("Commuter")) badgeColor = window.routeColors["KRL"];
+                }
+                transfersHtml += `<span class="px-2 py-1 rounded text-[10px] font-bold text-white font-sans tracking-wide shadow-sm" style="background-color: ${badgeColor}">${t}</span>`;
             });
             transfersHtml += `</div>`;
         }
 
-        // 4. Integrasi Halte (Format Sesuai Permintaan: INTEGRASI HALTE \n [halte] [kode rute])
+        // 4. Integrasi Halte (Transjakarta/Mikrotrans) (DIUBAH JADI BOLD)
         let halteInfoHtml = '';
         if (stop.halteInfo) {
             halteInfoHtml += `<div class="mt-2.5">`;
@@ -297,7 +305,7 @@ function renderTimeline(stops) {
             halteInfoHtml += `</div>`;
         }
 
-        // 5. Integrasi Stasiun (Format Sesuai Permintaan: INTEGRASI STASIUN \n [stasiun] [kode line])
+        // 5. Integrasi Stasiun (KRL/LRT/MRT) (DIUBAH JADI BOLD)
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
             stationIntegrationHtml += `<div class="mt-2.5">`;
