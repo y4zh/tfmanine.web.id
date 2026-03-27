@@ -5,16 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportasi MAN 9 Jakarta</title>
-    
-    <meta property="og:title" content="Transportasi MAN 9 Jakarta">
-    <meta property="og:description" content="Peta interaktif transportasi umum di sekitar MAN 9 Jakarta yang memudahkan pengguna menjelajahi rute Transjakarta dan Mikrotrans.">
-    <meta property="og:url" content="https://tfmanine.web.id">
-    <meta property="og:image" content="https://tfmanine.web.id/assets/images/tfmanine.web.id_20260326_195500_0000.png">
-    <meta property="og:type" content="website">
-
-    <link rel="icon" type="image/svg+xml" href="assets/images/sublogo.svg">
     <meta name="description" content="Transportasi umum menuju MAN 9 Jakarta">
 
+    <link rel="icon" type="image/svg+xml" href="assets/images/sublogo.svg">
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <base href="/">
     
@@ -35,8 +28,8 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
-<body class="bg-gray-50 min-h-screen">
-    <nav class="sticky top-0 z-50 bg-primary shadow-lg">
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -57,77 +50,62 @@
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto px-4 py-6 fade-in pb-24">
-        <div class="relative z-0 mb-6 rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-200 bg-gray-100">
-            <div id="map-container" class="w-full h-96 md:h-[30rem]"></div>
-        </div>
+    <div class="pt-[72px]"></div>
 
-        <div id="hero-info-card" class="relative z-20 mb-12 px-4 md:px-8">
-            <div class="bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl p-6 md:p-8 border border-white/50 ring-1 ring-black/5">
-                <div class="flex flex-col gap-6">
-                    <div class="flex items-start gap-5">
-                        <div id="route-badge-container" class="shrink-0 relative">
-                            <div class="w-16 h-16 bg-gray-200 rounded-full animate-pulse"></div>
-                        </div>
-                        <div class="flex-1 min-w-0 pt-1">
-                            <h1 id="route-name" class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-1">Memuat Rute...</h1>
-                            <p id="route-meta" class="text-sm font-medium text-gray-500 flex items-center gap-2"></p>
-                        </div>
+    <div class="w-full h-80 md:h-[400px] relative z-0 bg-gray-200">
+        <div id="map-container" class="absolute inset-0 w-full h-full"></div>
+    </div>
+
+    <div id="route-info-bar" class="w-full text-white px-4 py-3 relative z-10 transition-colors duration-300" style="background-color: #0072bc;">
+        <div class="max-w-4xl mx-auto flex flex-col gap-1.5">
+            <div class="flex items-center gap-2 text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span id="info-ops" class="tracking-wide uppercase text-xs md:text-sm">OPERASIONAL • --</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                <span id="info-details" class="tracking-wide uppercase text-xs md:text-sm">--</span>
+            </div>
+        </div>
+        <div class="h-10 md:h-12"></div> 
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 w-full -mt-8 md:-mt-10 relative z-20 mb-6">
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 md:p-5 flex items-center justify-between border border-gray-100">
+            <div class="flex flex-col relative w-full pr-4 gap-4">
+                <div class="absolute left-[11px] top-[24px] bottom-[24px] border-l-[2px] border-dotted border-gray-300 z-0"></div>
+
+                <div class="flex items-center gap-3 z-10 bg-white relative">
+                    <div class="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center shrink-0">
+                        <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
                     </div>
-                    <div class="h-px w-full bg-gray-100"></div>
-                    <div class="grid grid-cols-3 gap-2 divide-x divide-gray-100">
-                        <div class="text-center px-2">
-                            <p class="text-[10px] text-gray-400 font-semibold uppercase mb-1">Tarif</p>
-                            <p id="route-tarif" class="text-sm md:text-base font-bold text-gray-800">--</p>
-                        </div>
-                        <div class="text-center px-2">
-                            <p class="text-[10px] text-gray-400 font-semibold uppercase mb-1">Headway</p>
-                            <p id="route-headway" class="text-sm md:text-base font-bold text-gray-800 flex items-center justify-center gap-1">--</p>
-                        </div>
-                        <div class="text-center px-2">
-                            <p class="text-[10px] text-gray-400 font-semibold uppercase mb-1">Operasional</p>
-                            <p id="route-ops" class="text-sm md:text-base font-bold text-gray-800">--</p>
-                        </div>
+                    <span id="route-start" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
+                </div>
+
+                <div class="flex items-center gap-3 z-10 bg-white relative">
+                    <div id="route-end-icon" class="w-6 h-6 rounded-full border-[3px] bg-white flex items-center justify-center shrink-0" style="border-color: #0072bc;">
+                        <div id="route-end-dot" class="w-2 h-2 rounded-full" style="background-color: #0072bc;"></div>
                     </div>
+                    <span id="route-end" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
                 </div>
             </div>
-        </div>
-        
-        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-            Pemberhentian
-            <span class="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">Gulir untuk melihat</span>
-        </h2>
-        <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-6 md:p-8 relative overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none"></div>
-            <div class="flex items-center justify-between mb-10 bg-gray-50 p-1.5 rounded-2xl border border-gray-100">
-                <button id="btn-dir-0" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold shadow-sm bg-white text-primary ring-1 ring-black/5 transition-all duration-300" onclick="switchDirection(0)">Arah Tujuan 1</button>
-                <button id="btn-dir-1" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium text-gray-500 hover:bg-white/50 transition-all duration-300" onclick="switchDirection(1)">Arah Tujuan 2</button>
-            </div>
-            <div id="timeline-container" class="relative pl-6 md:pl-4 space-y-0"></div>
-        </div>
 
-        <div class="mt-8 text-center">
-            <button onclick="goBack()" class="text-gray-400 hover:text-primary font-medium text-sm transition-colors flex items-center justify-center gap-2 mx-auto py-2 px-4 rounded-full hover:bg-blue-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <button id="btn-swap-dir" onclick="toggleDirection()" class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 shrink-0 transition-colors hidden shadow-sm border border-red-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                 </svg>
-                Kembali ke Beranda
             </button>
         </div>
-    </main>
+    </div>
 
-    <footer class="bg-gray-800 text-white py-8 mt-8">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                <div class="md:w-1/2">
-                    <img src="assets/images/logo.svg" alt="logo" class="h-10 w-auto mb-3">
-                    <p class="text-sm text-gray-400 leading-relaxed">Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di MAN 9 Jakarta.</p>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 mt-6 pt-4 text-center">
-                <p class="text-xs text-gray-500">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
-                <p class="text-xs text-gray-500">v1.4.2 (Stable version)</p>
-            </div>
+    <div class="max-w-4xl mx-auto px-6 md:px-8 w-full pb-10 flex-1">
+        <div id="timeline-container" class="relative pl-2 mt-2"></div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-8 mt-auto w-full">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-xs text-gray-500">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
+            <p class="text-xs text-gray-500">v1.4.3 (Stable version)</p>
         </div>
     </footer>
 
