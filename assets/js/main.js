@@ -203,26 +203,31 @@ function getModeLabel(mode) {
 function toggleDirection() {
     if (!currentRouteDetail || !currentRouteDetail.directions) return;
     if (currentRouteDetail.directions.length < 2) return;
-    
     currentDirectionIndex = currentDirectionIndex === 0 ? 1 : 0;
-    updateDirectionCard();
+    switchDirection(currentDirectionIndex);
 }
 
-function updateDirectionCard() {
-    if (!currentRouteDetail || !currentRouteDetail.directions) return;
-    const currentDir = currentRouteDetail.directions[currentDirectionIndex];
-    if (!currentDir || !currentDir.stops || currentDir.stops.length === 0) return;
+function switchDirection(index) {
+    if (!currentRouteDetail || !currentRouteDetail.directions || !currentRouteDetail.directions[index]) return;
+    currentDirectionIndex = index;
 
-    const stops = currentDir.stops;
-    const startStop = stops[0].name;
-    const endStop = stops[stops.length - 1].name;
+    document.querySelectorAll('[id^="btn-dir-"]').forEach((btn, i) => {
+        if (i === index) {
+            btn.className = "flex-1 py-3 px-2 rounded-xl text-[13px] font-bold transition-all duration-300 shadow-sm bg-white text-primary ring-1 ring-black/5 font-sans";
+        } else {
+            btn.className = "flex-1 py-3 px-2 rounded-xl text-[13px] font-bold text-gray-500 hover:bg-white/50 transition-all duration-300 font-sans";
+        }
+    });
 
-    const startEl = document.getElementById('route-start');
-    const endEl = document.getElementById('route-end');
-    if (startEl) startEl.textContent = startStop;
-    if (endEl) endEl.textContent = endStop;
+    const currentDir = currentRouteDetail.directions[index];
+    if (currentDir && currentDir.stops && currentDir.stops.length > 0) {
+        const startEl = document.getElementById('route-start');
+        const endEl = document.getElementById('route-end');
+        if (startEl) startEl.textContent = currentDir.stops[0].name;
+        if (endEl) endEl.textContent = currentDir.stops[currentDir.stops.length - 1].name;
+    }
 
-    renderTimeline(stops);
+    renderTimeline(currentDir.stops);
 }
 
 function renderTimeline(stops) {
@@ -289,29 +294,10 @@ function renderTimeline(stops) {
                 stopsArray = [{ halte: stop.halteInfo.halte[0], routes: stop.halteInfo.routes }];
             }
 
-            const stasiunStops = stopsArray.filter(h => h.halte.toLowerCase().includes('stasiun'));
-            const nonStasiunStops = stopsArray.filter(h => !h.halte.toLowerCase().includes('stasiun'));
-
-            if (stasiunStops.length > 0) {
-                halteInfoHtml += `<div>`;
-                halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI STASIUN :</div>`;
-                stasiunStops.forEach((h) => {
-                    halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
-                    halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
-                    if (h.routes) {
-                        h.routes.forEach(r => {
-                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
-                        });
-                    }
-                    halteInfoHtml += `</div>`;
-                });
-                halteInfoHtml += `</div>`;
-            }
-
-            if (nonStasiunStops.length > 0) {
+            if (stopsArray.length > 0) {
                 halteInfoHtml += `<div>`;
                 halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">${nonStationLabel}</div>`;
-                nonStasiunStops.forEach((h) => {
+                stopsArray.forEach((h) => {
                     halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
                     halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
                     if (h.routes) {
@@ -378,6 +364,28 @@ function renderDetail() {
     
     const mainColor = route.badgeColor || '#0072bc';
     
+    const mapWrapper = document.getElementById('map-container')?.parentElement;
+    if (mapWrapper) {
+        const existingOverlay = document.getElementById('map-overlay-notif');
+        if (existingOverlay) existingOverlay.remove();
+        
+        if (route.mode === 'krl' || route.mode === 'lrt') {
+            const overlayHtml = `
+            <div id="map-overlay-notif" class="absolute inset-0 bg-white/40 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 rounded-[2.5rem]">
+                <div class="bg-white px-6 py-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 text-center max-w-[280px]">
+                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                    </div>
+                    <p class="text-[15px] font-bold text-gray-800 font-sans mb-1.5">Peta Belum Tersedia</p>
+                    <p class="text-xs text-gray-500 font-sans leading-relaxed">Visualisasi jalur di peta untuk rute ini sedang dalam tahap pengembangan.</p>
+                </div>
+            </div>`;
+            mapWrapper.insertAdjacentHTML('beforeend', overlayHtml);
+        }
+    }
+
     const infoBar = document.getElementById('route-info-bar');
     if (infoBar) {
         infoBar.className = "w-full text-white px-4 py-5 relative z-10 bg-primary transition-colors duration-300 shadow-md";
@@ -443,22 +451,60 @@ function renderDetail() {
         `;
     }
 
-    const endIcon = document.getElementById('route-end-icon');
-    const endDot = document.getElementById('route-end-dot');
-    if (endIcon) endIcon.style.borderColor = mainColor;
-    if (endDot) endDot.style.backgroundColor = mainColor;
+    let floatingCardContainer = document.getElementById('floating-card-wrapper');
+    if (!floatingCardContainer) {
+        const swapBtn = document.getElementById('btn-swap-dir');
+        if (swapBtn) {
+            floatingCardContainer = swapBtn.closest('.relative.z-20.mb-6');
+            if (floatingCardContainer) floatingCardContainer.id = 'floating-card-wrapper';
+        }
+    }
 
-    const swapBtn = document.getElementById('btn-swap-dir');
-    if (swapBtn) {
-        if (route.directions && route.directions.length > 1) {
-            swapBtn.classList.remove('hidden');
+    if (floatingCardContainer) {
+        floatingCardContainer.style.display = 'block'; 
+
+        if (route.directions && route.directions.length === 1) {
+            floatingCardContainer.style.display = 'none';
+        } else if (route.mode === 'krl' || route.mode === 'lrt') {
+            floatingCardContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-2 flex items-center justify-between border border-gray-100">
+                    <div class="flex items-center justify-between w-full bg-gray-50 p-1.5 rounded-xl border border-gray-100 gap-1.5">
+                        ${route.directions.map((dir, i) => `
+                            <button id="btn-dir-${i}" onclick="switchDirection(${i})" class="flex-1 py-3 px-2 rounded-xl text-[13px] font-bold text-gray-500 hover:bg-white/50 transition-all duration-300 font-sans">${dir.name}</button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
         } else {
-            swapBtn.classList.add('hidden');
+            floatingCardContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 md:p-5 flex items-center justify-between border border-gray-100">
+                    <div class="flex flex-col relative w-full pr-4 gap-4">
+                        <div class="absolute left-[11px] top-[24px] bottom-[24px] border-l-[2px] border-dotted border-gray-300 z-0"></div>
+                        <div class="flex items-center gap-3 z-10 bg-white relative">
+                            <div class="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center shrink-0">
+                                <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                            </div>
+                            <span id="route-start" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
+                        </div>
+                        <div class="flex items-center gap-3 z-10 bg-white relative">
+                            <div id="route-end-icon" class="w-6 h-6 rounded-full border-[3px] bg-white flex items-center justify-center shrink-0" style="border-color: ${mainColor};">
+                                <div id="route-end-dot" class="w-2 h-2 rounded-full" style="background-color: ${mainColor};"></div>
+                            </div>
+                            <span id="route-end" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
+                        </div>
+                    </div>
+                    <button id="btn-swap-dir" onclick="toggleDirection()" class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 shrink-0 transition-colors shadow-sm border border-red-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                    </button>
+                </div>
+            `;
         }
     }
 
     currentDirectionIndex = 0;
-    updateDirectionCard();
+    switchDirection(0); 
     
     document.title = `${route.code} - ${route.name} | Transportasi MAN 9 Jakarta`;
 }
