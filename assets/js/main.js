@@ -216,7 +216,8 @@ function renderTimeline(stops) {
     const container = document.getElementById('timeline-container');
     if (!container || !stops) return;
 
-    // Helper Fungsi Ambil Warna
+    const mainRouteColor = currentRouteDetail ? (currentRouteDetail.badgeColor || '#0072bc') : '#0072bc';
+
     function getColorForRoute(r) {
         if (!window.routeColors) return "#6b7280";
         if (window.routeColors[r]) return window.routeColors[r];
@@ -228,65 +229,67 @@ function renderTimeline(stops) {
     }
 
     container.innerHTML = stops.map((stop, idx) => {
-        // Tampilan Garis Separator
         if (stop.name === '---' || stop.isSeparator) {
             return `<div class="h-px bg-gray-200 my-6 ml-4 relative"><span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-xs text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
 
-        const isFirst = idx === 0;
         const isLast = idx === stops.length - 1;
-        const isActive = stop.label || stop.isActive;
+        const isTerdekat = stop.label || stop.isActive;
+        
+        let nodeClass = isTerdekat 
+            ? `border-[4px] bg-white w-5 h-5 -ml-[2px] z-10 shadow-sm` 
+            : `border-[3px] bg-white w-4 h-4 border-gray-300 z-10`;
+        let nodeStyle = isTerdekat ? `border-color: ${mainRouteColor};` : ``;
+        
+        let lineClass = isLast ? 'hidden' : `absolute left-[7px] top-4 bottom-[-24px] w-[3px] z-0`;
+        let lineStyle = isTerdekat ? `background-color: ${mainRouteColor};` : `background-color: #e5e7eb;`;
 
-        // Warna & Efek untuk Node/Lingkaran
-        const nodeColor = isActive ? 'bg-primary' : (isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300'));
-        const ringEffect = isActive ? 'ring-4 ring-primary/20' : '';
+        // 1. Label TERDEKAT di paling kanan
+        let labelHtml = '';
+        if (isTerdekat) {
+            const labelText = stop.label || "TERDEKAT";
+            labelHtml = `<span class="ml-auto flex-shrink-0 px-2.5 py-1 bg-blue-50 text-primary text-[10px] font-bold rounded-md shadow-sm font-sans tracking-wide leading-none border border-blue-200 uppercase">${labelText}</span>`;
+        }
 
-        // Tampilan Ikon SVG (Tidak ada background & border)
+        // 2. Render Icon (Polosan & Gedein dikit)
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
-            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-5 h-5 object-contain inline-block" alt="icon">`).join('');
+            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-6 h-6 object-contain inline-block" alt="icon">`).join('');
         }
 
-        // Tampilan Label TERDEKAT
-        let labelHtml = '';
-        if (isActive) {
-            const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="ml-auto inline-flex items-center px-1.5 py-0.5 bg-blue-50 text-primary border border-blue-200 text-[8px] font-extrabold uppercase rounded shadow-sm font-sans tracking-wide leading-none">${labelText}</span>`;
-        }
-
-        // Tampilan Daftar Transfer Reguler
+        // 3. Regular Transfer
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml += `<div class="flex flex-wrap gap-1 mt-1">`;
+            transfersHtml += `<div class="flex flex-wrap gap-1 mt-1.5">`;
             stop.transfers.forEach(t => {
-                transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans tracking-wide" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
+                transfersHtml += `<span class="px-2 py-1 rounded text-[10px] font-medium text-white font-sans tracking-wide shadow-sm" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
             });
             transfersHtml += `</div>`;
         }
 
-        // Tampilan Teks INTEGRASI HALTE
+        // 4. Integrasi Halte (Format Sesuai Permintaan: INTEGRASI HALTE \n [halte] [kode rute])
         let halteInfoHtml = '';
         if (stop.halteInfo) {
-            halteInfoHtml += `<div class="mt-2 mb-1">`;
-            halteInfoHtml += `<div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans mb-1">INTEGRASI HALTE :</div>`;
+            halteInfoHtml += `<div class="mt-2.5">`;
+            halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI HALTE :</div>`;
             
             if (stop.halteInfo.stops) {
-                stop.halteInfo.stops.forEach(h => {
-                    halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1 last:mb-0">`;
-                    halteInfoHtml += `<span class="text-sm font-bold text-gray-800 font-sans">${h.halte}</span>`;
+                stop.halteInfo.stops.forEach((h) => {
+                    halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
+                    halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
                     if (h.routes) {
                         h.routes.forEach(r => {
-                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans tracking-wide" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
+                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
                         });
                     }
                     halteInfoHtml += `</div>`;
                 });
             } else if (stop.halteInfo.halte) {
-                halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1 last:mb-0">`;
-                halteInfoHtml += `<span class="text-sm font-bold text-gray-800 font-sans">${stop.halteInfo.halte[0]}</span>`;
+                halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5">`;
+                halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${stop.halteInfo.halte[0]}</span>`;
                 if (stop.halteInfo.routes) {
                     stop.halteInfo.routes.forEach(r => {
-                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans tracking-wide" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
+                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
                     });
                 }
                 halteInfoHtml += `</div>`;
@@ -294,32 +297,34 @@ function renderTimeline(stops) {
             halteInfoHtml += `</div>`;
         }
 
-        // Tampilan Teks INTEGRASI STASIUN
+        // 5. Integrasi Stasiun (Format Sesuai Permintaan: INTEGRASI STASIUN \n [stasiun] [kode line])
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
-            stationIntegrationHtml += `<div class="mt-2 mb-1">`;
-            stationIntegrationHtml += `<div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans mb-1">INTEGRASI STASIUN :</div>`;
+            stationIntegrationHtml += `<div class="mt-2.5">`;
+            stationIntegrationHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI STASIUN :</div>`;
             stationIntegrationHtml += `<div class="flex flex-wrap items-center gap-1.5">`;
-            stationIntegrationHtml += `<span class="text-sm font-bold text-gray-800 font-sans">Stasiun ${stop.stationIntegration.station}</span>`;
+            stationIntegrationHtml += `<span class="font-bold text-gray-800 text-[13px]">Stasiun ${stop.stationIntegration.station}</span>`;
             if (stop.stationIntegration.trainLines) {
-                 stop.stationIntegration.trainLines.forEach(tl => {
-                     stationIntegrationHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans tracking-wide" style="background-color: ${getColorForRoute(tl)}">${tl}</span>`;
-                 });
+                stop.stationIntegration.trainLines.forEach(tl => {
+                    stationIntegrationHtml += `<span class="px-1.5 py-[2px] rounded text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(tl)}">${tl}</span>`;
+                });
             }
             stationIntegrationHtml += `</div>`;
             stationIntegrationHtml += `</div>`;
         }
 
         return `
-        <div class="relative pb-6 last:pb-0 flex items-start group font-sans">
-            <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-200 group-last:hidden"></div>
+        <div class="relative pb-8 last:pb-0 flex items-start font-sans">
+            <div class="${lineClass}" style="${lineStyle}"></div>
             
-            <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} ${ring} shadow-sm mt-1 flex-shrink-0"></div>
-            
+            <div class="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
+                <div class="rounded-full ${nodeClass}" style="${nodeStyle}"></div>
+            </div>
+
             <div class="ml-4 flex-1 w-full min-w-0">
-                <div class="flex items-center w-full pr-1 mb-0.5">
-                    <div class="flex items-center gap-1.5">
-                        <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
+                <div class="flex items-start justify-between gap-2 w-full pr-1">
+                    <div class="flex items-center gap-1.5 pt-0.5">
+                        <h4 class="text-[15px] font-bold ${isTerdekat ? 'text-gray-900' : 'text-gray-800'} leading-tight font-sans">${stop.name}</h4>
                         <div class="flex items-center gap-1">${iconsHtml}</div>
                     </div>
                     ${labelHtml}
