@@ -236,29 +236,34 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
+        // Node Class & Style (Titik Halte)
         let nodeClass = isTerdekat 
-            ? `border-[4px] bg-white w-5 h-5 -ml-[2px] z-10` 
+            ? `border-[4px] bg-white w-5 h-5 -ml-[2px] z-10 shadow-sm` 
             : `border-[3px] bg-white w-4 h-4 border-gray-300 z-10`;
-        
         let nodeStyle = isTerdekat ? `border-color: ${mainRouteColor};` : ``;
+        
+        // Line Class & Style (Garis Rute)
         let lineClass = isLast ? 'hidden' : `absolute left-[7px] top-4 bottom-[-24px] w-[3px] z-0`;
         let lineStyle = isTerdekat ? `background-color: ${mainRouteColor};` : `background-color: #e5e7eb;`;
 
+        // Label TERDEKAT (Eye-Catching, Alignment Paling Kanan, Warna Biru sesuai tema)
         let labelHtml = '';
         if (isTerdekat) {
             const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="ml-auto flex-shrink-0 px-2.5 py-1 bg-[#B93A22] text-white text-[10px] font-bold rounded-md shadow-sm font-sans tracking-wide leading-none border border-[#9A3016]">${labelText}</span>`;
+            labelHtml = `<span class="ml-auto flex-shrink-0 px-2.5 py-1 bg-blue-50 text-primary text-[10px] font-bold rounded-md shadow-sm font-sans tracking-wide leading-none border border-blue-200 uppercase">${labelText}</span>`;
         }
 
+        // HTML Transfer Antar Rute
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
             transfersHtml += `<div class="flex flex-wrap gap-1 mt-1.5">`;
             stop.transfers.forEach(t => {
-                transfersHtml += `<span class="px-2 py-1 rounded text-[10px] font-medium text-white font-sans tracking-wide" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
+                transfersHtml += `<span class="px-2 py-1 rounded text-[10px] font-medium text-white font-sans tracking-wide shadow-sm" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
             });
             transfersHtml += `</div>`;
         }
 
+        // HTML Integrasi Halte (Transjakarta/Mikrotrans)
         let halteInfoHtml = '';
         if (stop.halteInfo) {
             const labelText = stop.halteInfo.type === 'integrasi' ? 'Halte Integration' : 'Pemberhentian Terdekat';
@@ -296,6 +301,7 @@ function renderTimeline(stops) {
             halteInfoHtml += `</div>`;
         }
 
+        // HTML Integrasi Stasiun (KRL/LRT/MRT)
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
             stationIntegrationHtml += `<div class="mt-3 ml-1">`;
@@ -309,6 +315,7 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `</div>`;
         }
 
+        // Ikon Khusus (Kereta/Bus) di Samping Nama Halte
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
             iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-4 h-4 object-contain inline-block bg-white rounded-full border border-gray-100 shadow-sm p-0.5" alt="icon">`).join('');
@@ -325,7 +332,7 @@ function renderTimeline(stops) {
             <div class="ml-4 flex-1 w-full min-w-0">
                 <div class="flex items-start justify-between gap-2 w-full pr-1">
                     <div class="flex items-center gap-1.5 pt-0.5">
-                        <h4 class="text-[15px] font-bold text-gray-800 leading-tight font-sans">${stop.name}</h4>
+                        <h4 class="text-[15px] font-bold ${isTerdekat ? 'text-gray-900' : 'text-gray-800'} leading-tight font-sans">${stop.name}</h4>
                         <div class="flex items-center gap-1">${iconsHtml}</div>
                     </div>
                     ${labelHtml}
