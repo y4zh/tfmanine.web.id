@@ -1,5 +1,4 @@
 let currentFilter = null;
-let currentSearchQuery = "";
 
 function renderCategories() {
     const container = document.getElementById('category-grid');
@@ -25,64 +24,41 @@ function renderCategories() {
 
 function filterRoute(mode) {
     currentFilter = mode;
-    currentSearchQuery = ""; 
-    
-    const searchInput = document.getElementById('route-search');
-    if(searchInput) searchInput.value = "";
-
     const section = document.getElementById('route-list-section');
+    const container = document.getElementById('route-list');
+    const title = document.getElementById('route-list-title');
+    const count = document.getElementById('route-count');
+
     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
 
     const activeBtn = document.querySelector(`[data-mode="${mode}"]`);
     if (activeBtn) activeBtn.classList.add('active', 'border-primary');
 
-    section.classList.remove('hidden');
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    updateRouteListUI();
-}
-
-function updateRouteListUI() {
-    const container = document.getElementById('route-list');
-    const title = document.getElementById('route-list-title');
-    const count = document.getElementById('route-count');
-    
+    let filteredRoutes = [];
+    let titleText = 'Daftar Rute';
     if (!window.appData) return;
 
-    let filteredRoutes = window.appData.routes;
-
-    if (currentFilter === 'brt') {
-        filteredRoutes = filteredRoutes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
-        if(title) title.textContent = 'Rute Transjakarta';
-    } else if (currentFilter === 'mikro') {
-        filteredRoutes = filteredRoutes.filter(r => r.mode === 'mikro');
+    if (mode === 'brt') {
+        filteredRoutes = window.appData.routes.filter(r => r.mode === 'brt' || r.mode === 'nbrt');
+        titleText = 'Rute Transjakarta';
+    } else if (mode === 'mikro') {
+        filteredRoutes = window.appData.routes.filter(r => r.mode === 'mikro');
         filteredRoutes.sort((a, b) => {
             if (a.subtype === 'rusun' && b.subtype !== 'rusun') return -1;
             if (a.subtype !== 'rusun' && b.subtype === 'rusun') return 1;
             return 0;
         });
-        if(title) title.textContent = 'Rute Mikrotrans & Rusun';
-    } else if (currentFilter === 'krl') {
-        filteredRoutes = filteredRoutes.filter(r => r.mode === 'krl');
-        if(title) title.textContent = 'KRL Commuter Line';
-    } else if (currentFilter === 'lrt') {
-        filteredRoutes = filteredRoutes.filter(r => r.mode === 'lrt');
-        if(title) title.textContent = 'LRT Jabodebek';
+        titleText = 'Rute Mikrotrans & Rusun';
+    } else if (mode === 'krl') {
+        filteredRoutes = window.appData.routes.filter(r => r.mode === 'krl');
+        titleText = 'KRL Commuter Line';
+    } else if (mode === 'lrt') {
+        filteredRoutes = window.appData.routes.filter(r => r.mode === 'lrt');
+        titleText = 'LRT Jabodebek';
     }
 
-    if (currentSearchQuery) {
-        filteredRoutes = filteredRoutes.filter(r => {
-            const searchTarget = `${r.code} ${r.name}`.toLowerCase();
-            return searchTarget.includes(currentSearchQuery);
-        });
-    }
-
-    if(count) count.textContent = `(${filteredRoutes.length} rute)`;
-
-    if (filteredRoutes.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 bg-white rounded-xl border border-gray-100"><p class="text-gray-500 font-sans font-medium">Rute tidak ditemukan</p></div>`;
-        return;
-    }
+    title.textContent = titleText;
+    count.textContent = `(${filteredRoutes.length} rute)`;
 
     const formatBadge = (code, color) => {
         if (code.startsWith('JAK ')) {
@@ -96,7 +72,7 @@ function updateRouteListUI() {
     };
 
     container.innerHTML = filteredRoutes.map(route => `
-        <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 mb-3" onclick="openDetail('${route.id}')">
+        <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 font-sans" onclick="openDetail('${route.id}')">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     ${formatBadge(route.code, route.badgeColor || '#0072bc')}
@@ -113,13 +89,13 @@ function updateRouteListUI() {
             </div>
         </div>
     `).join('');
+
+    section.classList.remove('hidden');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function clearFilter() {
     currentFilter = null;
-    currentSearchQuery = "";
-    const searchInput = document.getElementById('route-search');
-    if(searchInput) searchInput.value = "";
     document.getElementById('route-list-section')?.classList.add('hidden');
     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
 }
@@ -212,20 +188,30 @@ function renderTimeline(stops) {
     if (!container || !stops) return;
 
     container.innerHTML = stops.map((stop, idx) => {
-        // Handle separator dropdown KRL
         if (stop.name === '---' || stop.isSeparator) {
-            return `<div class="h-px bg-gray-200 my-6 ml-4 relative"><span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-xs text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
+            return `<div class="dropdown-separator ml-4 my-2"><div class="line"></div></div>`;
         }
 
         const isFirst = idx === 0;
         const isLast = idx === stops.length - 1;
-        const color = isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300');
         
+        // Warna Marker & Garis Default
+        let circleColor = isFirst ? 'bg-blue-500' : (isLast ? 'bg-red-500' : 'bg-gray-300');
+        let lineColor = 'bg-gray-100';
+        let labelHtml = '';
+
+        // JELAS: Penanda Eye-Catching untuk Terdekat
+        if (stop.label || stop.isActive) {
+            circleColor = 'bg-yellow-400 border-blue-500'; // Lingkaran kuning, outline biru
+            lineColor = 'bg-blue-200'; // Garis jalur warna biru muda
+            const labelText = stop.label || "TERDEKAT";
+            // Posisi ditarik ke paling kanan pakai ml-auto. Warna badge merah bata sesuai contoh.
+            labelHtml = `<span class="ml-auto inline-flex items-center px-2 py-0.5 bg-[#c43c22] text-white text-[9px] font-bold uppercase rounded shadow-sm font-sans tracking-wide leading-none">${labelText}</span>`;
+        }
+
         let transfersHtml = '';
-        
-        // 1. Regular Transfers (Array of Strings)
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml += `<div class="flex flex-wrap gap-1 mt-1">`;
+            transfersHtml = `<div class="flex flex-wrap gap-1 mt-1">`;
             stop.transfers.forEach(t => {
                 let badgeColor = "#6b7280"; 
                 if (window.routeColors) {
@@ -238,81 +224,75 @@ function renderTimeline(stops) {
             transfersHtml += `</div>`;
         }
 
-        // 2. Halte Integration Logic (Transjakarta, LRT, dll)
-        if (stop.halteInfo) {
-            transfersHtml += `<div class="mt-2 pl-3 border-l-2 border-primary/20 space-y-1.5">`;
+        // Integrasi Halte/dropdown TJ (untuk KRL/LRT)
+        let halteInfoHtml = '';
+        if (stop.halteInfo && stop.halteInfo.halte) {
+            const label = stop.halteInfo.type === 'integrasi' ? 'Integrasi' : 'Pemberhentian Terdekat';
+            halteInfoHtml = `<div class="mt-2 pl-3 border-l-2 border-primary/20 space-y-1.5">`;
             
+            // Handle multi-halte integrasi
             if (stop.halteInfo.stops) {
-                // Multi-halte integrasi
                 stop.halteInfo.stops.forEach(h => {
-                    transfersHtml += `<div class="flex flex-col gap-1">`;
-                    transfersHtml += `<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>Integrasi ${h.halte}</span>`;
+                    halteInfoHtml += `<div class="flex flex-col gap-1 mb-1.5 last:mb-0">`;
+                    halteInfoHtml += `<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>${label} ${h.halte}</span>`;
                     if (h.routes) {
-                        transfersHtml += `<div class="flex flex-wrap gap-1">`;
+                        halteInfoHtml += `<div class="flex flex-wrap gap-1">`;
                         h.routes.forEach(r => {
                             let rColor = window.routeColors?.[r] || (r.startsWith("JAK") ? window.routeColors?.["JAK"] : "#6b7280");
-                            transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${rColor}">${r}</span>`;
+                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${rColor}">${r}</span>`;
                         });
-                        transfersHtml += `</div>`;
+                        halteInfoHtml += `</div>`;
                     }
-                    transfersHtml += `</div>`;
+                    halteInfoHtml += `</div>`;
                 });
             } else if (stop.halteInfo.halte) {
-                // Single-halte integrasi
-                transfersHtml += `<div class="flex flex-col gap-1">`;
-                transfersHtml += `<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>Integrasi ${stop.halteInfo.halte[0]}</span>`;
+                halteInfoHtml += `<div class="flex flex-col gap-1">`;
+                halteInfoHtml += `<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>${label} ${stop.halteInfo.halte[0]}</span>`;
                 if (stop.halteInfo.routes) {
-                    transfersHtml += `<div class="flex flex-wrap gap-1">`;
+                    halteInfoHtml += `<div class="flex flex-wrap gap-1">`;
                     stop.halteInfo.routes.forEach(r => {
                         let rColor = window.routeColors?.[r] || (r.startsWith("JAK") ? window.routeColors?.["JAK"] : "#6b7280");
-                        transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${rColor}">${r}</span>`;
+                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${rColor}">${r}</span>`;
                     });
-                    transfersHtml += `</div>`;
+                    halteInfoHtml += `</div>`;
                 }
-                transfersHtml += `</div>`;
+                halteInfoHtml += `</div>`;
             }
-            transfersHtml += `</div>`;
+            halteInfoHtml += `</div>`;
         }
 
-        // 3. Station Integration Logic (Kereta Lain / MRT)
+        // Integrasi Stasiun (untuk KRL/LRT)
         if (stop.stationIntegration) {
-            transfersHtml += `<div class="mt-2 pl-3 border-l-2 border-orange-400/30 space-y-1">`;
-            transfersHtml += `<span class="text-[10px] text-orange-600 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Stasiun ${stop.stationIntegration.station}</span>`;
+            halteInfoHtml += `<div class="mt-2 pl-3 border-l-2 border-orange-400/30 space-y-1">`;
+            halteInfoHtml += `<span class="text-[10px] text-orange-600 font-bold uppercase tracking-wider font-sans"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Stasiun ${stop.stationIntegration.station}</span>`;
             if (stop.stationIntegration.trainLines) {
-                 transfersHtml += `<div class="flex flex-wrap gap-1 mt-0.5">`;
+                 halteInfoHtml += `<div class="flex flex-wrap gap-1 mt-0.5">`;
                  stop.stationIntegration.trainLines.forEach(tl => {
                      let tColor = window.routeColors?.[tl] || "#4b5563";
-                     transfersHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${tColor}">${tl}</span>`;
+                     halteInfoHtml += `<span class="px-1.5 py-[2px] rounded text-[9px] font-bold text-white font-sans" style="background-color: ${tColor}">${tl}</span>`;
                  });
-                 transfersHtml += `</div>`;
+                 halteInfoHtml += `</div>`;
             }
-            transfersHtml += `</div>`;
+            halteInfoHtml += `</div>`;
         }
 
-        // Icons Renderer (MRT, KRL, LRT, dll)
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
             iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-4 h-4 object-contain inline-block bg-white rounded-full border border-gray-100 shadow-sm p-0.5" alt="icon">`).join('');
         }
 
-        // TERDEKAT Label
-        let labelHtml = '';
-        if (stop.label || stop.isActive) {
-            const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="inline-flex items-center px-1.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-200 text-[8px] font-extrabold uppercase rounded shadow-sm font-sans tracking-wide leading-none">${labelText}</span>`;
-        }
-
         return `
         <div class="relative pb-6 last:pb-0 flex items-start group font-sans">
-            <div class="absolute left-[10px] top-2 bottom-0 w-0.5 bg-gray-100 group-last:hidden"></div>
-            <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${color} shadow-sm mt-1 flex-shrink-0"></div>
-            <div class="ml-4 flex-1 pt-0.5">
-                <div class="flex flex-wrap items-center gap-1.5 mb-1">
+            <div class="absolute left-[10px] top-2 bottom-0 w-0.5 ${lineColor} group-last:hidden"></div>
+            <div class="relative z-10 w-5 h-5 rounded-full border-4 border-white ${circleColor} shadow-sm mt-1 flex-shrink-0 transition-colors"></div>
+            <div class="ml-4 flex-1 pt-0.5 w-full">
+                <div class="flex items-center gap-1.5 mb-1 w-full pr-1">
                     <h4 class="text-sm font-bold text-gray-800 leading-tight">${stop.name}</h4>
                     <div class="flex items-center gap-1">${iconsHtml}</div>
                     ${labelHtml}
                 </div>
                 ${transfersHtml}
+                ${halteInfoHtml}
             </div>
         </div>`;
     }).join('');
@@ -338,15 +318,14 @@ function renderDetail() {
         badgeContainer.innerHTML = `<div class="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center text-white text-xl font-bold" style="background-color: ${route.badgeColor || '#0072bc'}">${route.code}</div>`;
     }
 
-    // FIX: Sembunyikan Header Tabs jika hanya ada 1 arah / Full Route
-    const btnContainer = document.getElementById('btn-dir-0').parentElement;
+    // Sembunyikan Header Tabs jika hanya ada 1 arah / Full Route
+    const btnContainer = document.getElementById('btn-dir-0')?.parentElement;
     
     if (route.directions && route.directions.length > 0) {
         if (route.directions.length === 1) {
-            // Sembunyikan kotak tab seluruhnya
-            if(btnContainer) btnContainer.classList.add('hidden');
+            if (btnContainer) btnContainer.classList.add('hidden');
         } else {
-            if(btnContainer) btnContainer.classList.remove('hidden');
+            if (btnContainer) btnContainer.classList.remove('hidden');
             route.directions.forEach((dir, i) => {
                 const btn = document.getElementById(`btn-dir-${i}`);
                 if (btn) {
@@ -354,7 +333,6 @@ function renderDetail() {
                     btn.classList.remove('hidden');
                 }
             });
-            // Sembunyikan jika tidak ada tab 2
             if (route.directions.length < 2) {
                 const btn1 = document.getElementById(`btn-dir-1`);
                 if (btn1) btn1.classList.add('hidden');
@@ -370,12 +348,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('category-grid')) renderCategories();
     if (document.getElementById('guides-container')) initGuides();
     if (document.getElementById('map-container')) renderDetail();
-
-    const searchInput = document.getElementById('route-search');
-    if(searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            currentSearchQuery = e.target.value.toLowerCase();
-            updateRouteListUI();
-        });
-    }
 });
