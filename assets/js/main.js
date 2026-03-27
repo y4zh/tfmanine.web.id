@@ -230,6 +230,8 @@ function renderTimeline(stops) {
     if (!container || !stops) return;
 
     const mainRouteColor = currentRouteDetail ? (currentRouteDetail.badgeColor || '#0072bc') : '#0072bc';
+    const isBrt = currentRouteDetail && currentRouteDetail.mode === 'brt';
+    const nonStationLabel = isBrt ? 'INTEGRASI BUS STOP :' : 'INTEGRASI HALTE :';
 
     function getColorForRoute(r) {
         if (!window.routeColors) return "#6b7280";
@@ -280,16 +282,26 @@ function renderTimeline(stops) {
             transfersHtml += `</div>`;
         }
 
+        // --- PEMISAHAN LOGIKA INTEGRASI HALTE DAN STASIUN ---
         let halteInfoHtml = '';
         if (stop.halteInfo) {
-            halteInfoHtml += `<div class="mt-2.5">`;
+            halteInfoHtml += `<div class="mt-2.5 flex flex-col gap-2.5">`;
             
-            // LOGIKA BARU: Cek apakah tipe data adalah 'stasiun'
-            let sectionHeader = stop.halteInfo.type === 'stasiun' ? 'INTEGRASI STASIUN :' : 'INTEGRASI HALTE :';
-            halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">${sectionHeader}</div>`;
-            
+            let stopsArray = [];
             if (stop.halteInfo.stops) {
-                stop.halteInfo.stops.forEach((h) => {
+                stopsArray = stop.halteInfo.stops;
+            } else if (stop.halteInfo.halte) {
+                stopsArray = [{ halte: stop.halteInfo.halte[0], routes: stop.halteInfo.routes }];
+            }
+
+            const stasiunStops = stopsArray.filter(h => h.halte.toLowerCase().includes('stasiun'));
+            const nonStasiunStops = stopsArray.filter(h => !h.halte.toLowerCase().includes('stasiun'));
+
+            // 1. Group Stasiun
+            if (stasiunStops.length > 0) {
+                halteInfoHtml += `<div>`;
+                halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI STASIUN :</div>`;
+                stasiunStops.forEach((h) => {
                     halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
                     halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
                     if (h.routes) {
@@ -299,14 +311,23 @@ function renderTimeline(stops) {
                     }
                     halteInfoHtml += `</div>`;
                 });
-            } else if (stop.halteInfo.halte) {
-                halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5">`;
-                halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${stop.halteInfo.halte[0]}</span>`;
-                if (stop.halteInfo.routes) {
-                    stop.halteInfo.routes.forEach(r => {
-                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
-                    });
-                }
+                halteInfoHtml += `</div>`;
+            }
+
+            // 2. Group Halte / Bus Stop
+            if (nonStasiunStops.length > 0) {
+                halteInfoHtml += `<div>`;
+                halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">${nonStationLabel}</div>`;
+                nonStasiunStops.forEach((h) => {
+                    halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
+                    halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
+                    if (h.routes) {
+                        h.routes.forEach(r => {
+                            halteInfoHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
+                        });
+                    }
+                    halteInfoHtml += `</div>`;
+                });
                 halteInfoHtml += `</div>`;
             }
             halteInfoHtml += `</div>`;
