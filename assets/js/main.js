@@ -1,7 +1,7 @@
 let currentFilter = null;
 let currentSearchQuery = "";
 let currentRouteDetail = null;
-let currentDirectionIndex = 0; // State untuk navigasi rute
+let currentDirectionIndex = 0;
 
 function renderCategories() {
     const container = document.getElementById('category-grid');
@@ -131,6 +131,39 @@ function clearFilter() {
     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active', 'border-primary'));
 }
 
+function initGuides() {
+    const container = document.getElementById('guides-container');
+    if (!container || !window.appData) return;
+
+    container.innerHTML = window.appData.guides.map((guide, index) => `
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden font-sans mb-3">
+            <button onclick="toggleAccordion(${index})" class="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <span class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold text-sm">${index + 1}</span>
+                    <span class="font-semibold text-gray-800 font-sans">${guide.title}</span>
+                </div>
+                <svg id="accordion-icon-${index}" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <div id="accordion-content-${index}" class="accordion-content hidden px-4 pb-4 pt-2 border-t border-gray-100">
+                <ol class="space-y-3 font-data font-sans list-decimal list-inside text-sm text-gray-600">
+                    ${guide.steps.map((step) => `<li>${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</li>`).join('')}
+                </ol>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleAccordion(index) {
+    const content = document.getElementById(`accordion-content-${index}`);
+    const icon = document.getElementById(`accordion-icon-${index}`);
+    if (content && icon) {
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
+    }
+}
+
 function openDetail(routeId) {
     if (!window.appData) return;
     const route = window.appData.routes.find(r => r.id === routeId);
@@ -141,11 +174,6 @@ function openDetail(routeId) {
 }
 
 function goBack() { window.location.href = '/'; }
-
-function getRouteSlug() {
-    const urlParams = newSearchParams(window.location.search);
-    return urlParams.get('rute');
-}
 
 function getRouteSlug() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -172,7 +200,6 @@ function getModeLabel(mode) {
     return labels[mode] || { text: mode };
 }
 
-// LOGIKA TUKAR ARAH DAN UPDATE KARTU DI BAWAH PETA
 function toggleDirection() {
     if (!currentRouteDetail || !currentRouteDetail.directions) return;
     if (currentRouteDetail.directions.length < 2) return;
@@ -222,9 +249,8 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        // Garis dan titik desain baru (solid, putih di tengah, border color sesuai rute)
+        // Garis penghubung dan titik selalu sesuai warna rute asli
         let lineHtml = isLast ? '' : `<div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>`;
-        
         let nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
 
         if (isTerdekat) {
@@ -235,30 +261,30 @@ function renderTimeline(stops) {
             </div>`;
         }
 
-        // Label Terdekat
+        // 1. Label TERDEKAT diletakkan mentok KANAN menggunakan ml-auto
         let labelHtml = '';
         if (isTerdekat) {
             const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="ml-2 px-2 py-0.5 bg-blue-50 text-primary text-[9px] font-bold rounded shadow-sm font-sans tracking-wider border border-blue-200 uppercase">${labelText}</span>`;
+            labelHtml = `<span class="ml-auto px-2.5 py-1 bg-blue-600 text-white text-[9px] font-bold rounded-md shadow-sm font-sans tracking-widest uppercase border border-blue-700 shrink-0">${labelText}</span>`;
         }
 
         // Ikon SVG murni (tanpa lingkaran background)
         let iconsHtml = '';
         if (stop.icons && stop.icons.length > 0) {
-            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-5 h-5 object-contain inline-block ml-1.5" alt="icon">`).join('');
+            iconsHtml = stop.icons.map(icon => `<img src="assets/images/${icon}" class="w-6 h-6 object-contain inline-block ml-1.5" alt="icon">`).join('');
         }
 
         // Transfer Badge
         let transfersHtml = '';
         if (stop.transfers && stop.transfers.length > 0) {
-            transfersHtml += `<div class="flex flex-wrap gap-1.5 mt-1">`;
+            transfersHtml += `<div class="flex flex-wrap gap-1.5 mt-1.5">`;
             stop.transfers.forEach(t => {
                 transfersHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans tracking-wide shadow-sm" style="background-color: ${getColorForRoute(t)}">${t}</span>`;
             });
             transfersHtml += `</div>`;
         }
 
-        // Integrasi Halte CLone Sianteng
+        // Integrasi Halte Format Bersih
         let halteInfoHtml = '';
         if (stop.halteInfo) {
             halteInfoHtml += `<div class="mt-2.5">`;
@@ -288,7 +314,7 @@ function renderTimeline(stops) {
             halteInfoHtml += `</div>`;
         }
 
-        // Integrasi Stasiun Clone Sianteng
+        // Integrasi Stasiun Format Bersih
         let stationIntegrationHtml = '';
         if (stop.stationIntegration) {
             stationIntegrationHtml += `<div class="mt-2.5">`;
@@ -304,14 +330,23 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `</div>`;
         }
 
+        // Wrapper Konten
+        // Jika Terdekat, beri kotak biru shadow. Jika bukan, biarkan transparan.
+        let contentClass = "ml-4 flex-1 min-w-0 pb-1";
+        if (isTerdekat) {
+            contentClass = "ml-3 flex-1 min-w-0 pb-1 bg-blue-50 border border-blue-100 shadow-[0_2px_12px_-4px_rgba(0,114,188,0.3)] rounded-xl p-3 -mt-2 relative z-10";
+        }
+
         return `
         <div class="relative pb-6 flex items-start font-sans">
             ${lineHtml}
             ${nodeHtml}
-            <div class="ml-4 flex-1 min-w-0 pb-1">
-                <div class="flex items-center flex-wrap gap-1">
-                    <h4 class="text-[14px] font-bold text-gray-800 leading-snug">${stop.name}</h4>
-                    ${iconsHtml}
+            <div class="${contentClass}">
+                <div class="flex items-start justify-between w-full">
+                    <div class="flex items-center flex-wrap gap-1">
+                        <h4 class="text-[14px] md:text-[15px] font-bold ${isTerdekat ? 'text-blue-900' : 'text-gray-800'} leading-snug">${stop.name}</h4>
+                        ${iconsHtml}
+                    </div>
                     ${labelHtml}
                 </div>
                 ${transfersHtml}
@@ -329,32 +364,86 @@ function renderDetail() {
 
     currentRouteDetail = route;
     
-    // Set Header Data
-    document.getElementById('header-code').textContent = route.code;
+    // Header & Kode Rute
+    const headerCodeEl = document.getElementById('header-code');
+    if (headerCodeEl) headerCodeEl.textContent = route.code;
     
-    // Set Info Bar Data (Warna dan Konten)
     const mainColor = route.badgeColor || '#0072bc';
+    
+    // Mengganti Isi Bar Informasi secara langsung agar sesuai desain
     const infoBar = document.getElementById('route-info-bar');
-    if (infoBar) infoBar.style.backgroundColor = mainColor;
+    if (infoBar) {
+        infoBar.className = "w-full text-white px-4 py-5 relative z-10 bg-primary transition-colors duration-300 shadow-md";
+        infoBar.style.backgroundColor = ""; // Reset inline agar CSS bg-primary bekerja
 
-    const opsEl = document.getElementById('info-ops');
-    if (opsEl) opsEl.textContent = `OPERASIONAL • ${route.details.ops || '--'}`;
+        // Menambahkan Promo Rp2.000 khusus TJ
+        const isTJ = route.mode === 'brt' || route.mode === 'nbrt';
+        let tarifPromoHtml = '';
+        if (isTJ) {
+            tarifPromoHtml = `<span class="block mt-1 text-[10px] text-blue-100 font-bold bg-black/20 w-max px-1.5 py-0.5 rounded shadow-sm">Rp 2.000,- (05.00-07.00)</span>`;
+        }
 
-    const detailsEl = document.getElementById('info-details');
-    if (detailsEl) {
-        const modeText = getModeLabel(route.mode).text.toUpperCase();
-        const headwayText = route.details.headway ? ` • ${route.details.headway}` : '';
-        const tarifText = route.details.tarif ? ` • TARIF ${route.details.tarif}` : '';
-        detailsEl.textContent = `KORIDOR ${route.code} ${headwayText} ${tarifText}`;
+        // Format Kotak Kode Rute
+        let codeHtml = '';
+        if (route.code.startsWith('JAK')) {
+            const num = route.code.replace('JAK', '').trim();
+            codeHtml = `<div class="flex flex-col leading-none items-center justify-center text-white"><span class="text-[10px] font-bold tracking-widest">JAK</span><span class="text-xl mt-0.5">${num}</span></div>`;
+        } else {
+            codeHtml = `<span class="text-xl">${route.code}</span>`;
+        }
+
+        infoBar.innerHTML = `
+        <div class="max-w-4xl mx-auto flex flex-col gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-[52px] h-[52px] shrink-0 rounded-xl shadow-md border-2 border-white/20 flex items-center justify-center font-bold font-sans" style="background-color: ${mainColor};">
+                    ${codeHtml}
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold leading-tight font-sans drop-shadow-sm">${route.name}</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-2 bg-black/10 rounded-xl p-4 border border-white/10 font-sans">
+                <div class="flex items-start gap-2.5">
+                    <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Tarif</span>
+                        <span class="text-sm font-bold leading-none">${route.details.tarif || '--'}</span>
+                        ${tarifPromoHtml}
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-2.5">
+                    <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Headway</span>
+                        <span class="text-sm font-bold leading-none">${route.details.headway || '--'}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-2.5">
+                    <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Jam Operasional</span>
+                        <span class="text-sm font-bold leading-none">${route.details.ops || '--'}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-10 md:h-12"></div>
+        `;
     }
 
-    // Set Card Destination
+    // Set Arah Map & Swap Button
     const endIcon = document.getElementById('route-end-icon');
     const endDot = document.getElementById('route-end-dot');
     if (endIcon) endIcon.style.borderColor = mainColor;
     if (endDot) endDot.style.backgroundColor = mainColor;
 
-    // Show/Hide Swap Button
     const swapBtn = document.getElementById('btn-swap-dir');
     if (swapBtn) {
         if (route.directions && route.directions.length > 1) {
