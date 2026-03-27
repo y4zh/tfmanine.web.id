@@ -255,17 +255,13 @@ function renderTimeline(stops) {
         let nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
 
         if (isTerdekat) {
-            nodeHtml = `
-            <div class="relative w-[12px] h-[12px] mt-1.5 shrink-0 z-10 flex items-center justify-center">
-                <div class="absolute w-5 h-5 rounded-full animate-ping" style="background-color: ${mainRouteColor}40;"></div>
-                <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white relative" style="border-color: ${mainRouteColor};"></div>
-            </div>`;
+            nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[3px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
         }
 
         let labelHtml = '';
         if (isTerdekat) {
             const labelText = stop.label || "TERDEKAT";
-            labelHtml = `<span class="ml-auto px-2.5 py-1 bg-blue-600 text-white text-[9px] font-bold rounded-md shadow-sm font-sans tracking-widest uppercase border border-blue-700 shrink-0">${labelText}</span>`;
+            labelHtml = `<span class="ml-auto px-3 py-1 bg-[#2563eb] text-white text-[10px] font-bold rounded-md shadow-sm font-sans tracking-wider uppercase shrink-0">${labelText}</span>`;
         }
 
         let iconsHtml = '';
@@ -282,7 +278,6 @@ function renderTimeline(stops) {
             transfersHtml += `</div>`;
         }
 
-        // --- PEMISAHAN LOGIKA INTEGRASI HALTE DAN STASIUN ---
         let halteInfoHtml = '';
         if (stop.halteInfo) {
             halteInfoHtml += `<div class="mt-2.5 flex flex-col gap-2.5">`;
@@ -297,7 +292,6 @@ function renderTimeline(stops) {
             const stasiunStops = stopsArray.filter(h => h.halte.toLowerCase().includes('stasiun'));
             const nonStasiunStops = stopsArray.filter(h => !h.halte.toLowerCase().includes('stasiun'));
 
-            // 1. Group Stasiun
             if (stasiunStops.length > 0) {
                 halteInfoHtml += `<div>`;
                 halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI STASIUN :</div>`;
@@ -314,7 +308,6 @@ function renderTimeline(stops) {
                 halteInfoHtml += `</div>`;
             }
 
-            // 2. Group Halte / Bus Stop
             if (nonStasiunStops.length > 0) {
                 halteInfoHtml += `<div>`;
                 halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">${nonStationLabel}</div>`;
@@ -348,9 +341,9 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `</div>`;
         }
 
-        let contentClass = "ml-4 flex-1 min-w-0 pb-1";
+        let contentClass = "ml-4 flex-1 min-w-0 pb-2";
         if (isTerdekat) {
-            contentClass = "ml-3 flex-1 min-w-0 pb-1 bg-blue-50 border border-blue-100 shadow-[0_2px_12px_-4px_rgba(0,114,188,0.3)] rounded-xl p-3 -mt-2 relative z-10";
+            contentClass = "ml-3 flex-1 min-w-0 bg-[#f4f7fc] border border-blue-100 rounded-xl p-3.5 -mt-2 relative z-10 flex flex-col justify-center";
         }
 
         return `
@@ -358,9 +351,9 @@ function renderTimeline(stops) {
             ${lineHtml}
             ${nodeHtml}
             <div class="${contentClass}">
-                <div class="flex items-start justify-between w-full">
-                    <div class="flex items-center flex-wrap gap-1">
-                        <h4 class="text-[14px] md:text-[15px] font-bold ${isTerdekat ? 'text-blue-900' : 'text-gray-800'} leading-snug">${stop.name}</h4>
+                <div class="flex items-center justify-between w-full gap-2">
+                    <div class="flex items-center flex-wrap gap-1.5">
+                        <h4 class="text-[14px] md:text-[15px] font-bold ${isTerdekat ? 'text-[#1e3a8a]' : 'text-gray-800'} leading-snug">${stop.name}</h4>
                         ${iconsHtml}
                     </div>
                     ${labelHtml}
