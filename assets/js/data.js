@@ -912,7 +912,7 @@ window.appData = {
                         { name: "Pancoran bank bjb", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Pancoran"], routes: ["4K", "5N", "9", "9A", "9C", "9D", "13B", "P11"] } },
                         { name: "Cikoko", transfers: [], icons: ["icon-train.svg","icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Cikoko"], routes: ["4K", "7D", "9", "9A", "9C"] }, stationIntegration: { station: "Stasiun Cawang", trainLines: ["B | Bogor"] } },
                         { name: "Ciliwung", transfers: [], icons: ["icon-bus.svg"],halteInfo: { type: "integrasi", halte: ["Ciliwung"], routes: ["4K", "7D", "9", "9A", "9C"] } },
-                        { name: "Cawang", transfers: [], hicons: ["icon-bus.svg"], halteInfo: { type: "integrasi", stops: [{ halte: "Cawang", routes: ["4K", "5C", "7", "7D", "9", "9A", "9C"] }, { halte: "BNN 1 & 2", routes: ["7W", "B11", "B21"] }] } },
+                        { name: "Cawang", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", stops: [{ halte: "Cawang", routes: ["4K", "5C", "7", "7D", "9", "9A", "9C"] }, { halte: "BNN 1 & 2", routes: ["7W", "B11", "B21"] }] } },
                         { name: "Halim", transfers: [], icons: ["icon-bus.svg", "KCIC.svg"], halteInfo: { type: "stasiun", halte: ["St. Kereta Cepat Halim"], routes: ["7W"] }, stationIntegration: { station: "KCIC Halim", trainLines: ["Whoosh"], label: "Whoosh", labelColor: "#7B0D1E" } },
                         { name: "Jati Bening Baru", transfers: [], isActive: true, label: "Terdekat" },
                         { name: "Cikunir 1", transfers: [] },
