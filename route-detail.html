@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportasi MAN 9 Jakarta</title>
     <meta name="description" content="Transportasi umum menuju MAN 9 Jakarta">
-
     <link rel="icon" type="image/svg+xml" href="assets/images/sublogo.svg">
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <base href="/">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -27,7 +23,6 @@
     </script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body class="bg-gray-50 min-h-screen flex flex-col font-sans">
     <nav class="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-4">
@@ -70,18 +65,16 @@
         <div class="h-10 md:h-12"></div> 
     </div>
 
-    <div class="max-w-4xl mx-auto px-4 w-full -mt-8 md:-mt-10 relative z-20 mb-6">
+    <div class="max-w-4xl mx-auto px-4 w-full -mt-8 md:-mt-10 relative z-20 mb-6" id="floating-card-wrapper">
         <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 md:p-5 flex items-center justify-between border border-gray-100">
             <div class="flex flex-col relative w-full pr-4 gap-4">
                 <div class="absolute left-[11px] top-[24px] bottom-[24px] border-l-[2px] border-dotted border-gray-300 z-0"></div>
-
                 <div class="flex items-center gap-3 z-10 bg-white relative">
                     <div class="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center shrink-0">
                         <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
                     </div>
                     <span id="route-start" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
                 </div>
-
                 <div class="flex items-center gap-3 z-10 bg-white relative">
                     <div id="route-end-icon" class="w-6 h-6 rounded-full border-[3px] bg-white flex items-center justify-center shrink-0" style="border-color: #0072bc;">
                         <div id="route-end-dot" class="w-2 h-2 rounded-full" style="background-color: #0072bc;"></div>
@@ -89,8 +82,7 @@
                     <span id="route-end" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
                 </div>
             </div>
-
-            <button id="btn-swap-dir" onclick="toggleDirection()" class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 shrink-0 transition-colors hidden shadow-sm border border-red-100">
+            <button id="btn-swap-dir" onclick="toggleDirection()" class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 shrink-0 transition-colors shadow-sm border border-red-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                 </svg>
@@ -103,11 +95,23 @@
     </div>
 
     <footer class="bg-gray-800 text-white py-8 mt-auto w-full">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-xs text-gray-500">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
-            <p class="text-xs text-gray-500">v1.4.3 (Stable version)</p>
-        </div>
-    </footer>
+        <div class="max-w-7xl mx-auto px-4 text-center flex flex-col items-center">
+            <div class="flex items-center space-x-6 mb-4">
+                <a href="mailto:manine@tfmanine.web.id" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </a>
+                <a href="https://instagram.com/man9jakarta" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.7-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-xs text-gray-500 mb-1">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
+                <p class="text-xs text-gray-400">v1.4.3 (Tahap Pengembangan)</p>
+            </div>
+        </footer>
 
     <script src="assets/js/data.js"></script>
     <script src="assets/js/main.js"></script>
