@@ -259,19 +259,14 @@ function renderTimeline(stops) {
         return "#6b7280";
     }
 
-    const renderStopHtml = (stop, idx, nextIsHidden = false) => {
+    const renderStopHtml = (stop, idx, isLastOverall = false) => {
         if (stop.name === '---' || stop.isSeparator) {
             return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
 
-        const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
-        
-        let lineBottomClass = 'bottom-[-16px]';
-        if(isLast || nextIsHidden) lineBottomClass = 'bottom-[calc(100%-3rem)]';
-        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] ${lineBottomClass} w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
-        
         let isHalteStop = true;
+        
         if (currentRouteDetail.mode === 'mikro') {
             isHalteStop = false;
         } else if (currentRouteDetail.code === '4F' || currentRouteDetail.code === '11Q') {
@@ -287,20 +282,20 @@ function renderTimeline(stops) {
 
         let nodeHtml = '';
         if (isHalteStop) {
-            nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+            nodeHtml = `<div class="w-[14px] h-[14px] rounded-full border-[3px] bg-white z-10 relative mt-[3px] shrink-0" style="border-color: ${mainRouteColor};"></div>`;
             if (isTerdekat) {
-                nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[3px] bg-white z-10 relative mt-1.5 shrink-0 shadow-md" style="border-color: ${mainRouteColor};"></div>`;
+                nodeHtml = `<div class="w-[14px] h-[14px] rounded-full border-[3.5px] bg-white z-10 relative mt-[3px] shrink-0 shadow-md" style="border-color: ${mainRouteColor};"></div>`;
             }
         } else {
             if (isTerdekat) {
                 nodeHtml = `
-                <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
-                    <div class="absolute left-[4px] top-[2px] w-[14px] h-[8px] rounded-r-sm" style="background-color: ${mainRouteColor};"></div>
+                <div class="w-[14px] h-[14px] relative mt-[3px] shrink-0 z-10">
+                    <div class="absolute left-[5px] top-[3px] w-[24px] h-[8px] rounded-r-[4px] shadow-sm" style="background-color: ${mainRouteColor};"></div>
                 </div>`;
             } else {
                 nodeHtml = `
-                <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
-                    <div class="absolute left-[4px] top-[3px] w-[12px] h-[6px] rounded-r-sm" style="background-color: ${mainRouteColor};"></div>
+                <div class="w-[14px] h-[14px] relative mt-[3px] shrink-0 z-10">
+                    <div class="absolute left-[5px] top-[4px] w-[20px] h-[6px] rounded-r-[3px]" style="background-color: ${mainRouteColor};"></div>
                 </div>`;
             }
         }
@@ -406,9 +401,10 @@ function renderTimeline(stops) {
             contentClass = "ml-3 flex-1 min-w-0 bg-[#f4f7fc] border border-blue-100 rounded-xl p-3.5 -mt-2 relative z-10 flex flex-col justify-center";
         }
 
+        let pbClass = isLastOverall ? "pb-2" : "pb-6";
+
         return `
-        <div class="relative pb-6 flex items-start font-sans">
-            ${lineHtml}
+        <div class="relative ${pbClass} flex items-start font-sans">
             ${nodeHtml}
             <div class="${contentClass}">
                 <div class="flex items-center justify-between w-full gap-2">
@@ -452,30 +448,27 @@ function renderTimeline(stops) {
         }
     }
 
-    let html = '';
+    let html = `<div class="relative">`;
+    html += `<div class="absolute left-[5px] top-[10px] bottom-[20px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+
     let i = 0;
     let dropCounter = 0;
 
     const renderToggleNode = (id, count, isAfter) => `
         <div class="relative pb-6 flex items-start font-sans">
-            <div class="absolute left-[4px] top-[-16px] bottom-[-16px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>
-            <div class="absolute left-[0px] top-[22px] text-gray-500 opacity-60 flex flex-col items-center w-[12px]">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                <svg class="w-3 h-3 -mt-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-            </div>
-            <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10"></div>
-            <div class="ml-4 flex-1 min-w-0 pr-2 md:pr-0">
-                <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron-btn').classList.toggle('rotate-180')" class="w-full flex items-center bg-[#fafafa] hover:bg-gray-100 border border-gray-200 rounded-xl px-4 py-3.5 transition-all duration-300 shadow-sm focus:outline-none group">
-                    <svg class="w-5 h-5 text-gray-500 chevron-btn transition-transform duration-300 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            <div class="w-[14px] h-[14px] relative mt-[3px] shrink-0 z-10"></div>
+            <div class="ml-4 flex-1 min-w-0 pr-2 md:pr-0 relative z-10">
+                <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron-btn').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
                     <span class="text-[13.5px] font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Lihat ${count} pemberhentian ${isAfter ? 'selanjutnya' : 'sebelumnya'}</span>
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 chevron-btn transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
             </div>
         </div>`;
 
     while (i < stops.length) {
         if (isVisible[i]) {
-            let nextHidden = (i+1 < stops.length && !isVisible[i+1]);
-            html += renderStopHtml(stops[i], i, nextHidden);
+            let isLastOverall = (i === stops.length - 1);
+            html += renderStopHtml(stops[i], i, isLastOverall);
             i++;
         } else {
             let startHidden = i;
@@ -491,12 +484,14 @@ function renderTimeline(stops) {
             html += renderToggleNode(dropId, hiddenCount, isAfter);
             html += `<div id="${dropId}" class="hidden">`;
             for (let j = startHidden; j <= endHidden; j++) {
-                html += renderStopHtml(stops[j], j, false);
+                let isLastOverall = (j === stops.length - 1);
+                html += renderStopHtml(stops[j], j, isLastOverall);
             }
             html += `</div>`;
         }
     }
-
+    
+    html += `</div>`;
     container.innerHTML = html;
 }
 
@@ -554,44 +549,50 @@ function renderDetail() {
         }
 
         const details = route.details || {};
-        let opsGridItemHtml = '';
-        let tableHtml = '';
-
+        
+        let opsContainerHtml = '';
         if (route.code === '7P') {
-            tableHtml = `
-            <div class="mt-3 bg-black/10 rounded-xl p-0 border border-white/10 font-sans overflow-hidden">
-                <table class="w-full text-center divide-y divide-white/10">
-                    <thead>
-                        <tr class="divide-x divide-white/10 bg-white/5">
-                            <th colspan="2" class="py-2 px-1 font-bold text-[11px] uppercase tracking-wider text-white">Keberangkatan Awal</th>
-                            <th colspan="2" class="py-2 px-1 font-bold text-[11px] uppercase tracking-wider text-white">Keberangkatan Akhir</th>
-                        </tr>
-                        <tr class="divide-x divide-white/10 text-[10px] text-white/80 bg-white/5">
-                            <th class="py-1 px-1 font-normal">Jam</th>
-                            <th class="py-1 px-1 font-normal">Dari</th>
-                            <th class="py-1 px-1 font-normal">Jam</th>
-                            <th class="py-1 px-1 font-normal">Dari</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/10 text-[12px] md:text-[13px] text-white">
-                        <tr class="divide-x divide-white/10">
-                            <td class="py-2.5 px-1 font-bold">05.00</td>
-                            <td class="py-2.5 px-1 font-medium">Pondok Kelapa</td>
-                            <td class="py-2.5 px-1 font-bold">21.30</td>
-                            <td class="py-2.5 px-1 font-medium">Pondok Kelapa</td>
-                        </tr>
-                        <tr class="divide-x divide-white/10">
-                            <td class="py-2.5 px-1 font-bold">05.30</td>
-                            <td class="py-2.5 px-1 font-medium leading-tight">Cawang Cililitan</td>
-                            <td class="py-2.5 px-1 font-bold">22.00</td>
-                            <td class="py-2.5 px-1 font-medium leading-tight">Cawang Cililitan</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            `;
+            opsContainerHtml = `
+            <div class="flex flex-col sm:col-span-2 mt-2 pt-4 border-t border-white/10">
+                <div class="flex items-center gap-2.5 mb-3">
+                    <svg class="w-4 h-4 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold">Jam Operasional</span>
+                </div>
+                <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5">
+                    <table class="w-full text-center divide-y divide-white/10">
+                        <thead>
+                            <tr class="divide-x divide-white/10 bg-white/5">
+                                <th colspan="2" class="py-2 px-1 font-bold text-[11px] uppercase tracking-wider text-white">Keberangkatan Awal</th>
+                                <th colspan="2" class="py-2 px-1 font-bold text-[11px] uppercase tracking-wider text-white">Keberangkatan Akhir</th>
+                            </tr>
+                            <tr class="divide-x divide-white/10 text-[10px] text-white/80 bg-white/5">
+                                <th class="py-1 px-1 font-normal w-1/4">Jam</th>
+                                <th class="py-1 px-1 font-normal w-1/4">Dari</th>
+                                <th class="py-1 px-1 font-normal w-1/4">Jam</th>
+                                <th class="py-1 px-1 font-normal w-1/4">Dari</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10 text-[12px] md:text-[13px] text-white">
+                            <tr class="divide-x divide-white/10">
+                                <td class="py-2.5 px-1 font-bold">05.00</td>
+                                <td class="py-2.5 px-1 font-medium">Pondok Kelapa</td>
+                                <td class="py-2.5 px-1 font-bold">21.30</td>
+                                <td class="py-2.5 px-1 font-medium">Pondok Kelapa</td>
+                            </tr>
+                            <tr class="divide-x divide-white/10 bg-white/5">
+                                <td class="py-2.5 px-1 font-bold">05.30</td>
+                                <td class="py-2.5 px-1 font-medium leading-tight">Cawang Cililitan</td>
+                                <td class="py-2.5 px-1 font-bold">22.00</td>
+                                <td class="py-2.5 px-1 font-medium leading-tight">Cawang Cililitan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
         } else {
-            opsGridItemHtml = `
+            opsContainerHtml = `
             <div class="flex items-start gap-2.5">
                 <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -600,22 +601,39 @@ function renderDetail() {
                     <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Jam Operasional</span>
                     <span class="text-sm font-bold leading-none">${details.ops || '--'}</span>
                 </div>
-            </div>
-            `;
+            </div>`;
         }
 
-        let gridClass = route.code === '7P' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3';
-
-        infoBar.innerHTML = `
-        <div class="max-w-4xl mx-auto flex flex-col gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-[52px] h-[52px] shrink-0 rounded-xl shadow-md border-2 border-white/20 flex items-center justify-center font-bold font-sans" style="background-color: ${mainColor};">
-                    ${codeHtml}
+        let infoGridHtml = '';
+        if (route.code === '7P') {
+            infoGridHtml = `
+            <div class="flex flex-col gap-0 mt-2 bg-black/10 rounded-xl p-4 border border-white/10 font-sans">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-start gap-2.5">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                        </svg>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Tarif</span>
+                            <span class="text-sm font-bold leading-none">${details.tarif || '--'}</span>
+                            ${tarifPromoHtml}
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Headway</span>
+                            <span class="text-sm font-bold leading-none">${details.headway || '--'}</span>
+                        </div>
+                    </div>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-bold leading-tight font-sans drop-shadow-sm">${route.name || ''}</h2>
-            </div>
-
-            <div class="grid ${gridClass} gap-3 md:gap-4 mt-2 bg-black/10 rounded-xl p-4 border border-white/10 font-sans">
+                ${opsContainerHtml}
+            </div>`;
+        } else {
+            infoGridHtml = `
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-2 bg-black/10 rounded-xl p-4 border border-white/10 font-sans">
                 <div class="flex items-start gap-2.5">
                     <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -626,7 +644,6 @@ function renderDetail() {
                         ${tarifPromoHtml}
                     </div>
                 </div>
-                
                 <div class="flex items-start gap-2.5">
                     <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -636,10 +653,19 @@ function renderDetail() {
                         <span class="text-sm font-bold leading-none">${details.headway || '--'}</span>
                     </div>
                 </div>
+                ${opsContainerHtml}
+            </div>`;
+        }
 
-                ${opsGridItemHtml}
+        infoBar.innerHTML = `
+        <div class="max-w-4xl mx-auto flex flex-col gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-[52px] h-[52px] shrink-0 rounded-xl shadow-md border-2 border-white/20 flex items-center justify-center font-bold font-sans" style="background-color: ${mainColor};">
+                    ${codeHtml}
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold leading-tight font-sans drop-shadow-sm">${route.name || ''}</h2>
             </div>
-            ${tableHtml}
+            ${infoGridHtml}
         </div>
         <div class="h-10 md:h-12"></div>
         `;
