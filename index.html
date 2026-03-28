@@ -49,17 +49,17 @@
     </section>
 
     <section class="max-w-7xl mx-auto px-4 py-8">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">Moda Transportasi</h2>
+        <h2 class="text-lg font-bold text-gray-800 mb-4 font-sans">Moda Transportasi</h2>
         <div id="category-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
     </section>
 
     <section id="route-list-section" class="max-w-7xl mx-auto px-4 pb-6 hidden">
         <div class="flex items-center justify-between mb-3">
-            <h2 class="text-lg font-bold text-gray-800">
+            <h2 class="text-lg font-bold text-gray-800 font-sans">
                 <span id="route-list-title">Daftar Rute</span>
                 <span id="route-count" class="text-sm font-normal text-gray-500 ml-2"></span>
             </h2>
-            <button onclick="clearFilter()" class="text-sm text-primary font-medium hover:underline">× Tutup</button>
+            <button onclick="clearFilter()" class="text-sm text-primary font-medium hover:underline font-sans">× Tutup</button>
         </div>
 
         <div class="mb-4 relative">
@@ -73,7 +73,7 @@
     </section>
 
     <section id="guides-section" class="max-w-7xl mx-auto px-4 pb-8">
-        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center font-sans">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
@@ -82,17 +82,47 @@
         <div id="guides-container" class="space-y-3"></div>
     </section>
 
+    <section class="max-w-7xl mx-auto px-4 w-full mb-12">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-[#1DA1F2] rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-[16px] font-sans leading-none">Live Update Transjakarta</h3>
+                    <p class="text-[11px] text-gray-500 font-sans mt-1.5 uppercase tracking-wider font-bold">Informasi Resmi @PT_Transjakarta</p>
+                </div>
+            </div>
+
+            <div class="rounded-xl overflow-hidden border border-gray-100" style="max-height: 450px; overflow-y: auto;">
+                <a class="twitter-timeline" 
+                   data-height="450" 
+                   data-theme="light" 
+                   data-chrome="noheader nofooter noborders transparent"
+                   href="https://twitter.com/PT_Transjakarta?ref_src=twsrc%5Etfw">
+                   Memuat informasi rute...
+                </a> 
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+            
+            <p class="mt-4 text-[10px] text-gray-400 font-sans text-center">
+                Konten otomatis dari akun resmi X/Twitter Transjakarta
+            </p>
+        </div>
+    </section>
     <footer class="bg-gray-800 text-white py-8">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                 <div class="md:w-1/2">
                     <img src="assets/images/logo.svg" alt="logo" class="h-10 w-auto mb-3">
-                    <p class="text-sm text-gray-400 leading-relaxed">Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di MAN 9 Jakarta.</p>
+                    <p class="text-sm text-gray-400 leading-relaxed font-sans">Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di MAN 9 Jakarta.</p>
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-6 pt-4 text-center">
-                <p class="text-xs text-gray-500">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
-                <p class="text-xs text-gray-500">v1.4.2 (Stable version)</p>
+                <p class="text-xs text-gray-500 font-sans">© 2026 Transportasi MAN 9 Jakarta - Data rute dapat berubah sewaktu-waktu.</p>
+                <p class="text-xs text-gray-500 font-sans">v1.4.5 (Beta)</p>
             </div>
         </div>
     </footer>
@@ -101,4 +131,5 @@
     <script src="assets/js/map.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
+
 </html>
