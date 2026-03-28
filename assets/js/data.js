@@ -910,7 +910,7 @@ window.appData = {
                         { name: "Rasuna Said", transfers: [], halteInfo: { type: "integrasi", halte: ["Rasuna Said"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
                         { name: "Kuningan", transfers: [], halteInfo: { type: "integrasi", halte: ["Kuningan"], routes: ["4D", "6", "6A", "6B", "6H", "6K", "6M", "13E", "L13E"] } },
                         { name: "Pancoran bank bjb", transfers: [], halteInfo: { type: "integrasi", halte: ["Pancoran"], routes: ["4K", "5N", "9", "9A", "9C", "9D", "13B", "P11"] } },
-                        { name: "Cikoko", transfers: ["B | Bogor"], icons: ["icon-train.svg"], trainConnections: ["B | Bogor"], halteInfo: { type: "integrasi", halte: ["Cikoko"], routes: ["4K", "7D", "9", "9A", "9C"], halteInfo: {type:"stasiun", halte:["Stasiun Cawang"], routes:["B | Bogor"] } },
+                        { name: "Cikoko", transfers: ["B | Bogor"], icons: ["icon-train.svg"], trainConnections: ["B | Bogor"], halteInfo: { type: "integrasi", halte: ["Cikoko"], routes: ["4K", "7D", "9", "9A", "9C"] },{ halteInfo: {type:"stasiun", halte:["Stasiun Cawang"], routes:["B | Bogor"] } },
                         { name: "Ciliwung", transfers: [], halteInfo: { type: "integrasi", halte: ["Ciliwung"], routes: ["4K", "7D", "9", "9A", "9C"] } },
                         { name: "Cawang", transfers: [], halteInfo: { type: "integrasi", stops: [{ halte: "Cawang", routes: ["4K", "5C", "7", "7D", "9", "9A", "9C"] }, { halte: "BNN 1 & 2", routes: ["7W", "B11", "B21"] }] } },
                         { name: "Halim", transfers: [], icons: ["KCIC.svg"], halteInfo: { type: "stasiun", halte: ["St. Kereta Cepat Halim"], routes: ["7W"] } },
