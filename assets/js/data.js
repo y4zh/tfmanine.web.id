@@ -422,7 +422,7 @@ window.appData = {
                         { name: "Penggilingan 2", transfers: ["11B", "11P", "11R", "JAK 100"] },
                         { name: "Perumnas Klender 1", transfers: ["11P"] },
                         { name: "Rusun Klender", transfers: ["11P"] },
-                        { name: "Flyover Radin Inten 1", transfers: ["11P", "JAK 39"] },
+                        { name: "Flyover Radin Inten 1", transfers: ["11P", "JAK 39"], icons: ["icon-train.svg"], halteInfo: { type: "integrasi", stops: [{ halte: "Stasiun Buaran", routes: ["C | Cikarang"] }, { halte: "Simpang Buaran", routes: ["11", "11M"] }] } },
                         { name: "SMKN 48", transfers: ["11P", "JAK 39"] },
                         { name: "Sbr. Budhaya Santo Agustinus", transfers: ["11P", "JAK 99"] },
                         { name: "Gedung Senam", transfers: ["11P", "JAK 99"] },
@@ -480,7 +480,7 @@ window.appData = {
                         { name: "Dinas Kebersihan Duren Sawit", transfers: ["11P", "JAK 39", "JAK 99"] },
                         { name: "Buaran Plaza", transfers: ["11P", "JAK 39"] },
                         { name: "Taman Buaran Indah", transfers: ["11P", "JAK 39"] },
-                        { name: "Flyover Radin Inten 2", transfers: ["11P", "JAK 39", "C | Cikarang"] },
+                        { name: "Flyover Radin Inten 2", transfers: ["11P", "JAK 39", "C | Cikarang"], icons: ["icon-train.svg"], halteInfo: { type: "integrasi", stops: [{ halte: "Stasiun Buaran", routes: ["C | Cikarang"] }, { halte: "Simpang Buaran", routes: ["11", "11M"] }] } },
                         { name: "Perumnas Klender 2", transfers: ["11P", "JAK 39"] },
                         { name: "Penggilingan 1", transfers: ["11B", "11P", "11R", "JAK 100"] },
                         { name: "Walikota Jakarta Timur 1", transfers: ["11B", "11P", "JAK 100"] },
@@ -718,7 +718,7 @@ window.appData = {
                         { name: "RS Islam Pondok Kopi 1", transfers: ["JAK 39"] },
                         { name: "Minimarket Pondok Kopi", transfers: ["JAK 39"] },
                         { name: "Akses Bawah Flyover Pondok Kopi", transfers: ["JAK 39"] },
-                        { name: "St. Klender Baru", transfers: ["JAK 39", "C | Cikarang"], trainConnections: ["C"] },
+                        { name: "St. Klender Baru", transfers: ["JAK 39", "C | Cikarang"], icons: ["icon-train.svg"], trainConnections: ["C"], halteInfo: { type: "stasiun", halte: ["Stasiun Klender Baru"], routes: ["C | Cikarang"] } },
                         { name: "Jln. Bintara IV", transfers: [] }
                     ]
                 }
@@ -906,14 +906,14 @@ window.appData = {
                     name: "Full Route",
                     stops: [
                         { name: "Dukuh Atas", transfers: ["CB | Cibubur", "BK | Bekasi"], icons: ["icon-bus.svg", "icon-train.svg", "MRT.svg"], trainConnections: ["C | Cikarang", "MRT", "A | Basoetta"], halteInfo: { type: "integrasi", stops: [{ halte: "Galunggung", routes: ["4", "6"] }, { halte: "Dukuh Atas", routes: ["1", "1B", "6A", "6B"] }] }, stationIntegration: { station: "Sudirman", trainLines: ["C | Cikarang"] } },
-                        { name: "Setiabudi", transfers: [], halteInfo: { type: "integrasi", halte: ["Setiabudi"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
-                        { name: "Rasuna Said", transfers: [], halteInfo: { type: "integrasi", halte: ["Rasuna Said"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
-                        { name: "Kuningan", transfers: [], halteInfo: { type: "integrasi", halte: ["Kuningan"], routes: ["4D", "6", "6A", "6B", "6H", "6K", "6M", "13E", "L13E"] } },
-                        { name: "Pancoran bank bjb", transfers: [], halteInfo: { type: "integrasi", halte: ["Pancoran"], routes: ["4K", "5N", "9", "9A", "9C", "9D", "13B", "P11"] } },
-                        { name: "Cikoko", transfers: ["B | Bogor"], icons: ["icon-train.svg"], trainConnections: ["B | Bogor"], halteInfo: { type: "integrasi", halte: ["Cikoko"], routes: ["4K", "7D", "9", "9A", "9C"] } },
+                        { name: "Setiabudi", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Setiabudi"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
+                        { name: "Rasuna Said", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Rasuna Said"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
+                        { name: "Kuningan", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Kuningan"], routes: ["4D", "6", "6A", "6B", "6H", "6K", "6M", "13E", "L13E"] } },
+                        { name: "Pancoran bank bjb", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Pancoran"], routes: ["4K", "5N", "9", "9A", "9C", "9D", "13B", "P11"] } },
+                        { name: "Cikoko", transfers: ["B | Bogor"], icons: ["icon-train.svg"], trainConnections: ["B | Bogor"], halteInfo: { type: "integrasi", halte: ["Cikoko"], routes: ["4K", "7D", "9", "9A", "9C"] }, stationIntegration: { station: "Stasiun Cawang", trainLines: ["B | Bogor"] } },
                         { name: "Ciliwung", transfers: [], halteInfo: { type: "integrasi", halte: ["Ciliwung"], routes: ["4K", "7D", "9", "9A", "9C"] } },
                         { name: "Cawang", transfers: [], halteInfo: { type: "integrasi", stops: [{ halte: "Cawang", routes: ["4K", "5C", "7", "7D", "9", "9A", "9C"] }, { halte: "BNN 1 & 2", routes: ["7W", "B11", "B21"] }] } },
-                        { name: "Halim", transfers: [], icons: ["KCIC.svg"], halteInfo: { type: "stasiun", halte: ["St. Kereta Cepat Halim"], routes: ["7W"] } },
+                        { name: "Halim", transfers: [], icons: ["icon-bus.svg", "KCIC.svg"], halteInfo: { type: "stasiun", halte: ["KCIC Halim"], routes: ["7W"] }, stationIntegration: { station: "KCIC Halim", trainLines: ["Whoosh"], label: "Whoosh", labelColor: "#7B0D1E" } },
                         { name: "Jati Bening Baru", transfers: [], isActive: true, label: "Terdekat" },
                         { name: "Cikunir 1", transfers: [] },
                         { name: "Cikunir 2", transfers: [] },
@@ -1027,5 +1027,6 @@ window.routeColors = {
     "MRT": "#ca2047",    // MRT Lin Utara Selatan
     "KRL": "#26baed",     // Generic KRL
     "LW | Walahar" : "#b6b7b7",
-    "LJ | Jatiluhur" : "#404040"
+    "LJ | Jatiluhur" : "#404040",
+    "Whoosh": "#7B0D1E"
 };
