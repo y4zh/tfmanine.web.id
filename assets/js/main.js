@@ -253,7 +253,7 @@ function renderTimeline(stops) {
         return "#6b7280";
     }
 
-    container.innerHTML = stops.map((stop, idx) => {
+    const renderStopHtml = (stop, idx) => {
         if (stop.name === '---' || stop.isSeparator) {
             return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
@@ -387,7 +387,69 @@ function renderTimeline(stops) {
                 ${stationIntegrationHtml}
             </div>
         </div>`;
-    }).join('');
+    };
+
+    const isLrt = currentRouteDetail && currentRouteDetail.mode === 'lrt';
+    const isKrl = currentRouteDetail && currentRouteDetail.mode === 'krl';
+    const THRESHOLD = 8;
+
+    let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
+    if (terdekatIdx === -1) terdekatIdx = stops.length - 1;
+
+    let html = '';
+
+    const renderToggleNode = (id, label) => `
+        <div class="relative pb-6 flex items-start font-sans cursor-pointer group" onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
+            <div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>
+            <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>
+            <div class="ml-4 flex-1 min-w-0 pb-2">
+                <div class="flex items-center gap-2 mt-[-2px]">
+                    <span class="text-[13px] font-bold text-primary group-hover:text-blue-700 transition-colors">${label}</span>
+                    <svg class="w-4 h-4 text-primary chevron transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+            </div>
+        </div>`;
+
+    if (isLrt || stops.length <= 3) {
+        html = stops.map((s, i) => renderStopHtml(s, i)).join('');
+    } else {
+        if (terdekatIdx >= THRESHOLD) {
+            if (isKrl) {
+                html += renderToggleNode('drop-single', `${terdekatIdx} pemberhentian sebelumnya`);
+                html += `<div id="drop-single" class="hidden">` + stops.slice(0, terdekatIdx).map((s, i) => renderStopHtml(s, i)).join('') + `</div>`;
+                html += stops.slice(terdekatIdx).map((s, i) => renderStopHtml(s, terdekatIdx + i)).join('');
+            } else {
+                html += renderStopHtml(stops[0], 0);
+                const hideCount = terdekatIdx - 1;
+                if (hideCount > 0) {
+                    html += renderToggleNode('drop-single', `${hideCount} pemberhentian`);
+                    html += `<div id="drop-single" class="hidden">` + stops.slice(1, terdekatIdx).map((s, i) => renderStopHtml(s, 1 + i)).join('') + `</div>`;
+                }
+                html += stops.slice(terdekatIdx).map((s, i) => renderStopHtml(s, terdekatIdx + i)).join('');
+            }
+        } else {
+            html += stops.slice(0, terdekatIdx + 1).map((s, i) => renderStopHtml(s, i)).join('');
+            let remainingCount = stops.length - 1 - terdekatIdx;
+
+            if (isKrl) {
+                if (remainingCount > 0) {
+                    html += renderToggleNode('drop-single', `${remainingCount} pemberhentian selanjutnya`);
+                    html += `<div id="drop-single" class="hidden">` + stops.slice(terdekatIdx + 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
+                }
+            } else {
+                if (remainingCount > 1) {
+                    const hideCount = remainingCount - 1;
+                    html += renderToggleNode('drop-single', `${hideCount} pemberhentian`);
+                    html += `<div id="drop-single" class="hidden">` + stops.slice(terdekatIdx + 1, stops.length - 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
+                    html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
+                } else if (remainingCount === 1) {
+                    html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
+                }
+            }
+        }
+    }
+
+    container.innerHTML = html;
 }
 
 function renderDetail() {
