@@ -193,18 +193,6 @@ function getRouteData(slug) {
     });
 }
 
-function getModeLabel(mode) {
-    const labels = {
-        'brt': { text: 'BRT' },
-        'nbrt': { text: 'Angkutan Umum Integrasi' },
-        'mikro': { text: 'Mikrotrans' },
-        'rusun': { text: 'Rusun' },
-        'krl': { text: 'KRL Commuter' },
-        'lrt': { text: 'LRT Jabodebek' }
-    };
-    return labels[mode] || { text: mode };
-}
-
 function toggleDirection() {
     if (!currentRouteDetail || !currentRouteDetail.directions) return;
     if (currentRouteDetail.directions.length < 2) return;
@@ -279,7 +267,9 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] bottom-[-16px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+        let lineBottomClass = 'bottom-[-16px]';
+        if(isLast || nextIsHidden) lineBottomClass = 'bottom-[calc(100%-3rem)]';
+        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] ${lineBottomClass} w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
         
         let isHalteStop = true;
         if (currentRouteDetail.mode === 'mikro') {
@@ -564,6 +554,58 @@ function renderDetail() {
             codeHtml = `<span class="text-xl">${route.code}</span>`;
         }
 
+        let opsGridItemHtml = '';
+        let tableHtml = '';
+
+        if (route.code === '7P') {
+            tableHtml = `
+            <div class="mt-3 bg-black/10 rounded-xl p-0 border border-white/10 font-sans overflow-hidden">
+                <table class="w-full text-center divide-y divide-white/10">
+                    <thead>
+                        <tr class="divide-x divide-white/10 bg-white/5">
+                            <th colspan="2" class="py-2 px-1 font-bold text-[11px] uppercase tracking-wider text-white">Keberangkatan Awal</th>
+                            <th colspan="2" class="py-2 px-1 font-bold text-[11px] uppercase tracking-wider text-white">Keberangkatan Akhir</th>
+                        </tr>
+                        <tr class="divide-x divide-white/10 text-[10px] text-white/80 bg-white/5">
+                            <th class="py-1 px-1 font-normal">Jam</th>
+                            <th class="py-1 px-1 font-normal">Dari</th>
+                            <th class="py-1 px-1 font-normal">Jam</th>
+                            <th class="py-1 px-1 font-normal">Dari</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10 text-[12px] md:text-[13px] text-white">
+                        <tr class="divide-x divide-white/10">
+                            <td class="py-2.5 px-1 font-bold">05.00</td>
+                            <td class="py-2.5 px-1 font-medium">Pondok Kelapa</td>
+                            <td class="py-2.5 px-1 font-bold">21.30</td>
+                            <td class="py-2.5 px-1 font-medium">Pondok Kelapa</td>
+                        </tr>
+                        <tr class="divide-x divide-white/10">
+                            <td class="py-2.5 px-1 font-bold">05.30</td>
+                            <td class="py-2.5 px-1 font-medium leading-tight">Cawang Cililitan</td>
+                            <td class="py-2.5 px-1 font-bold">22.00</td>
+                            <td class="py-2.5 px-1 font-medium leading-tight">Cawang Cililitan</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `;
+        } else {
+            opsGridItemHtml = `
+            <div class="flex items-start gap-2.5">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Jam Operasional</span>
+                    <span class="text-sm font-bold leading-none">${route.details.ops || '--'}</span>
+                </div>
+            </div>
+            `;
+        }
+
+        let gridClass = route.code === '7P' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3';
+
         infoBar.innerHTML = `
         <div class="max-w-4xl mx-auto flex flex-col gap-4">
             <div class="flex items-center gap-4">
@@ -573,7 +615,7 @@ function renderDetail() {
                 <h2 class="text-2xl md:text-3xl font-bold leading-tight font-sans drop-shadow-sm">${route.name}</h2>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-2 bg-black/10 rounded-xl p-4 border border-white/10 font-sans">
+            <div class="grid ${gridClass} gap-3 md:gap-4 mt-2 bg-black/10 rounded-xl p-4 border border-white/10 font-sans">
                 <div class="flex items-start gap-2.5">
                     <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -595,16 +637,9 @@ function renderDetail() {
                     </div>
                 </div>
 
-                <div class="flex items-start gap-2.5">
-                    <svg class="w-4 h-4 mt-0.5 shrink-0 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <div class="flex flex-col">
-                        <span class="text-[10px] uppercase tracking-widest opacity-80 font-bold mb-0.5">Jam Operasional</span>
-                        <span class="text-sm font-bold leading-none">${route.details.ops || '--'}</span>
-                    </div>
-                </div>
+                ${opsGridItemHtml}
             </div>
+            ${tableHtml}
         </div>
         <div class="h-10 md:h-12"></div>
         `;
@@ -694,35 +729,4 @@ function renderGlobalFooter() {
                 <div class="flex-1">
                     <h3 class="font-bold text-lg mb-4 underline underline-offset-[6px] decoration-2">Media Sosial</h3>
                     <ul class="space-y-3.5">
-                        <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.7-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col items-center justify-center gap-1.5">
-                <p>© 2026 Transportasi MAN 9 Jakarta.</p>
-                <p>v1.4.5 (Beta)</p>
-            </div>
-        </div>
-    `;
-
-    footers.forEach(f => {
-        f.className = "bg-[#1f2937] text-white pt-12 pb-6 mt-auto w-full font-sans";
-        f.innerHTML = footerHTML;
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('category-grid')) renderCategories();
-    if (document.getElementById('guides-container')) initGuides();
-    if (document.getElementById('map-container')) renderDetail();
-    
-    renderGlobalFooter();
-
-    const searchInput = document.getElementById('route-search');
-    if(searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            currentSearchQuery = e.target.value.toLowerCase();
-            updateRouteListUI();
-        });
-    }
-});
+                        <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.7-4.919-4.92-.058-1.265-.07-1.644-.07-4.849
