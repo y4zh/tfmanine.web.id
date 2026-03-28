@@ -410,12 +410,35 @@ function renderTimeline(stops) {
     const isLrt = currentRouteDetail && currentRouteDetail.mode === 'lrt';
     const isKrl = currentRouteDetail && currentRouteDetail.mode === 'krl';
 
-    let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
-    if (terdekatIdx === -1) terdekatIdx = stops.length - 1;
+    let isVisible = new Array(stops.length).fill(false);
+
+    if (isLrt || stops.length <= 3) {
+        isVisible.fill(true);
+    } else {
+        let terdekatIndices = [];
+        stops.forEach((s, i) => {
+            if (s.label || s.isActive) terdekatIndices.push(i);
+        });
+
+        if (terdekatIndices.length === 0) terdekatIndices.push(stops.length - 1);
+
+        terdekatIndices.forEach(idx => {
+            for (let i = Math.max(0, idx - 3); i <= Math.min(stops.length - 1, idx + 3); i++) {
+                isVisible[i] = true;
+            }
+        });
+
+        if (!isKrl) {
+            isVisible[0] = true;
+            isVisible[stops.length - 1] = true;
+        }
+    }
 
     let html = '';
+    let i = 0;
+    let dropCounter = 0;
 
-    const renderToggleNode = (id, label) => `
+    const renderToggleNode = (id, count) => `
         <div class="relative pb-6 flex items-start font-sans">
             <div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>
             <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-3.5 shrink-0" style="border-color: ${mainRouteColor};"></div>
@@ -423,45 +446,32 @@ function renderTimeline(stops) {
                 <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
                     <div class="flex items-center gap-2.5">
                         <svg class="w-4 h-4 text-primary opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
-                        <span class="text-[13px] font-bold text-primary group-hover:text-blue-700 transition-colors">${label}</span>
+                        <span class="text-[13px] font-bold text-primary group-hover:text-blue-700 transition-colors">${count} pemberhentian</span>
                     </div>
                     <svg class="w-5 h-5 text-primary chevron transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
             </div>
         </div>`;
 
-    if (isLrt || stops.length <= 3) {
-        html = stops.map((s, i) => renderStopHtml(s, i)).join('');
-    } else {
-        if (terdekatIdx > 1) {
-            if (isKrl) {
-                html += renderToggleNode('drop-before', `${terdekatIdx} pemberhentian sebelumnya`);
-                html += `<div id="drop-before" class="hidden">` + stops.slice(0, terdekatIdx).map((s, i) => renderStopHtml(s, i)).join('') + `</div>`;
-            } else {
-                html += renderStopHtml(stops[0], 0);
-                const hideCount = terdekatIdx - 1;
-                html += renderToggleNode('drop-before', `${hideCount} pemberhentian`);
-                html += `<div id="drop-before" class="hidden">` + stops.slice(1, terdekatIdx).map((s, i) => renderStopHtml(s, 1 + i)).join('') + `</div>`;
-            }
+    while (i < stops.length) {
+        if (isVisible[i]) {
+            html += renderStopHtml(stops[i], i);
+            i++;
         } else {
-            html += stops.slice(0, terdekatIdx).map((s, i) => renderStopHtml(s, i)).join('');
-        }
-
-        html += renderStopHtml(stops[terdekatIdx], terdekatIdx);
-
-        let remainingCount = stops.length - 1 - terdekatIdx;
-        if (remainingCount > 1) {
-            if (isKrl) {
-                html += renderToggleNode('drop-after', `${remainingCount} pemberhentian selanjutnya`);
-                html += `<div id="drop-after" class="hidden">` + stops.slice(terdekatIdx + 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
-            } else {
-                const hideCount = remainingCount - 1;
-                html += renderToggleNode('drop-after', `${hideCount} pemberhentian`);
-                html += `<div id="drop-after" class="hidden">` + stops.slice(terdekatIdx + 1, stops.length - 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
-                html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
+            let startHidden = i;
+            while (i < stops.length && !isVisible[i]) {
+                i++;
             }
-        } else if (remainingCount === 1) {
-            html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
+            let endHidden = i - 1;
+            let hiddenCount = endHidden - startHidden + 1;
+            let dropId = 'drop-group-' + dropCounter++;
+            
+            html += renderToggleNode(dropId, hiddenCount);
+            html += `<div id="${dropId}" class="hidden">`;
+            for (let j = startHidden; j <= endHidden; j++) {
+                html += renderStopHtml(stops[j], j);
+            }
+            html += `</div>`;
         }
     }
 
