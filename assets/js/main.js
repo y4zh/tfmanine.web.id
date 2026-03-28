@@ -451,6 +451,11 @@ function renderDetail() {
         `;
     }
 
+    const endIcon = document.getElementById('route-end-icon');
+    const endDot = document.getElementById('route-end-dot');
+    if (endIcon) endIcon.style.borderColor = mainColor;
+    if (endDot) endDot.style.backgroundColor = mainColor;
+
     let floatingCardContainer = document.getElementById('floating-card-wrapper');
     if (!floatingCardContainer) {
         const swapBtn = document.getElementById('btn-swap-dir');
