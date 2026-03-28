@@ -553,36 +553,31 @@ function renderGlobalFooter() {
 
     const footerHTML = `
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row gap-10 justify-between mb-8">
-                <div class="md:w-[45%]">
-                    <div class="flex items-center gap-4 mb-4">
-                        <img src="assets/images/icons_sublogo.svg" alt="Logo Transportasi MAN 9" class="w-16 h-16 object-contain shrink-0">
-                    </div>
-                    <p class="text-gray-300 text-[15px] leading-relaxed font-sans">Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di sekitar MAN 9 Jakarta.</p>
+            <div class="mb-8">
+                <img src="assets/images/icons_sublogo.svg" alt="Logo Transportasi MAN 9" class="h-10 w-auto object-contain mb-5">
+                <p class="text-gray-300 text-[15px] leading-relaxed font-sans max-w-xl">Platform informasi untuk memudahkan aksesibilitas penggunaan transportasi umum di sekitar MAN 9 Jakarta.</p>
+            </div>
+            <div class="flex flex-row gap-8 sm:gap-16 mb-8">
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg mb-4 underline underline-offset-[6px] decoration-2">Kontak</h3>
+                    <ul class="space-y-3.5">
+                        <li><a href="mailto:manine@tfmanine.web.id" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Email</a></li>
+                        <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Direct Message</a></li>
+                    </ul>
                 </div>
-                <div class="md:w-[55%] flex flex-row gap-8 sm:gap-16">
-                    <div class="flex-1">
-                        <h3 class="font-bold text-lg mb-4 underline underline-offset-[6px] decoration-2">Kontak</h3>
-                        <ul class="space-y-3.5">
-                            <li><a href="mailto:manine@tfmanine.web.id" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Email</a></li>
-                            <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Direct Message</a></li>
-                        </ul>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-lg mb-4 underline underline-offset-[6px] decoration-2">Media Sosial</h3>
-                        <ul class="space-y-3.5">
-                            <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.7-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a></li>
-                                </ul>
-                            </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg mb-4 underline underline-offset-[6px] decoration-2">Media Sosial</h3>
+                    <ul class="space-y-3.5">
+                        <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.7-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col md:flex-row items-center justify-center gap-1.5 md:gap-2">
-                        <p>© 2026 Transportasi MAN 9 Jakarta.</p>
-                        <p class="hidden md:block">-</p>
-                        <p>v1.4.4 (Tahap Pengembangan) • Made with ❤️</p>
-                    </div>
+                <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col items-center justify-center gap-1.5">
+                    <p>© 2026 Transportasi MAN 9 Jakarta.</p>
+                    <p>v1.4.5 (Beta)</p>
                 </div>
-            `;
+            </div>
+        `;
 
     footers.forEach(f => {
         f.className = "bg-[#1f2937] text-white pt-12 pb-6 mt-auto w-full font-sans";
