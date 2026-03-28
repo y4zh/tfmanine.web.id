@@ -193,18 +193,6 @@ function getRouteData(slug) {
     });
 }
 
-function getModeLabel(mode) {
-    const labels = {
-        'brt': { text: 'BRT' },
-        'nbrt': { text: 'Angkutan Umum Integrasi' },
-        'mikro': { text: 'Mikrotrans' },
-        'rusun': { text: 'Rusun' },
-        'krl': { text: 'KRL Commuter' },
-        'lrt': { text: 'LRT Jabodebek' }
-    };
-    return labels[mode] || { text: mode };
-}
-
 function toggleDirection() {
     if (!currentRouteDetail || !currentRouteDetail.directions) return;
     if (currentRouteDetail.directions.length < 2) return;
@@ -279,11 +267,39 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        let lineHtml = isLast ? '' : `<div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>`;
-        let nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] bottom-[-12px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+        
+        let isHalteStop = true;
+        if (currentRouteDetail.mode === 'mikro') {
+            isHalteStop = false;
+        } else if (currentRouteDetail.code === '4F' || currentRouteDetail.code === '11Q') {
+            isHalteStop = false;
+        } else if (currentRouteDetail.code === '7P') {
+            const n = stop.name.toLowerCase();
+            if (n.includes('cawang cililitan') || n.includes('simpang cawang')) {
+                isHalteStop = true;
+            } else {
+                isHalteStop = false;
+            }
+        }
 
-        if (isTerdekat) {
-            nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[3px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+        let nodeHtml = '';
+        if (isHalteStop) {
+            nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+            if (isTerdekat) {
+                nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[3px] bg-white z-10 relative mt-1.5 shrink-0 shadow-md" style="border-color: ${mainRouteColor};"></div>`;
+            }
+        } else {
+            nodeHtml = `
+            <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
+                <div class="absolute left-[4px] top-[4px] w-[8px] h-[4px]" style="background-color: ${mainRouteColor};"></div>
+            </div>`;
+            if (isTerdekat) {
+                nodeHtml = `
+                <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
+                    <div class="absolute left-[4px] top-[3px] w-[10px] h-[6px] rounded-r-sm shadow-sm" style="background-color: ${mainRouteColor}; border: 1px solid #fff; border-left: none;"></div>
+                </div>`;
+            }
         }
 
         let labelHtml = '';
@@ -440,7 +456,7 @@ function renderTimeline(stops) {
 
     const renderToggleNode = (id, count) => `
         <div class="relative pb-6 flex items-start font-sans">
-            <div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>
+            <div class="absolute left-[4px] top-[12px] bottom-[-12px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>
             <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-3.5 shrink-0" style="border-color: ${mainRouteColor};"></div>
             <div class="ml-3 flex-1 min-w-0 pb-1 mt-0.5">
                 <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
