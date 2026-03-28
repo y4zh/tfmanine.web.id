@@ -136,20 +136,25 @@ function initGuides() {
     if (!container || !window.appData) return;
 
     container.innerHTML = window.appData.guides.map((guide, index) => `
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden font-sans mb-3">
-            <button onclick="toggleAccordion(${index})" class="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 font-sans mb-3 h-auto">
+            <button onclick="toggleAccordion(${index})" class="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors rounded-xl focus:outline-none">
                 <div class="flex items-center space-x-3">
-                    <span class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold text-sm">${index + 1}</span>
-                    <span class="font-semibold text-gray-800 font-sans">${guide.title}</span>
+                    <span class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold text-sm shrink-0">${index + 1}</span>
+                    <span class="font-semibold text-gray-800 font-sans text-[14px] md:text-[15px] pr-2">${guide.title}</span>
                 </div>
-                <svg id="accordion-icon-${index}" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg id="accordion-icon-${index}" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            <div id="accordion-content-${index}" class="accordion-content hidden px-4 pb-4 pt-2 border-t border-gray-100">
-                <ol class="space-y-3 font-data font-sans list-decimal list-inside text-sm text-gray-600">
-                    ${guide.steps.map((step) => `<li>${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</li>`).join('')}
-                </ol>
+            <div id="accordion-content-${index}" class="hidden px-5 pb-5 pt-1 border-t border-gray-100">
+                <div class="space-y-3.5 font-sans text-[13px] md:text-[14px] text-gray-600 leading-relaxed mt-3">
+                    ${guide.steps.map((step, i) => `
+                        <div class="flex gap-3 items-start">
+                            <span class="font-bold text-gray-400 shrink-0 pt-0.5">${i + 1}.</span>
+                            <p class="break-words whitespace-normal flex-1">${step.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')}</p>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         </div>
     `).join('');
@@ -569,15 +574,15 @@ function renderGlobalFooter() {
                     <h3 class="font-bold text-lg mb-4 underline underline-offset-[6px] decoration-2">Media Sosial</h3>
                     <ul class="space-y-3.5">
                         <li><a href="https://instagram.com/transportmanine" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-[14px] sm:text-[15px] font-sans"><svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.7-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col items-center justify-center gap-1.5">
-                    <p>© 2026 Transportasi MAN 9 Jakarta.</p>
-                    <p>v1.4.5 (Beta)</p>
+                    </ul>
                 </div>
             </div>
-        `;
+            <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col items-center justify-center gap-1.5">
+                <p>© 2026 Transportasi MAN 9 Jakarta.</p>
+                <p>v1.4.5 (Beta)</p>
+            </div>
+        </div>
+    `;
 
     footers.forEach(f => {
         f.className = "bg-[#1f2937] text-white pt-12 pb-6 mt-auto w-full font-sans";
