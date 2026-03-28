@@ -208,8 +208,26 @@ function getModeLabel(mode) {
 function toggleDirection() {
     if (!currentRouteDetail || !currentRouteDetail.directions) return;
     if (currentRouteDetail.directions.length < 2) return;
-    currentDirectionIndex = currentDirectionIndex === 0 ? 1 : 0;
-    switchDirection(currentDirectionIndex);
+
+    const btn = document.getElementById('btn-swap-dir');
+    const startEl = document.getElementById('route-start');
+    const endEl = document.getElementById('route-end');
+
+    if (btn) {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.classList.toggle('rotate-180');
+    }
+
+    if (startEl) startEl.classList.add('opacity-0');
+    if (endEl) endEl.classList.add('opacity-0');
+
+    setTimeout(() => {
+        currentDirectionIndex = currentDirectionIndex === 0 ? 1 : 0;
+        switchDirection(currentDirectionIndex);
+        
+        if (startEl) startEl.classList.remove('opacity-0');
+        if (endEl) endEl.classList.remove('opacity-0');
+    }, 300);
 }
 
 function switchDirection(index) {
@@ -391,7 +409,6 @@ function renderTimeline(stops) {
 
     const isLrt = currentRouteDetail && currentRouteDetail.mode === 'lrt';
     const isKrl = currentRouteDetail && currentRouteDetail.mode === 'krl';
-    const THRESHOLD = 8;
 
     let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
     if (terdekatIdx === -1) terdekatIdx = stops.length - 1;
@@ -399,53 +416,52 @@ function renderTimeline(stops) {
     let html = '';
 
     const renderToggleNode = (id, label) => `
-        <div class="relative pb-6 flex items-start font-sans cursor-pointer group" onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
+        <div class="relative pb-6 flex items-start font-sans">
             <div class="absolute left-[5px] top-[20px] bottom-[-16px] w-[2px] z-0" style="background-color: ${mainRouteColor}80;"></div>
-            <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-1.5 shrink-0" style="border-color: ${mainRouteColor};"></div>
-            <div class="ml-4 flex-1 min-w-0 pb-2">
-                <div class="flex items-center gap-2 mt-[-2px]">
-                    <span class="text-[13px] font-bold text-primary group-hover:text-blue-700 transition-colors">${label}</span>
-                    <svg class="w-4 h-4 text-primary chevron transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </div>
+            <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-3.5 shrink-0" style="border-color: ${mainRouteColor};"></div>
+            <div class="ml-3 flex-1 min-w-0 pb-1 mt-0.5">
+                <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
+                    <div class="flex items-center gap-2.5">
+                        <svg class="w-4 h-4 text-primary opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                        <span class="text-[13px] font-bold text-primary group-hover:text-blue-700 transition-colors">${label}</span>
+                    </div>
+                    <svg class="w-5 h-5 text-primary chevron transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </button>
             </div>
         </div>`;
 
     if (isLrt || stops.length <= 3) {
         html = stops.map((s, i) => renderStopHtml(s, i)).join('');
     } else {
-        if (terdekatIdx >= THRESHOLD) {
+        if (terdekatIdx > 1) {
             if (isKrl) {
-                html += renderToggleNode('drop-single', `${terdekatIdx} pemberhentian sebelumnya`);
-                html += `<div id="drop-single" class="hidden">` + stops.slice(0, terdekatIdx).map((s, i) => renderStopHtml(s, i)).join('') + `</div>`;
-                html += stops.slice(terdekatIdx).map((s, i) => renderStopHtml(s, terdekatIdx + i)).join('');
+                html += renderToggleNode('drop-before', `${terdekatIdx} pemberhentian sebelumnya`);
+                html += `<div id="drop-before" class="hidden">` + stops.slice(0, terdekatIdx).map((s, i) => renderStopHtml(s, i)).join('') + `</div>`;
             } else {
                 html += renderStopHtml(stops[0], 0);
                 const hideCount = terdekatIdx - 1;
-                if (hideCount > 0) {
-                    html += renderToggleNode('drop-single', `${hideCount} pemberhentian`);
-                    html += `<div id="drop-single" class="hidden">` + stops.slice(1, terdekatIdx).map((s, i) => renderStopHtml(s, 1 + i)).join('') + `</div>`;
-                }
-                html += stops.slice(terdekatIdx).map((s, i) => renderStopHtml(s, terdekatIdx + i)).join('');
+                html += renderToggleNode('drop-before', `${hideCount} pemberhentian`);
+                html += `<div id="drop-before" class="hidden">` + stops.slice(1, terdekatIdx).map((s, i) => renderStopHtml(s, 1 + i)).join('') + `</div>`;
             }
         } else {
-            html += stops.slice(0, terdekatIdx + 1).map((s, i) => renderStopHtml(s, i)).join('');
-            let remainingCount = stops.length - 1 - terdekatIdx;
+            html += stops.slice(0, terdekatIdx).map((s, i) => renderStopHtml(s, i)).join('');
+        }
 
+        html += renderStopHtml(stops[terdekatIdx], terdekatIdx);
+
+        let remainingCount = stops.length - 1 - terdekatIdx;
+        if (remainingCount > 1) {
             if (isKrl) {
-                if (remainingCount > 0) {
-                    html += renderToggleNode('drop-single', `${remainingCount} pemberhentian selanjutnya`);
-                    html += `<div id="drop-single" class="hidden">` + stops.slice(terdekatIdx + 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
-                }
+                html += renderToggleNode('drop-after', `${remainingCount} pemberhentian selanjutnya`);
+                html += `<div id="drop-after" class="hidden">` + stops.slice(terdekatIdx + 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
             } else {
-                if (remainingCount > 1) {
-                    const hideCount = remainingCount - 1;
-                    html += renderToggleNode('drop-single', `${hideCount} pemberhentian`);
-                    html += `<div id="drop-single" class="hidden">` + stops.slice(terdekatIdx + 1, stops.length - 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
-                    html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
-                } else if (remainingCount === 1) {
-                    html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
-                }
+                const hideCount = remainingCount - 1;
+                html += renderToggleNode('drop-after', `${hideCount} pemberhentian`);
+                html += `<div id="drop-after" class="hidden">` + stops.slice(terdekatIdx + 1, stops.length - 1).map((s, i) => renderStopHtml(s, terdekatIdx + 1 + i)).join('') + `</div>`;
+                html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
             }
+        } else if (remainingCount === 1) {
+            html += renderStopHtml(stops[stops.length - 1], stops.length - 1);
         }
     }
 
@@ -589,17 +605,17 @@ function renderDetail() {
                             <div class="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center shrink-0">
                                 <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
                             </div>
-                            <span id="route-start" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
+                            <span id="route-start" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate transition-opacity duration-300">--</span>
                         </div>
                         <div class="flex items-center gap-3 z-10 bg-white relative">
                             <div id="route-end-icon" class="w-6 h-6 rounded-full border-[3px] bg-white flex items-center justify-center shrink-0" style="border-color: ${mainColor};">
                                 <div id="route-end-dot" class="w-2 h-2 rounded-full" style="background-color: ${mainColor};"></div>
                             </div>
-                            <span id="route-end" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate">--</span>
+                            <span id="route-end" class="font-medium text-gray-800 text-[14px] md:text-[15px] truncate transition-opacity duration-300">--</span>
                         </div>
                     </div>
-                    <button id="btn-swap-dir" onclick="toggleDirection()" class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 shrink-0 transition-colors shadow-sm border border-red-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button id="btn-swap-dir" onclick="toggleDirection()" class="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 shrink-0 transition-colors shadow-sm border border-red-100 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                         </svg>
                     </button>
