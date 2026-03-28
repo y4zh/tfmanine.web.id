@@ -271,7 +271,7 @@ function renderTimeline(stops) {
         return "#6b7280";
     }
 
-    const renderStopHtml = (stop, idx, endLineAtNode = false) => {
+    const renderStopHtml = (stop, idx, nextIsHidden = false) => {
         if (stop.name === '---' || stop.isSeparator) {
             return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
@@ -279,9 +279,7 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        let lineBottomClass = 'bottom-[-16px]';
-        if(isLast || endLineAtNode) lineBottomClass = 'bottom-[calc(100%-3rem)]';
-        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] ${lineBottomClass} w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] bottom-[-16px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
         
         let isHalteStop = true;
         if (currentRouteDetail.mode === 'mikro') {
@@ -304,15 +302,15 @@ function renderTimeline(stops) {
                 nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[3px] bg-white z-10 relative mt-1.5 shrink-0 shadow-md" style="border-color: ${mainRouteColor};"></div>`;
             }
         } else {
-            if(isTerdekat) {
+            if (isTerdekat) {
                 nodeHtml = `
-                <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10 shadow-lg">
-                    <div class="absolute left-[4px] top-[2px] w-[13px] h-[8px] rounded-r-sm" style="background-color: ${mainRouteColor}; border: 1.5px solid #fff; border-left: none;"></div>
+                <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
+                    <div class="absolute left-[4px] top-[3px] w-[20px] h-[6px]" style="background-color: ${mainRouteColor};"></div>
                 </div>`;
             } else {
                 nodeHtml = `
                 <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
-                    <div class="absolute left-[4px] top-[3px] w-[10px] h-[6px] rounded-r-sm shadow-sm" style="background-color: ${mainRouteColor}; border: 1px solid #fff; border-left: none;"></div>
+                    <div class="absolute left-[4px] top-[4px] w-[16px] h-[4px]" style="background-color: ${mainRouteColor};"></div>
                 </div>`;
             }
         }
@@ -469,16 +467,18 @@ function renderTimeline(stops) {
     let i = 0;
     let dropCounter = 0;
 
-    const renderToggleNode = (id, count) => `
-        <div class="pb-6 flex items-center font-sans relative">
-            <div class="w-[12px] h-[12px] shrink-0"></div>
-            <div class="ml-3 flex-1 min-w-0">
-                <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
-                    <div class="flex items-center gap-2.5">
-                        <svg class="w-4 h-4 text-primary opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
-                        <span class="text-[13px] font-bold text-primary group-hover:text-blue-700 transition-colors">${count} pemberhentian</span>
-                    </div>
-                    <svg class="w-5 h-5 text-primary chevron transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+    const renderToggleNode = (id, count, isAfter) => `
+        <div class="relative pb-6 flex items-start font-sans">
+            <div class="absolute left-[4px] top-[-16px] bottom-[-16px] w-[4px] z-0" style="background-color: ${mainRouteColor}; opacity: 0.3;"></div>
+            <div class="absolute left-[0px] top-[22px] text-gray-500 opacity-60 flex flex-col items-center w-[12px]">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                <svg class="w-3 h-3 -mt-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10"></div>
+            <div class="ml-4 flex-1 min-w-0 pr-2 md:pr-0">
+                <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron-btn').classList.toggle('rotate-180')" class="w-full flex items-center bg-[#fafafa] hover:bg-gray-100 border border-gray-200 rounded-xl px-4 py-3.5 transition-all duration-300 shadow-sm focus:outline-none group">
+                    <svg class="w-5 h-5 text-gray-500 chevron-btn transition-transform duration-300 mr-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    <span class="text-[13.5px] font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Lihat ${count} pemberhentian ${isAfter ? 'selanjutnya' : 'sebelumnya'}</span>
                 </button>
             </div>
         </div>`;
@@ -496,11 +496,13 @@ function renderTimeline(stops) {
             let endHidden = i - 1;
             let hiddenCount = endHidden - startHidden + 1;
             let dropId = 'drop-group-' + dropCounter++;
+            let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
+            let isAfter = startHidden > terdekatIdx;
             
-            html += renderToggleNode(dropId, hiddenCount);
+            html += renderToggleNode(dropId, hiddenCount, isAfter);
             html += `<div id="${dropId}" class="hidden">`;
             for (let j = startHidden; j <= endHidden; j++) {
-                html += renderStopHtml(stops[j], j);
+                html += renderStopHtml(stops[j], j, false);
             }
             html += `</div>`;
         }
