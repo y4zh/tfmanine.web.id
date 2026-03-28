@@ -193,6 +193,18 @@ function getRouteData(slug) {
     });
 }
 
+function getModeLabel(mode) {
+    const labels = {
+        'brt': { text: 'BRT' },
+        'nbrt': { text: 'Angkutan Umum Integrasi' },
+        'mikro': { text: 'Mikrotrans' },
+        'rusun': { text: 'Rusun' },
+        'krl': { text: 'KRL Commuter' },
+        'lrt': { text: 'LRT Jabodebek' }
+    };
+    return labels[mode] || { text: mode };
+}
+
 function toggleDirection() {
     if (!currentRouteDetail || !currentRouteDetail.directions) return;
     if (currentRouteDetail.directions.length < 2) return;
@@ -259,7 +271,7 @@ function renderTimeline(stops) {
         return "#6b7280";
     }
 
-    const renderStopHtml = (stop, idx) => {
+    const renderStopHtml = (stop, idx, endLineAtNode = false) => {
         if (stop.name === '---' || stop.isSeparator) {
             return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
@@ -267,7 +279,9 @@ function renderTimeline(stops) {
         const isLast = idx === stops.length - 1;
         const isTerdekat = stop.label || stop.isActive;
         
-        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] bottom-[-12px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+        let lineBottomClass = 'bottom-[-16px]';
+        if(isLast || endLineAtNode) lineBottomClass = 'bottom-[calc(100%-3rem)]';
+        let lineHtml = isLast ? '' : `<div class="absolute left-[4px] top-[12px] ${lineBottomClass} w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
         
         let isHalteStop = true;
         if (currentRouteDetail.mode === 'mikro') {
@@ -290,11 +304,12 @@ function renderTimeline(stops) {
                 nodeHtml = `<div class="w-[12px] h-[12px] rounded-full border-[3px] bg-white z-10 relative mt-1.5 shrink-0 shadow-md" style="border-color: ${mainRouteColor};"></div>`;
             }
         } else {
-            nodeHtml = `
-            <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
-                <div class="absolute left-[4px] top-[4px] w-[8px] h-[4px]" style="background-color: ${mainRouteColor};"></div>
-            </div>`;
-            if (isTerdekat) {
+            if(isTerdekat) {
+                nodeHtml = `
+                <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10 shadow-lg">
+                    <div class="absolute left-[4px] top-[2px] w-[13px] h-[8px] rounded-r-sm" style="background-color: ${mainRouteColor}; border: 1.5px solid #fff; border-left: none;"></div>
+                </div>`;
+            } else {
                 nodeHtml = `
                 <div class="w-[12px] h-[12px] relative mt-1.5 shrink-0 z-10">
                     <div class="absolute left-[4px] top-[3px] w-[10px] h-[6px] rounded-r-sm shadow-sm" style="background-color: ${mainRouteColor}; border: 1px solid #fff; border-left: none;"></div>
@@ -455,10 +470,9 @@ function renderTimeline(stops) {
     let dropCounter = 0;
 
     const renderToggleNode = (id, count) => `
-        <div class="relative pb-6 flex items-start font-sans">
-            <div class="absolute left-[4px] top-[12px] bottom-[-12px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>
-            <div class="w-[12px] h-[12px] rounded-full border-[2.5px] bg-white z-10 relative mt-3.5 shrink-0" style="border-color: ${mainRouteColor};"></div>
-            <div class="ml-3 flex-1 min-w-0 pb-1 mt-0.5">
+        <div class="pb-6 flex items-center font-sans relative">
+            <div class="w-[12px] h-[12px] shrink-0"></div>
+            <div class="ml-3 flex-1 min-w-0">
                 <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
                     <div class="flex items-center gap-2.5">
                         <svg class="w-4 h-4 text-primary opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
@@ -471,7 +485,8 @@ function renderTimeline(stops) {
 
     while (i < stops.length) {
         if (isVisible[i]) {
-            html += renderStopHtml(stops[i], i);
+            let nextHidden = (i+1 < stops.length && !isVisible[i+1]);
+            html += renderStopHtml(stops[i], i, nextHidden);
             i++;
         } else {
             let startHidden = i;
