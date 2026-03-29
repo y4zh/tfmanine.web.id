@@ -247,6 +247,8 @@ function renderTimeline(stops) {
 
     const mainRouteColor = currentRouteDetail ? (currentRouteDetail.badgeColor || '#0072bc') : '#0072bc';
     const isBrt = currentRouteDetail && currentRouteDetail.mode === 'brt';
+    const isKrl = currentRouteDetail && currentRouteDetail.mode === 'krl';
+    const isLrt = currentRouteDetail && currentRouteDetail.mode === 'lrt';
     const nonStationLabel = isBrt ? 'INTEGRASI BUS STOP :' : 'INTEGRASI HALTE :';
 
     function getColorForRoute(r) {
@@ -261,7 +263,7 @@ function renderTimeline(stops) {
 
     const renderStopHtml = (stop, idx, isLastOverall = false) => {
         if (stop.name === '---' || stop.isSeparator) {
-            return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
+            return '';
         }
 
         const isStart = (idx === 0);
@@ -412,7 +414,9 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `<span class="font-bold text-gray-800 text-[13px]">Stasiun ${stop.stationIntegration.station}</span>`;
             if (stop.stationIntegration.trainLines) {
                 stop.stationIntegration.trainLines.forEach(tl => {
-                    stationIntegrationHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(tl)}">${tl}</span>`;
+                    let labelT = stop.stationIntegration.label || tl;
+                    let bgCol = stop.stationIntegration.labelColor || getColorForRoute(tl);
+                    stationIntegrationHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${bgCol}">${labelT}</span>`;
                 });
             }
             stationIntegrationHtml += `</div>`;
@@ -448,13 +452,21 @@ function renderTimeline(stops) {
         </div>`;
     };
 
-    const isLrt = currentRouteDetail && currentRouteDetail.mode === 'lrt';
-    const isKrl = currentRouteDetail && currentRouteDetail.mode === 'krl';
-
     let isVisible = new Array(stops.length).fill(false);
 
     if (isLrt || stops.length <= 3) {
         isVisible.fill(true);
+    } else if (isKrl) {
+        let separatorIdx = stops.findIndex(s => s.isSeparator);
+        let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
+        
+        if (separatorIdx === -1) separatorIdx = stops.length - 1;
+        if (terdekatIdx === -1) terdekatIdx = 0;
+
+        isVisible[0] = true;
+        for (let i = terdekatIdx; i < separatorIdx; i++) {
+            isVisible[i] = true;
+        }
     } else {
         let terdekatIndices = [];
         stops.forEach((s, i) => {
@@ -469,19 +481,21 @@ function renderTimeline(stops) {
             }
         });
 
-        if (!isKrl) {
-            isVisible[0] = true;
-            isVisible[stops.length - 1] = true;
-        }
+        isVisible[0] = true;
+        isVisible[stops.length - 1] = true;
     }
 
     let html = `<div class="relative">`;
     let i = 0;
     let dropCounter = 0;
 
-    const renderToggleNode = (id, count, isAfter) => `
+    const renderToggleNode = (id, count, isAfter, isKrlSeparator = false) => {
+        let labelText = isKrlSeparator ? `Arah Balik (${count} pemberhentian)` : `Lihat ${count} pemberhentian ${isAfter ? 'selanjutnya' : 'sebelumnya'}`;
+        let lineTop = isKrlSeparator ? 'top-[-10px]' : 'top-0';
+        
+        return `
         <div class="relative pb-6 flex items-start font-sans">
-            <div class="absolute left-[11px] top-0 bottom-0 w-[6px] z-0" style="background-color: ${mainRouteColor}; opacity: 0.3;"></div>
+            <div class="absolute left-[11px] ${lineTop} bottom-0 w-[6px] z-0" style="background-color: ${mainRouteColor}; opacity: 0.3;"></div>
             <div class="w-[28px] flex justify-center shrink-0 relative z-10 mt-[4px]">
                 <div class="bg-white rounded-full p-0.5 shadow-sm border border-gray-200">
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
@@ -489,20 +503,37 @@ function renderTimeline(stops) {
             </div>
             <div class="ml-3 flex-1 min-w-0 pr-2 md:pr-0 relative z-10">
                 <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron-btn').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
-                    <span class="text-[13.5px] font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Lihat ${count} pemberhentian ${isAfter ? 'selanjutnya' : 'sebelumnya'}</span>
+                    <span class="text-[13.5px] font-medium text-gray-600 group-hover:text-gray-800 transition-colors">${labelText}</span>
                     <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 chevron-btn transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
             </div>
         </div>`;
+    };
 
     while (i < stops.length) {
-        if (isVisible[i]) {
+        if (stops[i].isSeparator) {
+            let startHidden = i + 1;
+            let endHidden = stops.length - 1;
+            let hiddenCount = endHidden - startHidden + 1;
+            
+            if (hiddenCount > 0) {
+                let dropId = 'drop-group-' + dropCounter++;
+                html += renderToggleNode(dropId, hiddenCount, true, true);
+                html += `<div id="${dropId}" class="hidden">`;
+                for (let j = startHidden; j <= endHidden; j++) {
+                    let isLastOverall = (j === stops.length - 1);
+                    html += renderStopHtml(stops[j], j, isLastOverall);
+                }
+                html += `</div>`;
+            }
+            break; 
+        } else if (isVisible[i]) {
             let isLastOverall = (i === stops.length - 1);
             html += renderStopHtml(stops[i], i, isLastOverall);
             i++;
         } else {
             let startHidden = i;
-            while (i < stops.length && !isVisible[i]) {
+            while (i < stops.length && !isVisible[i] && !stops[i].isSeparator) {
                 i++;
             }
             let endHidden = i - 1;
@@ -511,7 +542,7 @@ function renderTimeline(stops) {
             let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
             let isAfter = startHidden > terdekatIdx;
             
-            html += renderToggleNode(dropId, hiddenCount, isAfter);
+            html += renderToggleNode(dropId, hiddenCount, isAfter, false);
             html += `<div id="${dropId}" class="hidden">`;
             for (let j = startHidden; j <= endHidden; j++) {
                 let isLastOverall = (j === stops.length - 1);
