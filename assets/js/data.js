@@ -527,10 +527,10 @@ window.appData = {
                         { name: "Kampung Jembatan Ngurah Rai", transfers: ["JAK 39"] },
                         { name: "Perumnas Klender 2", transfers: ["11Q", "JAK 39"] },
                         { name: "Sekolah PGRI Penggilingan", transfers: ["JAK 39"] },
-                        { name: "Penggilingan 1", transfers: ["11B", "11Q", "11R", "JAK 100"],  halteInfo: { type: "integrasi", halte: ["Penggilingan"], routes: ["11","11C","11D","11M"] } },
+                        { name: "Penggilingan 1", transfers: ["11B", "11Q", "11R", "JAK 100"], halteInfo: { type: "integrasi", halte: ["Penggilingan"], routes: ["11","11C","11D","11M"] } },
                         { name: "Pengadilan Negeri Jaktim 1", transfers: ["11B","11C","11R","JAK 100"] },
                         { name: "Jln. Dr. Sumarno", transfers: ["11B","11C","JAK 100"] },
-                        { name: "Walikota Jakarta Timur 1", transfers: ["11B", "11Q", "JAK 100"], halteInfo: { type: "integrasi", halte: ["Walikota Jakarta Timur"], routes: ["11","11C","11D","11M"] } },
+                        { name: "Walikota Jakarta Timur 1", transfers: ["11B", "11Q", "JAK 100"], halteInfo: { type: "integrasi", halte: ["Walikota Jakarta Timur"], routes: ["11","11C","11D","11M"] } }
                     ]
                 },
                 {
@@ -539,7 +539,7 @@ window.appData = {
                         { name: "Walikota Jakarta Timur 1", transfers: ["11B", "11Q", "JAK 100"], halteInfo: { type: "integrasi", halte: ["Walikota Jakarta Timur"], routes: ["11","11C","11D","11M"] } },
                         { name: "Kodim 0505 1", transfers: ["11B","11C","11R","JAK 100"] },
                         { name: "Kodim 0505 2", transfers: ["11B","11C","11R","JAK 100"] },
-                        { name: "Walikota Jakarta Timur 2", transfers: ["11B", "11Q", "JAK 100"], , halteInfo: { type: "integrasi", halte: ["Walikota Jakarta Timur"], routes: ["11","11C","11D","11M"] } },
+                        { name: "Walikota Jakarta Timur 2", transfers: ["11B", "11Q", "JAK 100"], halteInfo: { type: "integrasi", halte: ["Walikota Jakarta Timur"], routes: ["11","11C","11D","11M"] } },
                         { name: "Pengadilan Negeri Jaktim 2", transfers: ["11B","11C","11R","JAK 100"] },
                         { name: "Penggilingan 2", transfers: ["11B", "11Q", "JAK 100"] },
                         { name: "Sbr. Sekolah PGRI Penggilingan", transfers: [] },
@@ -561,7 +561,7 @@ window.appData = {
                         { name: "RS Duren Sawit 2", transfers: ["JAK 02","JAK 26"] },
                         { name: "Gereja Santa Anna 2", transfers: ["JAK 02", "JAK 85"] },
                         { name: "Jln. Teluk Mandar 2", transfers: ["JAK 02", "JAK 85"] },
-                        { name: "Rusun Pondok Bambu", transfers: ["JAK 85"], isActive: true, label: "Terdekat" },
+                        { name: "Rusun Pondok Bambu", transfers: ["JAK 85"], isActive: true, label: "Terdekat" }
                     ]
                 }
             ]
