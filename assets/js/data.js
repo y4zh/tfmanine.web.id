@@ -583,7 +583,7 @@ window.appData = {
                     name: "Arah Kampung Melayu",
                     stops: [
                         { name: "Duren Sawit", transfers: ["JAK 26", "JAK 85"] },
-                        { name: "Gereja Santa Anna 2", transfers: ["JAK 85] },
+                        { name: "Gereja Santa Anna 2", transfers: ["JAK 85"] },
                         { name: "Jl. Teluk Mandar 2", transfers: ["11P", "JAK 85"], isActive: true, label: "Terdekat" },
                         { name: "Jl. Bambu Ori Raya", transfers: [] },
                         { name: "Simpang Gading Raya", transfers: [] },
@@ -630,7 +630,7 @@ window.appData = {
                         { name: "Jl. Otista III Utara", transfers: [] },
                         { name: "Jl. Kebon Nanas Utara", transfers: [] },
                         { name: "Masjid Jami Attaubah 1", transfers: [] },
-                        { name: "Pasar Kam 1", transfers: [] },
+                        { name: "Psr. Kam 1", transfers: [] },
                         { name: "Sbr. Jl. Otista III Komplek III", transfers: [] },
                         { name: "Cipinang Kebon Nanas 1", transfers: ["4K", "10B"] },
                         { name: "Kantor Kecamatan Cipinang Cempedak", transfers: [] },
