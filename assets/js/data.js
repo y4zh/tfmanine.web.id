@@ -560,8 +560,8 @@ window.appData = {
                         { name: "Sbr. SMPN 195", transfers: ["JAK 02", "JAK 26"] },
                         { name: "RS Duren Sawit 2", transfers: ["JAK 02","JAK 26"] },
                         { name: "Gereja Santa Anna 2", transfers: ["JAK 02", "JAK 85"] },
-                        { name: "Jln. Teluk Mandar 2", transfers: ["JAK 02", "JAK 85"]},
-                        { name: "Rusun Pondok Bambu", transfers: ["JAK 85"], isActive: true, label: "Terdekat"  }
+                        { name: "Jln. Teluk Mandar 2", transfers: ["JAK 02", "JAK 85"] },
+                        { name: "Rusun Pondok Bambu", transfers: ["JAK 85"], isActive: true, label: "Terdekat" },
                     ]
                 }
             ]
@@ -583,7 +583,7 @@ window.appData = {
                     name: "Arah Kampung Melayu",
                     stops: [
                         { name: "Duren Sawit", transfers: ["JAK 26", "JAK 85"] },
-                        { name: "Gereja Santa Anna 2", transfers: [] },
+                        { name: "Gereja Santa Anna 2", transfers: ["JAK 85] },
                         { name: "Jl. Teluk Mandar 2", transfers: ["11P", "JAK 85"], isActive: true, label: "Terdekat" },
                         { name: "Jl. Bambu Ori Raya", transfers: [] },
                         { name: "Simpang Gading Raya", transfers: [] },
