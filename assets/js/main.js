@@ -268,7 +268,20 @@ function renderTimeline(stops) {
         const isStartOrEnd = isStart || isLastOverall;
         const isTerdekat = stop.label || stop.isActive;
         
-        let lineHtml = isLastOverall ? '' : `<div class="absolute left-[10px] top-[14px] -bottom-[10px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+        let lineTop = 'top-0';
+        let lineBottom = 'bottom-0';
+
+        if (isStart) lineTop = 'top-[14px]';
+        if (isLastOverall) lineBottom = 'h-[14px]';
+
+        let lineHtml = '';
+        if (stops.length > 1) {
+             if (isLastOverall) {
+                 lineHtml = `<div class="absolute left-[11px] top-0 h-[14px] w-[6px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+             } else {
+                 lineHtml = `<div class="absolute left-[11px] ${lineTop} bottom-0 w-[6px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+             }
+        }
         
         let isHalteStop = true;
         if (currentRouteDetail.mode === 'mikro') {
@@ -284,22 +297,30 @@ function renderTimeline(stops) {
             }
         }
 
-        let nodeHtml = '';
-        if (isHalteStop) {
-            if (isStartOrEnd) {
-                nodeHtml = `<div class="w-[18px] h-[18px] rounded-full bg-white border-[4px] z-10 mt-[1px] shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+        let stubHtml = '';
+        if (!isHalteStop && !isStartOrEnd) {
+            if (isTerdekat) {
+                stubHtml = `<div class="absolute left-[11px] top-[10px] w-[26px] h-[8px] rounded-r-[4px] shadow-sm z-0" style="background-color: ${mainRouteColor};"></div>`;
             } else {
-                nodeHtml = `<div class="w-[14px] h-[14px] rounded-full bg-white border-[3px] z-10 mt-[3px] shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+                stubHtml = `<div class="absolute left-[11px] top-[11px] w-[22px] h-[6px] rounded-r-[3px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+            }
+        }
+
+        let nodeHtml = '';
+        if (isHalteStop || isStartOrEnd) {
+            if (isHalteStop) {
+                if (isStartOrEnd) {
+                    nodeHtml = `<div class="w-[22px] h-[22px] rounded-full bg-white border-[5px] z-10 mt-[3px] shrink-0 relative" style="border-color: ${mainRouteColor};"></div>`;
+                } else if (isTerdekat) {
+                    nodeHtml = `<div class="w-[20px] h-[20px] rounded-full bg-white border-[5px] z-10 mt-[4px] shrink-0 shadow-md relative" style="border-color: ${mainRouteColor};"></div>`;
+                } else {
+                    nodeHtml = `<div class="w-[16px] h-[16px] rounded-full bg-white border-[4px] z-10 mt-[6px] shrink-0 relative" style="border-color: ${mainRouteColor};"></div>`;
+                }
+            } else {
+                nodeHtml = `<div class="w-[22px] h-[22px] bg-white border-[5px] z-10 mt-[3px] shrink-0 rounded-[5px] relative" style="border-color: ${mainRouteColor};"></div>`;
             }
         } else {
-            if (isStartOrEnd) {
-                nodeHtml = `<div class="w-[18px] h-[18px] bg-white border-[4px] z-10 mt-[1px] shrink-0 rounded-[3px]" style="border-color: ${mainRouteColor};"></div>`;
-            } else {
-                nodeHtml = `
-                <div class="w-[14px] h-[14px] mt-[3px] z-10 flex items-center justify-center relative shrink-0">
-                    <div class="absolute left-[7px] w-[15px] h-[5px] rounded-r-[2px]" style="background-color: ${mainRouteColor};"></div>
-                </div>`;
-            }
+            nodeHtml = `<div class="w-[16px] h-[16px] mt-[6px] shrink-0 relative z-10"></div>`;
         }
 
         let labelHtml = '';
@@ -398,9 +419,9 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `</div>`;
         }
 
-        let contentClass = "ml-2 flex-1 min-w-0 pb-2";
+        let contentClass = "ml-3 flex-1 min-w-0 pb-2";
         if (isTerdekat) {
-            contentClass = "ml-1 flex-1 min-w-0 bg-[#f4f7fc] border border-blue-100 rounded-xl p-3.5 -mt-2 relative z-10 flex flex-col justify-center";
+            contentClass = "ml-2 flex-1 min-w-0 bg-[#f4f7fc] border border-blue-100 rounded-xl p-3.5 -mt-2 relative z-10 flex flex-col justify-center";
         }
 
         let pbClass = isLastOverall ? "pb-2" : "pb-6";
@@ -408,7 +429,8 @@ function renderTimeline(stops) {
         return `
         <div class="relative ${pbClass} flex items-start font-sans">
             ${lineHtml}
-            <div class="w-[24px] flex justify-center shrink-0">
+            ${stubHtml}
+            <div class="w-[28px] flex justify-center shrink-0">
                 ${nodeHtml}
             </div>
             <div class="${contentClass}">
@@ -459,13 +481,13 @@ function renderTimeline(stops) {
 
     const renderToggleNode = (id, count, isAfter) => `
         <div class="relative pb-6 flex items-start font-sans">
-            <div class="absolute left-[10px] top-[-10px] -bottom-[10px] w-[4px] z-0" style="background-color: ${mainRouteColor}; opacity: 0.3;"></div>
-            <div class="w-[24px] flex justify-center shrink-0 relative z-10 mt-[3px]">
-                <div class="bg-white rounded-full p-0.5 shadow-sm border border-gray-100">
-                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+            <div class="absolute left-[11px] top-0 bottom-0 w-[6px] z-0" style="background-color: ${mainRouteColor}; opacity: 0.3;"></div>
+            <div class="w-[28px] flex justify-center shrink-0 relative z-10 mt-[4px]">
+                <div class="bg-white rounded-full p-0.5 shadow-sm border border-gray-200">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </div>
-            <div class="ml-2 flex-1 min-w-0 pr-2 md:pr-0 relative z-10">
+            <div class="ml-3 flex-1 min-w-0 pr-2 md:pr-0 relative z-10">
                 <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron-btn').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
                     <span class="text-[13.5px] font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Lihat ${count} pemberhentian ${isAfter ? 'selanjutnya' : 'sebelumnya'}</span>
                     <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 chevron-btn transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
