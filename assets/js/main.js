@@ -264,9 +264,13 @@ function renderTimeline(stops) {
             return `<div class="h-px bg-gray-200 my-6 ml-1 relative"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white px-3 text-[10px] text-gray-400 font-bold font-sans rounded-full border border-gray-100 shadow-sm uppercase tracking-wider">Arah Balik</span></div>`;
         }
 
+        const isStart = (idx === 0);
+        const isStartOrEnd = isStart || isLastOverall;
         const isTerdekat = stop.label || stop.isActive;
-        let isHalteStop = true;
         
+        let lineHtml = isLastOverall ? '' : `<div class="absolute left-[10px] top-[14px] -bottom-[10px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
+        
+        let isHalteStop = true;
         if (currentRouteDetail.mode === 'mikro') {
             isHalteStop = false;
         } else if (currentRouteDetail.code === '4F' || currentRouteDetail.code === '11Q') {
@@ -282,20 +286,18 @@ function renderTimeline(stops) {
 
         let nodeHtml = '';
         if (isHalteStop) {
-            nodeHtml = `<div class="w-[14px] h-[14px] rounded-full border-[3px] bg-white z-10 relative mt-[3px] shrink-0" style="border-color: ${mainRouteColor};"></div>`;
-            if (isTerdekat) {
-                nodeHtml = `<div class="w-[14px] h-[14px] rounded-full border-[3.5px] bg-white z-10 relative mt-[3px] shrink-0 shadow-md" style="border-color: ${mainRouteColor};"></div>`;
+            if (isStartOrEnd) {
+                nodeHtml = `<div class="w-[18px] h-[18px] rounded-full bg-white border-[4px] z-10 mt-[1px] shrink-0" style="border-color: ${mainRouteColor};"></div>`;
+            } else {
+                nodeHtml = `<div class="w-[14px] h-[14px] rounded-full bg-white border-[3px] z-10 mt-[3px] shrink-0" style="border-color: ${mainRouteColor};"></div>`;
             }
         } else {
-            if (isTerdekat) {
-                nodeHtml = `
-                <div class="w-[14px] h-[14px] relative mt-[3px] shrink-0 z-10">
-                    <div class="absolute left-[5px] top-[3px] w-[24px] h-[8px] rounded-r-[4px] shadow-sm" style="background-color: ${mainRouteColor};"></div>
-                </div>`;
+            if (isStartOrEnd) {
+                nodeHtml = `<div class="w-[18px] h-[18px] bg-white border-[4px] z-10 mt-[1px] shrink-0 rounded-[3px]" style="border-color: ${mainRouteColor};"></div>`;
             } else {
                 nodeHtml = `
-                <div class="w-[14px] h-[14px] relative mt-[3px] shrink-0 z-10">
-                    <div class="absolute left-[5px] top-[4px] w-[20px] h-[6px] rounded-r-[3px]" style="background-color: ${mainRouteColor};"></div>
+                <div class="w-[14px] h-[14px] mt-[3px] z-10 flex items-center justify-center relative shrink-0">
+                    <div class="absolute left-[7px] w-[15px] h-[5px] rounded-r-[2px]" style="background-color: ${mainRouteColor};"></div>
                 </div>`;
             }
         }
@@ -396,16 +398,19 @@ function renderTimeline(stops) {
             stationIntegrationHtml += `</div>`;
         }
 
-        let contentClass = "ml-4 flex-1 min-w-0 pb-2";
+        let contentClass = "ml-2 flex-1 min-w-0 pb-2";
         if (isTerdekat) {
-            contentClass = "ml-3 flex-1 min-w-0 bg-[#f4f7fc] border border-blue-100 rounded-xl p-3.5 -mt-2 relative z-10 flex flex-col justify-center";
+            contentClass = "ml-1 flex-1 min-w-0 bg-[#f4f7fc] border border-blue-100 rounded-xl p-3.5 -mt-2 relative z-10 flex flex-col justify-center";
         }
 
         let pbClass = isLastOverall ? "pb-2" : "pb-6";
 
         return `
         <div class="relative ${pbClass} flex items-start font-sans">
-            ${nodeHtml}
+            ${lineHtml}
+            <div class="w-[24px] flex justify-center shrink-0">
+                ${nodeHtml}
+            </div>
             <div class="${contentClass}">
                 <div class="flex items-center justify-between w-full gap-2">
                     <div class="flex items-center flex-wrap gap-1.5">
@@ -449,15 +454,18 @@ function renderTimeline(stops) {
     }
 
     let html = `<div class="relative">`;
-    html += `<div class="absolute left-[5px] top-[10px] bottom-[20px] w-[4px] z-0" style="background-color: ${mainRouteColor};"></div>`;
-
     let i = 0;
     let dropCounter = 0;
 
     const renderToggleNode = (id, count, isAfter) => `
         <div class="relative pb-6 flex items-start font-sans">
-            <div class="w-[14px] h-[14px] relative mt-[3px] shrink-0 z-10"></div>
-            <div class="ml-4 flex-1 min-w-0 pr-2 md:pr-0 relative z-10">
+            <div class="absolute left-[10px] top-[-10px] -bottom-[10px] w-[4px] z-0" style="background-color: ${mainRouteColor}; opacity: 0.3;"></div>
+            <div class="w-[24px] flex justify-center shrink-0 relative z-10 mt-[3px]">
+                <div class="bg-white rounded-full p-0.5 shadow-sm border border-gray-100">
+                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+            <div class="ml-2 flex-1 min-w-0 pr-2 md:pr-0 relative z-10">
                 <button onclick="document.getElementById('${id}').classList.toggle('hidden'); this.querySelector('.chevron-btn').classList.toggle('rotate-180')" class="w-full flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm focus:outline-none group">
                     <span class="text-[13.5px] font-medium text-gray-600 group-hover:text-gray-800 transition-colors">Lihat ${count} pemberhentian ${isAfter ? 'selanjutnya' : 'sebelumnya'}</span>
                     <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 chevron-btn transition-transform duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
@@ -761,7 +769,7 @@ function renderGlobalFooter() {
             </div>
             <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col items-center justify-center gap-1.5">
                 <p>© 2026 Transportasi MAN 9 Jakarta.</p>
-                <p>v1.4.9 (Beta version)</p>
+                <p>v1.4.5 (Beta)</p>
             </div>
         </div>
     `;
