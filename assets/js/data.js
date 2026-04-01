@@ -1,3 +1,5 @@
+// males misah2in,ntar aja deh 
+// ilyas suka dimsum nyam nyam @dimsumcikini/@yazhwill
 window.appData = {
     locations: [
         { name: "MAN 9 Jakarta", type: "school", coords: [106.910491, -6.241088], desc: "Jl. Hj Dogol No 54, Pondok Bambu" },
@@ -429,12 +431,12 @@ window.appData = {
                         { name: "Taman UT Aheme", transfers: ["11P"] },
                         { name: "Masjid Jami Nurul Ain 2", transfers: ["11P"] },
                         { name: "Sbr. Swadaya Raya", transfers: ["11P", "JAK 42"] },
-                        { name: "Jl. Kel. Raya", transfers: ["11P", "JAK 02", "JAK 26", "JAK 42"], isActive: true },
+                        { name: "Jln. Kel. Raya", transfers: ["11P", "JAK 02", "JAK 26", "JAK 42"], isActive: true },
                         { name: "Masjid Jami Al Barkah 2", transfers: ["11P", "JAK 02", "JAK 26", "JAK 42"] },
                         { name: "RS Duren Sawit", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
                         { name: "Komplek Abadi 2", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
                         { name: "Komplek Wijaya Kusuma 2", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
-                        { name: "Jl. Melati Bhakti", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
+                        { name: "Jln. Melati Bhakti", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
                         { name: "Masjid Jami At Taqwa 2", transfers: [] },
                         { name: "Cipinang Indah", transfers: [] },
                         { name: "Simpang Perintis 2", transfers: [] },
@@ -466,15 +468,15 @@ window.appData = {
                         { name: "Simpang Perintis 1", transfers: [] },
                         { name: "Cipinang BKT", transfers: [] },
                         { name: "Masjid Jami At Taqwa 1", transfers: [] },
-                        { name: "Jl. Mesjid Abidin", transfers: ["JAK 26"] },
+                        { name: "Jln. Mesjid Abidin", transfers: ["JAK 26"] },
                         { name: "Komplek Wijaya Kusuma 1", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
                         { name: "Komplek Abadi 1", transfers: ["JAK 26", "JAK 35", "JAK 42"] },
                         { name: "Baladewa Residence", transfers: ["11P", "JAK 42"] },
                         { name: "Masjid Jami Al Barkah 1", transfers: ["11P", "JAK 42"] },
-                        { name: "Jl. Serdang", transfers: ["11P", "JAK 39", "JAK 42"], isActive: true },
-                        { name: "Jl. Swadaya Raya", transfers: ["11P", "JAK 39"] },
+                        { name: "Jln. Serdang", transfers: ["11P", "JAK 39", "JAK 42"], isActive: true },
+                        { name: "Jln. Swadaya Raya", transfers: ["11P", "JAK 39"] },
                         { name: "Masjid Jami Nurul Ain 1", transfers: ["11P"] },
-                        { name: "Jl. H. Aman", transfers: ["11P", "JAK 99"] },
+                        { name: "Jln. H. Aman", transfers: ["11P", "JAK 99"] },
                         { name: "Wisma Atlet Radin Inten", transfers: ["11P", "JAK 99"] },
                         { name: "Budhaya Santo Agustinus", transfers: ["11P", "JAK 99"] },
                         { name: "Dinas Kebersihan Duren Sawit", transfers: ["11P", "JAK 39", "JAK 99"] },
@@ -584,16 +586,16 @@ window.appData = {
                     stops: [
                         { name: "Duren Sawit", transfers: ["JAK 26", "JAK 85"] },
                         { name: "Gereja Santa Anna 2", transfers: ["JAK 85"] },
-                        { name: "Jl. Teluk Mandar 2", transfers: ["11P", "JAK 85"], isActive: true, label: "Terdekat" },
-                        { name: "Jl. Bambu Ori Raya", transfers: [] },
+                        { name: "Jln. Teluk Mandar 2", transfers: ["11P", "JAK 85"], isActive: true, label: "Terdekat" },
+                        { name: "Jln. Bambu Ori Raya", transfers: [] },
                         { name: "Simpang Gading Raya", transfers: [] },
                         { name: "Ps. Pd. Bambu 2", transfers: [] },
-                        { name: "Jl. Kejaksaan Pondok Bambu", transfers: [] },
+                        { name: "Jln. Kejaksaan Pondok Bambu", transfers: [] },
                         { name: "Simpang Pahlawan Revolusi 2", transfers: ["4F"] },
-                        { name: "Jl. Keamanan", transfers: ["4F"] },
+                        { name: "Jln. Keamanan", transfers: ["4F"] },
                         { name: "Simpang Pondok Bambu Batas 4", transfers: ["4F"] },
                         { name: "Simpang Pondok Bambu Batas 3", transfers: ["4F"] },
-                        { name: "Jl. Madrasah Bambu Batas", transfers: [] },
+                        { name: "Jln. Madrasah Bambu Batas", transfers: [] },
                         { name: "Univ. Borobudur 2", transfers: ["7P", "JAK 84", "JAK 85"] },
                         { name: "Mall Cipinang Indah 2", transfers: ["7P", "JAK 84", "JAK 85"] },
                         { name: "CPI Belakang 2", transfers: ["JAK 85"] },
@@ -601,19 +603,19 @@ window.appData = {
                         { name: "Simpang Cipinang Indah II", transfers: [] },
                         { name: "Simpang Nusa Cipinang Indah", transfers: [] },
                         { name: "Masjid Al Akhbar PWI 2", transfers: [] },
-                        { name: "Jl. Majalah", transfers: [] },
-                        { name: "Jl. Wijaya I", transfers: [] },
+                        { name: "Jln. Majalah", transfers: [] },
+                        { name: "Jln. Wijaya I", transfers: [] },
                         { name: "Gg. Haji Bunen 2", transfers: [] },
-                        { name: "Jl. Panca Warga 3", transfers: [] },
+                        { name: "Jln. Panca Warga 3", transfers: [] },
                         { name: "SLBN 7 Jakarta", transfers: [] },
                         { name: "TPU Kebon Nanas 2", transfers: ["10B"] },
                         { name: "STMT Trisakti 2", transfers: ["10B"] },
                         { name: "Penas Kalimalang 2", transfers: ["4K", "10B"] },
                         { name: "SPBU Jln. DI Panjaitan", transfers: ["4K"] },
-                        { name: "Jl. Otista III Komplek IV", transfers: [] },
+                        { name: "Jln. Otista III Komplek IV", transfers: [] },
                         { name: "Pasar Kam 2", transfers: [] },
                         { name: "Masjid Jami Attaubah 2", transfers: [] },
-                        { name: "Jl. Otista III Selatan", transfers: [] },
+                        { name: "Jln. Otista III Selatan", transfers: [] },
                         { name: "Simpang Otista III Selatan", transfers: [] },
                         { name: "STIS", transfers: [] },
                         { name: "Bidara Cina 2", transfers: ["11Q"] },
@@ -627,8 +629,8 @@ window.appData = {
                         { name: "Terminal Kampung Melayu", transfers: ["5", "5C", "5M", "5N", "7", "11", "JAK 41", "JAK 42", "JAK 84"] },
                         { name: "Bidara Cina 1", transfers: [] },
                         { name: "Simpang Otista III Utara", transfers: [] },
-                        { name: "Jl. Otista III Utara", transfers: [] },
-                        { name: "Jl. Kebon Nanas Utara", transfers: [] },
+                        { name: "Jln. Otista III Utara", transfers: [] },
+                        { name: "Jln. Kebon Nanas Utara", transfers: [] },
                         { name: "Masjid Jami Attaubah 1", transfers: [] },
                         { name: "Psr. Kam 1", transfers: [] },
                         { name: "Sbr. Jl. Otista III Komplek III", transfers: [] },
@@ -638,10 +640,10 @@ window.appData = {
                         { name: "STMT Trisakti 1", transfers: ["10B"] },
                         { name: "TPU Kebon Nanas 1", transfers: ["10B"] },
                         { name: "SDN Cipinang Besar Selatan", transfers: [] },
-                        { name: "Jl. Catur Tunggal", transfers: [] },
+                        { name: "Jln. Catur Tunggal", transfers: [] },
                         { name: "Gg. Haji Bunen 1", transfers: [] },
                         { name: "Simpang Media Massa", transfers: [] },
-                        { name: "Jl. Cakrawijaya II", transfers: [] },
+                        { name: "Jln. Cakrawijaya II", transfers: [] },
                         { name: "Masjid Al Akhbar PWI 1", transfers: [] },
                         { name: "Simpang Cipinang Nusa Indah", transfers: [] },
                         { name: "Simpang Cipinang Indah I", transfers: [] },
@@ -649,14 +651,14 @@ window.appData = {
                         { name: "CPI Belakang", transfers: ["JAK 85"] },
                         { name: "Mall Cipinang Indah 1", transfers: ["7P", "JAK 84", "JAK 85"] },
                         { name: "Univ. Borobudur 1", transfers: ["7P", "JAK 84", "JAK 85"] },
-                        { name: "Jl. Leman Bambu Batas", transfers: [] },
+                        { name: "Jln. Leman Bambu Batas", transfers: [] },
                         { name: "Simpang Pondok Bambu Batas 1", transfers: [] },
                         { name: "Simpang Pondok Bambu Batas 3", transfers: ["4F"] },
                         { name: "Simpang Pahlawan Revolusi 1", transfers: ["4F"] },
                         { name: "Ps. Pondok Bambu 1", transfers: [] },
                         { name: "Sekolah Tunas Cemerlang", transfers: [] },
-                        { name: "Jl. Bambu Ori I", transfers: [] },
-                        { name: "Jl. Teluk Mandar 1", transfers: ["11P", "JAK 85"], isActive: true, label: "Terdekat" },
+                        { name: "Jln. Bambu Ori I", transfers: [] },
+                        { name: "Jln. Teluk Mandar 1", transfers: ["11P", "JAK 85"], isActive: true, label: "Terdekat" },
                         { name: "Gereja Santa Anna 1", transfers: [] },
                         { name: "Laut Banda", transfers: ["JAK 26"] },
                         { name: "Kel. Duren Sawit", transfers: ["JAK 26"] },
@@ -804,7 +806,7 @@ window.appData = {
                 {
                     name: "via Manggarai",
                     stops: [
-                        // --- FASE 1: Cikarang s.d. Kampung Bandan (MUNCUL) ---
+                        // --- CKR - KPB VIA MRI ---
                         { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -838,10 +840,10 @@ window.appData = {
                         { name: "Angke", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
                         
-                        // --- PEMISAH: Semua di bawah ini masuk DROPDOWN ---
+                        // --- masuk dropdon ---
                         { name: "---", transfers: [], isSeparator: true },
 
-                        // --- FASE 2: Arah Balik ke Cikarang (TERSEMBUNYI) ---
+                        // --- KPB - CKR VIA PSE hodden---
                         { name: "Rajawali", transfers: [] },
                         { name: "Kemayoran", transfers: [] },
                         { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
@@ -876,7 +878,7 @@ window.appData = {
                 {
                     name: "via Pasar Senen",
                     stops: [
-                        // --- FASE 1: Cikarang s.d. Kampung Bandan (MUNCUL) ---
+                        // --- CKR - KPB VIA PSE ---
                         { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -908,10 +910,10 @@ window.appData = {
                         { name: "Rajawali", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
 
-                        // --- PEMISAH: Semua di bawah ini masuk DROPDOWN ---
+                        // --- dropdon ---
                         { name: "---", transfers: [], isSeparator: true },
 
-                        // --- FASE 2: Arah Balik ke Cikarang (TERSEMBUNYI) ---
+                        // --- KPB - CKR VIA MRI hidden---
                         { name: "Angke", transfers: [] },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
@@ -1085,8 +1087,11 @@ window.routeColors = {
     "CB | Cibubur": "#21409a",      // Lin Cibubur
     "BK | Bekasi": "#006838",      // Lin Bekasi (LRT)
     "MRT": "#ca2047",    // MRT Lin Utara Selatan
-    "KRL": "#26baed",     // Generic KRL
+    "KRL": "#26baed",     // KRL
     "LW | Walahar" : "#b6b7b7",
     "LJ | Jatiluhur" : "#404040",
     "Whoosh": "#7B0D1E"
 };
+
+// ilyas suka dimsum nyam nyam @dimsumcikini/@yazhwill
+
