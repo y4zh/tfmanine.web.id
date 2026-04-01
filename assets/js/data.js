@@ -879,7 +879,7 @@ window.appData = {
                     name: "via Pasar Senen",
                     stops: [
                         // --- CKR - KPB VIA PSE ---
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
@@ -1076,6 +1076,7 @@ window.routeColors = {
     "B25": "#A9C498",
     "D11": "#669043",
     "2B": "#266e9a",
+    "TWM-K1": "#2F4FA2#",
 
     // KRL Train Lines
     "A | Basoetta": "#262262",      // Lin Bandara Soetta
