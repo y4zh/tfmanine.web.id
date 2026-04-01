@@ -38,7 +38,7 @@ const ROUTE_DATA_MAPPING = {
         line: 'Cikarang Loop Line.geojson',
         stops: null, 
         color: '#26baed'
-       }
+    }
 };
 
 async function initRouteMap(map, routeCode) {
@@ -59,16 +59,16 @@ async function initRouteMap(map, routeCode) {
             if (map.getLayer('line-main')) map.removeLayer('line-main');
             if (map.getLayer('line-casing')) map.removeLayer('line-casing');
             map.removeSource('route-line');
-            map.removeSource('route-stops');
+            if (map.getSource('route-stops')) map.removeSource('route-stops');
         }
 
         map.addSource('route-line', { type: 'geojson', data: geojsonData });
-        map.addSource('route-stops', { type: 'geojson', data: `assets/data/${config.stops}` });
 
         map.addLayer({
             id: 'line-casing',
             type: 'line',
             source: 'route-line',
+            filter: ['==', '$type', 'LineString'],
             paint: { 'line-color': '#FFFFFF', 'line-width': 6, 'line-opacity': 0.8 }
         });
 
@@ -76,34 +76,57 @@ async function initRouteMap(map, routeCode) {
             id: 'line-main',
             type: 'line',
             source: 'route-line',
+            filter: ['==', '$type', 'LineString'],
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: { 'line-color': config.color, 'line-width': 4 }
         });
 
-        map.addLayer({
-            id: 'stop-points',
-            type: 'circle',
-            source: 'route-stops',
-            paint: {
-                'circle-radius': [
-                    "interpolate", ["linear"], ["zoom"],
-                    10, 2,
-                    14, 5,
-                    18, 10
-                ],
-                'circle-color': '#FFFFFF',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': config.color
-            }
-        });
+        
+        if (config.stops) {
+            map.addSource('route-stops', { type: 'geojson', data: `assets/data/${config.stops}` });
+            map.addLayer({
+                id: 'stop-points',
+                type: 'circle',
+                source: 'route-stops',
+                paint: {
+                    'circle-radius': [
+                        "interpolate", ["linear"], ["zoom"],
+                        10, 2,
+                        14, 5,
+                        18, 10
+                    ],
+                    'circle-color': '#FFFFFF',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': config.color
+                }
+            });
+        } elsse {
+            map.addLayer({
+                id: 'stop-points',
+                type: 'circle',
+                source: 'route-line',
+                filter: ['==', '$type', 'Point'],
+                paint: {
+                    'circle-radius': [
+                        "interpolate", ["linear"], ["zoom"],
+                        10, 2,
+                        14, 5,
+                        18, 10
+                    ],
+                    'circle-color': '#FFFFFF',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': config.color
+                }
+            });
+        }
 
-        // BUG FIX: Pindahkan stop layer ke paling atas agar tidak tertimpa garis
         if (map.getLayer('stop-points')) {
             map.moveLayer('stop-points');
         }
 
         map.on('click', 'stop-points', (e) => {
-            const name = e.features[0].properties.stop_name;
+            const props = e.features[0].properties;
+            const name = props.stop_name || props.title || 'Stasiun/Halte';
             new mapboxgl.Popup()
                 .setLngLat(e.lngLat)
                 .setHTML(`<p style="font-family: 'Plus Jakarta Sans', sans-serif;" class="font-bold text-sm text-gray-800">${name}</p>`)
@@ -120,6 +143,8 @@ async function initRouteMap(map, routeCode) {
                 c.forEach(line => line.forEach(pt => bounds.extend(pt)));
             } else if (f.geometry.type === 'LineString') {
                 c.forEach(pt => bounds.extend(pt));
+            } else if (f.geometry.type === 'Point') {
+                bounds.extend(c);
             }
         });
         map.fitBounds(bounds, { padding: 40, duration: 1500 });
