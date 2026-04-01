@@ -807,7 +807,7 @@ window.appData = {
                     name: "via Manggarai",
                     stops: [
                         // --- CKR - KPB VIA MRI ---
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg", "icon-bus.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
@@ -872,14 +872,14 @@ window.appData = {
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] }
+                        { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg", "icon-bus.svg"] }
                     ]
                 },
                 {
                     name: "via Pasar Senen",
                     stops: [
                         // --- CKR - KPB VIA PSE ---
-                        { name: "Cikarang", transfers: ["LJ | Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg"] },
+                        { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg", "icon-bus.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Tambun", transfers: [] },
@@ -937,14 +937,14 @@ window.appData = {
                         { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
                         { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
                         { name: "Klender Baru", transfers: [] },
-                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"] },
+                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"], icons : ["icon-bus.svg"] },
                         { name: "Kranji", transfers: [] },
                         { name: "Bekasi", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
                         { name: "Tambun", transfers: [] },
                         { name: "Cibitung", transfers: [] },
                         { name: "Metland Telaga Murni", transfers: [] },
-                        { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar"], icons: ["KAJJ.svg"] }
+                        { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg", "icon-bus.svg"] }
                     ]
                 }
             ]
