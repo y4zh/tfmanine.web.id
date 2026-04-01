@@ -1076,7 +1076,7 @@ window.routeColors = {
     "B25": "#A9C498",
     "D11": "#669043",
     "2B": "#266e9a",
-    "TWM-K1": "#2F4FA2#",
+    "TWM-K1": "#2F4FA2",
 
     // KRL Train Lines
     "A | Basoetta": "#262262",      // Lin Bandara Soetta
