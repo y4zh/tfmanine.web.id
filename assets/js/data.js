@@ -787,7 +787,7 @@ window.appData = {
             ]
         },
 
-     // Rail - UPDATE: KRL Cikarang Loop (Dropdown setelah Kpb Bandan)
+     // KRL Cikarang Loop (Dropdown setelah Kpb Bandan)
         {
             id: "KRL-C",
             code: "C",
@@ -816,12 +816,35 @@ window.appData = {
                         { name: "Kranji", transfers: [] },
                         { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"] },
                         { name: "Klender Baru", transfers: ["JAK 85"] },
-                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
-                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
+                        { 
+                            name: "Buaran", 
+                            transfers: [], 
+                            isActive: true, 
+                            label: "Terdekat", 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "integrasi", 
+                                stops: [
+                                    { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
+                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                ] 
+                            } 
+                        },
+                        { 
+                            name: "Klender", 
+                            transfers: [], 
+                            isActive: true, 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                halte: ["Stasiun Klender"], 
+                                routes: ["11", "11M"] 
+                            } 
+                        },
                         {
                             name: "Jatinegara",
                             transfers: [], 
-                            icons: ["KAJJ.svg"],
+                            icons: ["KAJJ.svg", "icon-bus.svg"],
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
@@ -830,12 +853,34 @@ window.appData = {
                                 ]
                             }
                         },
-                        { name: "Matraman", transfers: [], halteInfo: { type: "integrasi", halte: ["Matraman Baru"], routes: ["5", "5C", "B25"] } },
+                        { 
+                            name: "Matraman", 
+                            transfers: [], 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "integrasi", 
+                                halte: ["Matraman Baru"], 
+                                routes: ["5", "5C", "7U", "B25"] 
+                            } 
+                        },
                         { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT", "CB", "BK"] },
                         { name: "BNI City", transfers: ["A | Basoetta"], icons: ["KAB.svg"] },
                         { name: "Karet", transfers: [] },
-                        { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
+                        { 
+                            name: "Tanah Abang", 
+                            transfers: ["R | Rangkasbitung"], 
+                            icons: ["icon-bus.svg"],
+                            trainConnections: ["R | Rangkasbitung"],
+                            halteInfo: {
+                                type: "integrasi",
+                                stops: [
+                                    { halte: "Transjakarta Tanah Abang 1", routes: ["JAK 07", "JAK 08", "JAK 09", "JAK 10", "JAK 11", "JAK 12", "JAK 13", "JAK 14"] },
+                                    { halte: "Transjakarta Tanah Abang 2", routes: ["1H", "1N", "1R", "5M", "8C", "8M", "9D"] },
+                                    { halte: "Explorer Tanah Abang", routes: ["1H", "1N", "1R", "5M", "8M", "9D", "JAK 07", "JAK 11", "JAK 12", "JAK 14"] }
+                                ]
+                            }
+                        },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], icons : ["KAB.svg"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { name: "Angke", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
@@ -853,7 +898,7 @@ window.appData = {
                         { 
                             name: "Jatinegara",
                             transfers: [], 
-                            icons: ["KAJJ.svg"],
+                            icons: ["KAJJ.svg", "icon-bus.svg"],
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
@@ -862,8 +907,31 @@ window.appData = {
                                 ]
                             }
                         },
-                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
-                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
+                        { 
+                            name: "Klender", 
+                            transfers: [], 
+                            isActive: true, 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                halte: ["Stasiun Klender"], 
+                                routes: ["11", "11M"] 
+                            } 
+                        },
+                        { 
+                            name: "Buaran", 
+                            transfers: [], 
+                            isActive: true, 
+                            label: "Terdekat", 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                stops: [
+                                    { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
+                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                ] 
+                            } 
+                        },
                         { name: "Klender Baru", transfers: [] },
                         { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"] },
                         { name: "Kranji", transfers: [] },
@@ -886,14 +954,37 @@ window.appData = {
                         { name: "Bekasi Timur", transfers: [] },
                         { name: "Bekasi", transfers: [], icons: ["KAJJ.svg"]},
                         { name: "Kranji", transfers: [] },
-                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"] },
+                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"], icons: ["icon-bus.svg"] },
                         { name: "Klender Baru", transfers: ["JAK 85"] },
-                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
-                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
+                        { 
+                            name: "Buaran", 
+                            transfers: [], 
+                            isActive: true, 
+                            label: "Terdekat", 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                stops: [
+                                    { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
+                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                ] 
+                            } 
+                        },
+                        { 
+                            name: "Klender", 
+                            transfers: [], 
+                            isActive: true, 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                halte: ["Stasiun Klender"], 
+                                routes: ["11", "11M"] 
+                            } 
+                        },
                         {
                             name: "Jatinegara",
                             transfers: [], 
-                            icons: ["KAJJ.svg"],
+                            icons: ["KAJJ.svg", "icon-bus.svg"],
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
@@ -916,16 +1007,38 @@ window.appData = {
                         // --- KPB - CKR VIA MRI hidden---
                         { name: "Angke", transfers: [] },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
-                        { name: "Tanah Abang", transfers: ["R | Rangkasbitung"], trainConnections: ["R | Rangkasbitung"] },
+                        { 
+                            name: "Tanah Abang", 
+                            transfers: ["R | Rangkasbitung"], 
+                            icons: ["icon-bus.svg"],
+                            trainConnections: ["R | Rangkasbitung"],
+                            halteInfo: {
+                                type: "integrasi",
+                                stops: [
+                                    { halte: "Transjakarta Tanah Abang 1", routes: ["JAK 07", "JAK 08", "JAK 09", "JAK 10", "JAK 11", "JAK 12", "JAK 13", "JAK 14"] },
+                                    { halte: "Transjakarta Tanah Abang 2", routes: ["1H", "1N", "1R", "5M", "8C", "8M", "9D"] },
+                                    { halte: "Explorer Tanah Abang", routes: ["1H", "1N", "1R", "5M", "8M", "9D", "JAK 07", "JAK 11", "JAK 12", "JAK 14"] }
+                                ]
+                            }
+                        },
                         { name: "Karet", transfers: [] },
                         { name: "BNI City", transfers: ["A | Basoetta"], icons: ["KAB.svg"] },
                         { name: "Sudirman", transfers: [], icons: ["MRT.svg", "icon-lrt.svg"], trainConnections: ["MRT","CB","BK"] },
                         { name: "Manggarai", transfers: ["A | Basoetta", "B | Bogor"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "B | Bogor"] },
-                        { name: "Matraman", transfers: [] },
+                        { 
+                            name: "Matraman", 
+                            transfers: [], 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "integrasi", 
+                                halte: ["Matraman Baru"], 
+                                routes: ["5", "5C", "7U", "B25"] 
+                            } 
+                        },
                         {
                             name: "Jatinegara",
                             transfers: [], 
-                            icons: ["KAJJ.svg"],
+                            icons: ["KAJJ.svg", "icon-bus.svg"],
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
@@ -934,10 +1047,33 @@ window.appData = {
                                 ]
                             }
                         },
-                        { name: "Klender", transfers: [], isActive: true, halteInfo: { type: "terdekat", halte: ["Stasiun Klender"], routes: ["11", "11M"] } },
-                        { name: "Buaran", transfers: [], isActive: true, label: "Terdekat", halteInfo: { type: "terdekat", stops: [{ halte: "Simpang Buaran", routes: ["11", "11M"] }, { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }] } },
+                        { 
+                            name: "Klender", 
+                            transfers: [], 
+                            isActive: true, 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                halte: ["Stasiun Klender"], 
+                                routes: ["11", "11M"] 
+                            } 
+                        },
+                        { 
+                            name: "Buaran", 
+                            transfers: [], 
+                            isActive: true, 
+                            label: "Terdekat", 
+                            icons: ["icon-bus.svg"],
+                            halteInfo: { 
+                                type: "terdekat", 
+                                stops: [
+                                    { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
+                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                ] 
+                            } 
+                        },
                         { name: "Klender Baru", transfers: [] },
-                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"], icons : ["icon-bus.svg"] },
+                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"], icons: ["icon-bus.svg"] },
                         { name: "Kranji", transfers: [] },
                         { name: "Bekasi", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
