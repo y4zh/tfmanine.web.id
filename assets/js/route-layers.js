@@ -35,8 +35,8 @@ const ROUTE_DATA_MAPPING = {
         color: '#00b0ec'
     },
     'C': {
-        line: 'Cikarang Loop Line.geojson',
-        stops: null, 
+        line: 'Cikarang Loop Line - Line.geojson',
+        stops: 'Cikarang Loop Line - Stops.geojson', 
         color: '#26baed'
     }
 };
