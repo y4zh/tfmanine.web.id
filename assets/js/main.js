@@ -234,8 +234,8 @@ function switchDirection(index) {
     if (currentDir && currentDir.stops && currentDir.stops.length > 0) {
         const startEl = document.getElementById('route-start');
         const endEl = document.getElementById('route-end');
-        if (startEl) startEl.textContent = currentDir.stops[0].name;
-        if (endEl) endEl.textContent = currentDir.stops[currentDir.stops.length - 1].name;
+        if (startEl) startEl.textContent = currentDir.stops[0].name || "--";
+        if (endEl) endEl.textContent = currentDir.stops[currentDir.stops.length - 1].name || "--";
     }
 
     renderTimeline(currentDir.stops);
@@ -262,6 +262,7 @@ function renderTimeline(stops) {
     }
 
     const renderStopHtml = (stop, idx, isLastOverall = false) => {
+        if (!stop || !stop.name) return '';
         if (stop.name === '---' || stop.isSeparator) {
             return '';
         }
@@ -286,11 +287,11 @@ function renderTimeline(stops) {
         }
         
         let isHalteStop = true;
-        if (currentRouteDetail.mode === 'mikro') {
+        if (currentRouteDetail && currentRouteDetail.mode === 'mikro') {
             isHalteStop = false;
-        } else if (currentRouteDetail.code === '4F' || currentRouteDetail.code === '11Q') {
+        } else if (currentRouteDetail && (currentRouteDetail.code === '4F' || currentRouteDetail.code === '11Q')) {
             isHalteStop = false;
-        } else if (currentRouteDetail.code === '7P') {
+        } else if (currentRouteDetail && currentRouteDetail.code === '7P') {
             const n = stop.name.toLowerCase();
             if (n.includes('cawang cililitan') || n.includes('simpang cawang')) {
                 isHalteStop = true;
@@ -457,8 +458,8 @@ function renderTimeline(stops) {
     if (isLrt || stops.length <= 3) {
         isVisible.fill(true);
     } else if (isKrl) {
-        let separatorIdx = stops.findIndex(s => s.isSeparator);
-        let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
+        let separatorIdx = stops.findIndex(s => s && s.isSeparator);
+        let terdekatIdx = stops.findIndex(s => s && (s.label || s.isActive));
         
         if (separatorIdx === -1) separatorIdx = stops.length - 1;
         if (terdekatIdx === -1) terdekatIdx = 0;
@@ -470,7 +471,7 @@ function renderTimeline(stops) {
     } else {
         let terdekatIndices = [];
         stops.forEach((s, i) => {
-            if (s.label || s.isActive) terdekatIndices.push(i);
+            if (s && (s.label || s.isActive)) terdekatIndices.push(i);
         });
 
         if (terdekatIndices.length === 0) terdekatIndices.push(stops.length - 1);
@@ -511,6 +512,11 @@ function renderTimeline(stops) {
     };
 
     while (i < stops.length) {
+        if (!stops[i]) {
+            i++;
+            continue;
+        }
+
         if (stops[i].isSeparator) {
             let startHidden = i + 1;
             let endHidden = stops.length - 1;
@@ -533,13 +539,13 @@ function renderTimeline(stops) {
             i++;
         } else {
             let startHidden = i;
-            while (i < stops.length && !isVisible[i] && !stops[i].isSeparator) {
+            while (i < stops.length && !isVisible[i] && stops[i] && !stops[i].isSeparator) {
                 i++;
             }
             let endHidden = i - 1;
             let hiddenCount = endHidden - startHidden + 1;
             let dropId = 'drop-group-' + dropCounter++;
-            let terdekatIdx = stops.findIndex(s => s.label || s.isActive);
+            let terdekatIdx = stops.findIndex(s => s && (s.label || s.isActive));
             let isAfter = startHidden > terdekatIdx;
             
             html += renderToggleNode(dropId, hiddenCount, isAfter, false);
@@ -573,7 +579,7 @@ function renderDetail() {
         const existingOverlay = document.getElementById('map-overlay-notif');
         if (existingOverlay) existingOverlay.remove();
         
-        if (route.mode === 'krl' || route.mode === 'lrt') {
+        if ((route.mode === 'krl' || route.mode === 'lrt') && !route.geojson) {
             const overlayHtml = `
             <div id="map-overlay-notif" class="absolute inset-0 bg-white/40 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 rounded-[2.5rem]">
                 <div class="bg-white px-6 py-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 text-center max-w-[280px]">
