@@ -980,7 +980,7 @@ window.appData = {
                         { name: "Cikunir 1", transfers: [] },
                         { name: "Cikunir 2", transfers: [] },
                         { name: "Bekasi Barat", transfers: [] },
-                        { name: "Jati Mulya", transfers: [] }
+                        { name: "Jati Mulya", transfers: ["TWM-K1"] }
                     ]
                 }
             ]
