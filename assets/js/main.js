@@ -579,7 +579,8 @@ function renderDetail() {
         const existingOverlay = document.getElementById('map-overlay-notif');
         if (existingOverlay) existingOverlay.remove();
         
-        if ((route.mode === 'krl' || route.mode === 'lrt') && !route.geojson) {
+        const blockedRoutes = ['BK'];
+        if (blockedRoutes.includes(route.code)) {
             const overlayHtml = `
             <div id="map-overlay-notif" class="absolute inset-0 bg-white/40 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 rounded-[2.5rem]">
                 <div class="bg-white px-6 py-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 text-center max-w-[280px]">
