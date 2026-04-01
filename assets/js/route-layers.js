@@ -51,10 +51,7 @@ async function initRouteMap(map, routeCode) {
 
     try {
         const response = await fetch(`assets/data/${config.line}`);
-        if (!response.ok) {
-            console.error(`File GeoJSON tidak ditemukan: assets/data/${config.line}`);
-            return;
-        }
+        if (!response.ok) return;
         const geojsonData = await response.json();
 
         if (map.getSource('route-line')) {
@@ -151,7 +148,5 @@ async function initRouteMap(map, routeCode) {
         });
         map.fitBounds(bounds, { padding: 40, duration: 1500 });
 
-    } catch (err) { 
-        console.error("Gagal memuat peta rute:", err); 
-    }
+    } catch (err) {}
 }
