@@ -35,8 +35,13 @@ const ROUTE_DATA_MAPPING = {
         color: '#00b0ec'
     },
     'C': {
-        line: 'Cikarang Loop Line.geojson',
-        stops: null, 
+        line: 'Cikarang Loop Line - Line.geojson',
+        stops: 'Cikarang Loop Line - Stops.geojson',
+        color: '#26baed'
+    },
+    'KRL.C': {
+        line: 'Cikarang Loop Line - Line.geojson',
+        stops: 'Cikarang Loop Line - Stops.geojson',
         color: '#26baed'
     }
 };
@@ -50,8 +55,11 @@ async function initRouteMap(map, routeCode) {
     if (!config) return;
 
     try {
-        const response = await fetch(`assets/data/${config.line}`);
+        const lineUrl = encodeURI(`assets/data/${config.line}`);
+        const response = await fetch(lineUrl);
+        
         if (!response.ok) return;
+        
         const geojsonData = await response.json();
 
         if (map.getSource('route-line')) {
@@ -68,7 +76,7 @@ async function initRouteMap(map, routeCode) {
             id: 'line-casing',
             type: 'line',
             source: 'route-line',
-            filter: ['==', '$type', 'LineString'],
+            filter: ['==', ['geometry-type'], 'LineString'],
             paint: { 'line-color': '#FFFFFF', 'line-width': 6, 'line-opacity': 0.8 }
         });
 
@@ -76,13 +84,14 @@ async function initRouteMap(map, routeCode) {
             id: 'line-main',
             type: 'line',
             source: 'route-line',
-            filter: ['==', '$type', 'LineString'],
+            filter: ['==', ['geometry-type'], 'LineString'],
             layout: { 'line-join': 'round', 'line-cap': 'round' },
             paint: { 'line-color': config.color, 'line-width': 4 }
         });
 
         if (config.stops) {
-            map.addSource('route-stops', { type: 'geojson', data: `assets/data/${config.stops}` });
+            const stopsUrl = encodeURI(`assets/data/${config.stops}`);
+            map.addSource('route-stops', { type: 'geojson', data: stopsUrl });
             map.addLayer({
                 id: 'stop-points',
                 type: 'circle',
@@ -104,7 +113,7 @@ async function initRouteMap(map, routeCode) {
                 id: 'stop-points',
                 type: 'circle',
                 source: 'route-line',
-                filter: ['==', '$type', 'Point'],
+                filter: ['==', ['geometry-type'], 'Point'],
                 paint: {
                     'circle-radius': [
                         "interpolate", ["linear"], ["zoom"],
