@@ -33,7 +33,12 @@ const ROUTE_DATA_MAPPING = {
         line: 'Transjakarta - JAK.85 Bintara - Cipinang Indah.geojson',
         stops: 'Transjakarta - JAK.85 Bintara - Cipinang Indah - Stops.geojson',
         color: '#00b0ec'
-    }
+    },
+    'C': {
+        line: 'Cikarang Loop Line.geojson',
+        stops: null, 
+        color: '#26baed'
+       }
 };
 
 async function initRouteMap(map, routeCode) {
