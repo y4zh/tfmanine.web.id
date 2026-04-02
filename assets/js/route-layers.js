@@ -43,6 +43,11 @@ const ROUTE_DATA_MAPPING = {
         line: 'Cikarang Loop Line - Line.geojson',
         stops: 'Cikarang Loop Line - Stops.geojson',
         color: '#26baed'
+    },
+    'LRT-BK': {
+        line: 'LRT BK line.geojson',
+        stops: 'LRT BK stops.geojson',
+        color: '#'
     }
 };
 
