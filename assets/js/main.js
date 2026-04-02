@@ -354,11 +354,12 @@ function renderTimeline(stops) {
             if (stop.halteInfo.stops) {
                 stopsArray = stop.halteInfo.stops;
             } else if (stop.halteInfo.halte) {
-                stopsArray = [{ halte: stop.halteInfo.halte[0], routes: stop.halteInfo.routes }];
+                stopsArray = [{ halte: stop.halteInfo.halte[0], type: stop.halteInfo.type, routes: stop.halteInfo.routes }];
             }
 
             const stasiunStops = [];
-            const halteStops = [];
+            const defaultStops = [];
+            const explicitBusStops = [];
 
             stopsArray.forEach(h => {
                 const routesArr = Array.isArray(h.routes) ? h.routes : (h.routes ? [h.routes] : []);
@@ -369,8 +370,10 @@ function renderTimeline(stops) {
 
                 if (isTrainRoute) {
                     stasiunStops.push(h);
+                } else if (h.type === 'busstop') {
+                    explicitBusStops.push(h);
                 } else {
-                    halteStops.push(h);
+                    defaultStops.push(h);
                 }
             });
 
@@ -389,10 +392,25 @@ function renderTimeline(stops) {
                 halteInfoHtml += `</div>`;
             }
 
-            if (halteStops.length > 0) {
+            if (defaultStops.length > 0) {
                 halteInfoHtml += `<div>`;
                 halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">${nonStationLabel}</div>`;
-                halteStops.forEach((h) => {
+                defaultStops.forEach((h) => {
+                    halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
+                    halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
+                    const rArr = Array.isArray(h.routes) ? h.routes : (h.routes ? [h.routes] : []);
+                    rArr.forEach(r => {
+                        halteInfoHtml += `<span class="px-1.5 py-[2px] rounded-[4px] text-[10px] font-bold text-white font-sans shadow-sm" style="background-color: ${getColorForRoute(r)}">${r}</span>`;
+                    });
+                    halteInfoHtml += `</div>`;
+                });
+                halteInfoHtml += `</div>`;
+            }
+
+            if (explicitBusStops.length > 0) {
+                halteInfoHtml += `<div>`;
+                halteInfoHtml += `<div class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">INTEGRASI BUS STOP :</div>`;
+                explicitBusStops.forEach((h) => {
                     halteInfoHtml += `<div class="flex flex-wrap items-center gap-1.5 mb-1.5 last:mb-0">`;
                     halteInfoHtml += `<span class="font-bold text-gray-800 text-[13px]">${h.halte}</span>`;
                     const rArr = Array.isArray(h.routes) ? h.routes : (h.routes ? [h.routes] : []);
