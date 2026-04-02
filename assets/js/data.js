@@ -1103,7 +1103,7 @@ window.appData = {
                 {
                     name: "Full Route",
                     stops: [
-                        { name: "Dukuh Atas", transfers: ["CB | Cibubur", "BK | Bekasi"], icons: ["icon-bus.svg", "icon-train.svg", "MRT.svg"], trainConnections: ["C | Cikarang", "MRT", "A | Basoetta"], halteInfo: { type: "integrasi", stops: [{ halte: "Galunggung", routes: ["4", "6"] }, { halte: "Dukuh Atas", routes: ["1", "1B", "6A", "6B"] }] }, stationIntegration: { station: "Sudirman", trainLines: ["C | Cikarang"] } },
+                        { name: "Dukuh Atas Bank Syariah Indonesia", transfers: ["CB | Cibubur", "BK | Bekasi"], icons: ["icon-bus.svg", "icon-train.svg", "MRT.svg"], trainConnections: ["C | Cikarang", "MRT", "A | Basoetta"], halteInfo: { type: "integrasi", stops: [{ halte: "Galunggung", routes: ["4", "6"] }, { halte: "Dukuh Atas", routes: ["1", "1B", "6A", "6B"] }] }, stationIntegration: { station: "Sudirman", trainLines: ["C | Cikarang"] } },
                         { name: "Setiabudi", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Setiabudi"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
                         { name: "Rasuna Said", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Rasuna Said"], routes: ["4D", "6", "6A", "6B", "6H", "6M", "13E", "L13E"] } },
                         { name: "Kuningan", transfers: [], icons: ["icon-bus.svg"], halteInfo: { type: "integrasi", halte: ["Kuningan"], routes: ["4D", "6", "6A", "6B", "6H", "6K", "6M", "13E", "L13E"] } },
