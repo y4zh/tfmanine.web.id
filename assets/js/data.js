@@ -806,7 +806,6 @@ window.appData = {
                 {
                     name: "via Manggarai",
                     stops: [
-                        // --- CKR - KPB VIA MRI ---
                         { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg", "icon-bus.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -826,7 +825,7 @@ window.appData = {
                                 type: "integrasi", 
                                 stops: [
                                     { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
-                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                    { halte: "Flyover Radin Inten 1 & 2", type: "busstop", routes: ["11P", "11Q", "JAK 39"] }
                                 ] 
                             } 
                         },
@@ -875,9 +874,9 @@ window.appData = {
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
-                                    { halte: "Transjakarta Tanah Abang 1", routes: ["JAK 07", "JAK 08", "JAK 09", "JAK 10", "JAK 11", "JAK 12", "JAK 13", "JAK 14"] },
-                                    { halte: "Transjakarta Tanah Abang 2", routes: ["1H", "1N", "1R", "5M", "8C", "8M", "9D"] },
-                                    { halte: "Explorer Tanah Abang", routes: ["1H", "1N", "1R", "5M", "8M", "9D", "JAK 07", "JAK 11", "JAK 12", "JAK 14"] }
+                                    { halte: "Transjakarta Tanah Abang 1", type: "busstop", routes: ["JAK 07", "JAK 08", "JAK 09", "JAK 10", "JAK 11", "JAK 12", "JAK 13", "JAK 14"] },
+                                    { halte: "Transjakarta Tanah Abang 2", type: "busstop", routes: ["1H", "1N", "1R", "5M", "8C", "8M", "9D"] },
+                                    { halte: "Explorer Tanah Abang", type: "busstop", routes: ["1H", "1N", "1R", "5M", "8M", "9D", "JAK 07", "JAK 11", "JAK 12", "JAK 14"] }
                                 ]
                             }
                         },
@@ -885,10 +884,8 @@ window.appData = {
                         { name: "Angke", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
                         
-                        // --- masuk dropdon ---
                         { name: "---", transfers: [], isSeparator: true },
 
-                        // --- KPB - CKR VIA PSE hodden---
                         { name: "Rajawali", transfers: [] },
                         { name: "Kemayoran", transfers: [] },
                         { name: "Pasar Senen", transfers: [], icons: ["KAJJ.svg"] },
@@ -928,7 +925,7 @@ window.appData = {
                                 type: "terdekat", 
                                 stops: [
                                     { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
-                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                    { halte: "Flyover Radin Inten 1 & 2", type: "busstop", routes: ["11P", "11Q", "JAK 39"] }
                                 ] 
                             } 
                         },
@@ -946,7 +943,6 @@ window.appData = {
                 {
                     name: "via Pasar Senen",
                     stops: [
-                        // --- CKR - KPB VIA PSE ---
                         { name: "Cikarang", transfers: ["LJ| Jatiluhur","LW | Walahar", "TWM-K1"], icons: ["KAJJ.svg", "icon-bus.svg"] },
                         { name: "Metland Telaga Murni", transfers: [] },
                         { name: "Cibitung", transfers: [] },
@@ -966,7 +962,7 @@ window.appData = {
                                 type: "terdekat", 
                                 stops: [
                                     { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
-                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                    { halte: "Flyover Radin Inten 1 & 2", type: "busstop", routes: ["11P", "11Q", "JAK 39"] }
                                 ] 
                             } 
                         },
@@ -1001,10 +997,8 @@ window.appData = {
                         { name: "Rajawali", transfers: [] },
                         { name: "Kampung Bandan", transfers: ["TP | Tanjung Priok"], trainConnections: ["TP | Tanjung Priok"] },
 
-                        // --- dropdon ---
                         { name: "---", transfers: [], isSeparator: true },
 
-                        // --- KPB - CKR VIA MRI hidden---
                         { name: "Angke", transfers: [] },
                         { name: "Duri", transfers: ["A | Basoetta", "T | Tangerang"], icons: ["KAB.svg"], trainConnections: ["A | Basoetta", "T | Tangerang"] },
                         { 
@@ -1015,9 +1009,9 @@ window.appData = {
                             halteInfo: {
                                 type: "integrasi",
                                 stops: [
-                                    { halte: "Transjakarta Tanah Abang 1", routes: ["JAK 07", "JAK 08", "JAK 09", "JAK 10", "JAK 11", "JAK 12", "JAK 13", "JAK 14"] },
-                                    { halte: "Transjakarta Tanah Abang 2", routes: ["1H", "1N", "1R", "5M", "8C", "8M", "9D"] },
-                                    { halte: "Explorer Tanah Abang", routes: ["1H", "1N", "1R", "5M", "8M", "9D", "JAK 07", "JAK 11", "JAK 12", "JAK 14"] }
+                                    { halte: "Transjakarta Tanah Abang 1", type: "busstop", routes: ["JAK 07", "JAK 08", "JAK 09", "JAK 10", "JAK 11", "JAK 12", "JAK 13", "JAK 14"] },
+                                    { halte: "Transjakarta Tanah Abang 2", type: "busstop", routes: ["1H", "1N", "1R", "5M", "8C", "8M", "9D"] },
+                                    { halte: "Explorer Tanah Abang", type: "busstop", routes: ["1H", "1N", "1R", "5M", "8M", "9D", "JAK 07", "JAK 11", "JAK 12", "JAK 14"] }
                                 ]
                             }
                         },
@@ -1068,12 +1062,12 @@ window.appData = {
                                 type: "terdekat", 
                                 stops: [
                                     { halte: "Simpang Buaran", routes: ["11", "11M"] }, 
-                                    { halte: "Flyover Radin Inten 1 & 2", routes: ["11P", "11Q", "JAK 39"] }
+                                    { halte: "Flyover Radin Inten 1 & 2", type: "busstop", routes: ["11P", "11Q", "JAK 39"] }
                                 ] 
                             } 
                         },
                         { name: "Klender Baru", transfers: [] },
-                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"], icons: ["icon-bus.svg"] },
+                        { name: "Cakung", transfers: ["11B","11C","11M","JAK 100"], icons : ["icon-bus.svg"] },
                         { name: "Kranji", transfers: [] },
                         { name: "Bekasi", transfers: [] },
                         { name: "Bekasi Timur", transfers: [] },
