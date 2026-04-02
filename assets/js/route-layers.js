@@ -47,7 +47,7 @@ const ROUTE_DATA_MAPPING = {
     'LRT-BK': {
         line: 'LRT BK line.geojson',
         stops: 'LRT BK stops.geojson',
-        color: '#'
+        color: '#006838'
     }
 };
 
