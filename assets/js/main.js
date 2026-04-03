@@ -2,6 +2,80 @@ let currentFilter = null;
 let currentSearchQuery = "";
 let currentRouteDetail = null;
 let currentDirectionIndex = 0;
+window.activeDisruptions = [];
+
+const mockUpdates = {
+    'TJ': [
+        { time: "Baru saja", text: "INFO | Terdapat Pengalihan rute 11Q dikarenakan adanya perbaikan jalan di sekitar BKT. Harap maklum." },
+        { time: "1 Jam lalu", text: "INFO | Rute 4F dan 7P beroperasi normal." },
+        { time: "3 Jam lalu", text: "INFO | Layanan Mikrotrans JAK 85 dan JAK 02 lancar." }
+    ],
+    'KRL': [
+        { time: "10 Menit lalu", text: "Terdapat Gangguan persinyalan di Stasiun Jatinegara. Perjalanan KRL Lin Cikarang (C) mengalami antrean." },
+        { time: "2 Jam lalu", text: "Perjalanan KRL Commuter Line lintas Manggarai - Bogor beroperasi normal." }
+    ],
+    'LRT': [
+        { time: "30 Menit lalu", text: "Perjalanan LRT Jabodebek Lin Bekasi (BK) lancar dan normal." },
+        { time: "5 Jam lalu", text: "Stasiun Jati Bening Baru beroperasi normal melayani penumpang." }
+    ]
+};
+
+function switchInfoTab(tab) {
+    document.getElementById('tab-TJ').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
+    document.getElementById('tab-KRL').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
+    document.getElementById('tab-LRT').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
+
+    let activeBtn = document.getElementById('tab-' + tab);
+    activeBtn.className = "px-4 py-2 text-white text-[13px] font-bold rounded-xl shrink-0 shadow-sm transition-all border border-transparent";
+    
+    if(tab === 'KRL') activeBtn.style.backgroundColor = '#FF5733';
+    else if(tab === 'LRT') activeBtn.style.backgroundColor = '#006838';
+    else activeBtn.style.backgroundColor = '#0072bc';
+
+    renderInfoFeed(tab);
+}
+
+function renderInfoFeed(tab) {
+    const container = document.getElementById('info-feed-container');
+    const timeLabel = document.getElementById('last-update-time');
+    if(!container) return;
+
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    if(timeLabel) timeLabel.textContent = "TERAKHIR DIPERBARUI: HARI INI " + timeStr;
+
+    const feeds = mockUpdates[tab] || [];
+    container.innerHTML = feeds.map(feed => `
+        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 block mb-1.5 uppercase tracking-wider">${feed.time}</span>
+            <p class="text-[13.5px] text-gray-700 font-sans leading-relaxed">${feed.text}</p>
+        </div>
+    `).join('');
+
+    analyzeDisruptions();
+}
+
+function analyzeDisruptions() {
+    window.activeDisruptions = [];
+    const allFeeds = [...mockUpdates['TJ'], ...mockUpdates['KRL'], ...mockUpdates['LRT']];
+    
+    allFeeds.forEach(feed => {
+        const text = feed.text.toLowerCase();
+        if (text.includes('gangguan') || text.includes('pengalihan')) {
+            if (window.appData && window.appData.routes) {
+                window.appData.routes.forEach(route => {
+                    const codeLower = route.code.toLowerCase();
+                    if (text.includes(codeLower) || text.includes(`(${codeLower})`) || text.includes(`rute ${codeLower}`)) {
+                        if (!window.activeDisruptions.includes(route.code)) {
+                            window.activeDisruptions.push(route.code);
+                        }
+                    }
+                });
+            }
+        }
+    });
+    updateRouteListUI();
+}
 
 function renderCategories() {
     const container = document.getElementById('category-grid');
@@ -101,24 +175,30 @@ function updateRouteListUI() {
         return `<span class="text-white text-sm font-bold px-3 py-1.5 rounded-lg font-sans" style="background-color: ${color}">${code}</span>`;
     };
 
-    container.innerHTML = filteredRoutes.map(route => `
+    container.innerHTML = filteredRoutes.map(route => {
+        const hasDisrupt = window.activeDisruptions && window.activeDisruptions.includes(route.code);
+        const disruptBadge = hasDisrupt ? `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-md font-sans ml-2 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>GANGGUAN</span>` : '';
+        
+        return `
         <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 mb-3" onclick="openDetail('${route.id}')">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     ${formatBadge(route.code, route.badgeColor || '#0072bc')}
                     <div>
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-2 flex-wrap">
                             <h3 class="font-semibold text-gray-800 font-sans">${route.name}</h3>
                             ${route.subtype === 'rusun' ? '<span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded font-sans">RUSUN</span>' : ''}
+                            ${disruptBadge}
                         </div>
                     </div>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function clearFilter() {
@@ -871,5 +951,11 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSearchQuery = e.target.value.toLowerCase();
             updateRouteListUI();
         });
+    }
+
+    if (document.getElementById('info-feed-container')) {
+        setTimeout(() => {
+            switchInfoTab('TJ');
+        }, 300);
     }
 });
