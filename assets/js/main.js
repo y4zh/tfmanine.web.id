@@ -16,22 +16,26 @@ async function loadLiveUpdates() {
         if (response.ok) {
             liveUpdatesData = await response.json();
         }
-    } catch (error) {
-    }
+    } catch (error) {}
     switchInfoTab('TJ');
 }
 
 function switchInfoTab(tab) {
-    document.getElementById('tab-TJ').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
-    document.getElementById('tab-KRL').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
-    document.getElementById('tab-LRT').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
+    const btnTJ = document.getElementById('tab-TJ');
+    const btnKRL = document.getElementById('tab-KRL');
+    const btnLRT = document.getElementById('tab-LRT');
+
+    if (btnTJ) btnTJ.className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
+    if (btnKRL) btnKRL.className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
+    if (btnLRT) btnLRT.className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
 
     let activeBtn = document.getElementById('tab-' + tab);
-    activeBtn.className = "px-4 py-2 text-white text-[13px] font-bold rounded-xl shrink-0 shadow-sm transition-all border border-transparent";
-    
-    if(tab === 'KRL') activeBtn.style.backgroundColor = '#FF5733';
-    else if(tab === 'LRT') activeBtn.style.backgroundColor = '#006838';
-    else activeBtn.style.backgroundColor = '#0072bc';
+    if (activeBtn) {
+        activeBtn.className = "px-4 py-2 text-white text-[13px] font-bold rounded-xl shrink-0 shadow-sm transition-all border border-transparent";
+        if(tab === 'KRL') activeBtn.style.backgroundColor = '#FF5733';
+        else if(tab === 'LRT') activeBtn.style.backgroundColor = '#006838';
+        else activeBtn.style.backgroundColor = '#0072bc';
+    }
 
     renderInfoFeed(tab);
 }
@@ -66,18 +70,35 @@ function analyzeDisruptions() {
     const allFeeds = [...(liveUpdatesData['TJ'] || []), ...(liveUpdatesData['KRL'] || []), ...(liveUpdatesData['LRT'] || [])];
     
     allFeeds.forEach(feed => {
-        const text = feed.text.toLowerCase();
-        if (text.includes('gangguan') || text.includes('pengalihan')) {
-            if (window.appData && window.appData.routes) {
-                window.appData.routes.forEach(route => {
-                    const codeLower = route.code.toLowerCase();
-                    if (text.includes(codeLower) || text.includes(`(${codeLower})`) || text.includes(`rute ${codeLower}`)) {
-                        if (!window.activeDisruptions.includes(route.code)) {
-                            window.activeDisruptions.push(route.code);
-                        }
+        if (!feed || !feed.text) return;
+        const text = feed.text;
+        
+        if (window.appData && window.appData.routes) {
+            window.appData.routes.forEach(route => {
+                let routeCode = route.code;
+                let isMentioned = false;
+                
+                if (routeCode.startsWith('JAK')) {
+                    const num = routeCode.replace('JAK', '').trim();
+                    const regex1 = new RegExp(`\\bJAK\\s*${num}\\b`, 'i');
+                    const regex2 = new RegExp(`\\bJAKARTA\\s*${num}\\b`, 'i');
+                    if (regex1.test(text) || regex2.test(text) || text.includes(routeCode)) isMentioned = true;
+                } else if (route.mode === 'krl' || route.mode === 'lrt') {
+                    const regex = new RegExp(`\\b${routeCode}\\b`, 'i');
+                    if (regex.test(text) || text.toLowerCase().includes(route.name.toLowerCase().split(' - ')[0])) {
+                        isMentioned = true;
                     }
-                });
-            }
+                    if (routeCode === 'C' && text.toLowerCase().includes('cikarang')) isMentioned = true;
+                    if (routeCode === 'BK' && text.toLowerCase().includes('bekasi')) isMentioned = true;
+                } else {
+                    const regex = new RegExp(`\\b${routeCode}\\b`, 'i');
+                    if (regex.test(text)) isMentioned = true;
+                }
+                
+                if (isMentioned && !window.activeDisruptions.includes(route.code)) {
+                    window.activeDisruptions.push(route.code);
+                }
+            });
         }
     });
     updateRouteListUI();
@@ -183,7 +204,7 @@ function updateRouteListUI() {
 
     container.innerHTML = filteredRoutes.map(route => {
         const hasDisrupt = window.activeDisruptions && window.activeDisruptions.includes(route.code);
-        const disruptBadge = hasDisrupt ? `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-md font-sans flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>GANGGUAN</span>` : '';
+        const disruptBadge = hasDisrupt ? `<span class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-2 py-0.5 rounded-md font-sans ml-2 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>INFO TERKINI</span>` : '';
         
         return `
         <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 mb-3" onclick="openDetail('${route.id}')">
