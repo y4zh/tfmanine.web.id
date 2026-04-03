@@ -4,21 +4,22 @@ let currentRouteDetail = null;
 let currentDirectionIndex = 0;
 window.activeDisruptions = [];
 
-const mockUpdates = {
-    'TJ': [
-        { time: "Baru saja", text: "INFO | Terdapat Pengalihan rute 11Q dikarenakan adanya perbaikan jalan di sekitar BKT. Harap maklum." },
-        { time: "1 Jam lalu", text: "INFO | Rute 4F dan 7P beroperasi normal." },
-        { time: "3 Jam lalu", text: "INFO | Layanan Mikrotrans JAK 85 dan JAK 02 lancar." }
-    ],
-    'KRL': [
-        { time: "10 Menit lalu", text: "Terdapat Gangguan persinyalan di Stasiun Jatinegara. Perjalanan KRL Lin Cikarang (C) mengalami antrean." },
-        { time: "2 Jam lalu", text: "Perjalanan KRL Commuter Line lintas Manggarai - Bogor beroperasi normal." }
-    ],
-    'LRT': [
-        { time: "30 Menit lalu", text: "Perjalanan LRT Jabodebek Lin Bekasi (BK) lancar dan normal." },
-        { time: "5 Jam lalu", text: "Stasiun Jati Bening Baru beroperasi normal melayani penumpang." }
-    ]
+let liveUpdatesData = {
+    'TJ': [],
+    'KRL': [],
+    'LRT': []
 };
+
+async function loadLiveUpdates() {
+    try {
+        const response = await fetch('assets/data/live-update.json');
+        if (response.ok) {
+            liveUpdatesData = await response.json();
+        }
+    } catch (error) {
+    }
+    switchInfoTab('TJ');
+}
 
 function switchInfoTab(tab) {
     document.getElementById('tab-TJ').className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
@@ -37,18 +38,23 @@ function switchInfoTab(tab) {
 
 function renderInfoFeed(tab) {
     const container = document.getElementById('info-feed-container');
-    const timeLabel = document.getElementById('last-update-time');
     if(!container) return;
 
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-    if(timeLabel) timeLabel.textContent = "TERAKHIR DIPERBARUI: HARI INI " + timeStr;
+    const feeds = liveUpdatesData[tab] || [];
+    
+    if (feeds.length === 0) {
+        container.innerHTML = `<div class="flex items-center justify-center h-full text-sm text-gray-400 font-medium">Tidak ada informasi terbaru saat ini.</div>`;
+        analyzeDisruptions();
+        return;
+    }
 
-    const feeds = mockUpdates[tab] || [];
     container.innerHTML = feeds.map(feed => `
-        <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-            <span class="text-[10px] font-bold text-gray-400 block mb-1.5 uppercase tracking-wider">${feed.time}</span>
-            <p class="text-[13.5px] text-gray-700 font-sans leading-relaxed">${feed.text}</p>
+        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <p class="text-[13.5px] text-gray-700 font-sans leading-relaxed mb-3">${feed.text}</p>
+            <div class="flex items-center justify-between border-t border-gray-50 pt-2">
+                <a href="${feed.url || '#'}" target="_blank" class="text-[11px] text-primary font-bold hover:underline">Lihat sumber resmi ↗</a>
+                <span class="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">Diperbarui: ${feed.time}</span>
+            </div>
         </div>
     `).join('');
 
@@ -57,7 +63,7 @@ function renderInfoFeed(tab) {
 
 function analyzeDisruptions() {
     window.activeDisruptions = [];
-    const allFeeds = [...mockUpdates['TJ'], ...mockUpdates['KRL'], ...mockUpdates['LRT']];
+    const allFeeds = [...(liveUpdatesData['TJ'] || []), ...(liveUpdatesData['KRL'] || []), ...(liveUpdatesData['LRT'] || [])];
     
     allFeeds.forEach(feed => {
         const text = feed.text.toLowerCase();
@@ -177,7 +183,7 @@ function updateRouteListUI() {
 
     container.innerHTML = filteredRoutes.map(route => {
         const hasDisrupt = window.activeDisruptions && window.activeDisruptions.includes(route.code);
-        const disruptBadge = hasDisrupt ? `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-md font-sans ml-2 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>GANGGUAN</span>` : '';
+        const disruptBadge = hasDisrupt ? `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-md font-sans flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>GANGGUAN</span>` : '';
         
         return `
         <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 mb-3" onclick="openDetail('${route.id}')">
@@ -955,7 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (document.getElementById('info-feed-container')) {
         setTimeout(() => {
-            switchInfoTab('TJ');
+            loadLiveUpdates();
         }, 300);
     }
 });
