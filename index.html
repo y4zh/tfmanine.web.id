@@ -90,7 +90,7 @@
                 </div>
                 <div>
                     <h3 class="font-bold text-gray-800 text-[16px] font-sans leading-none">Pusat Informasi Layanan</h3>
-                    <p class="text-[11px] text-gray-500 font-sans mt-1.5 uppercase tracking-wider font-bold">Informasi Operasional Terkini</p>
+                    <p class="text-[11px] text-gray-500 font-sans mt-1.5 uppercase tracking-wider font-bold">INFO RESMI X/TWITTER TERKINI</p>
                 </div>
             </div>
 
@@ -100,12 +100,21 @@
                 <button onclick="switchInfoTab('LRT')" id="tab-LRT" class="px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200">LRT Jabodebek</button>
             </div>
 
-            <div id="info-feed-container" class="h-[300px] overflow-y-auto rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-3">
-                <div class="flex items-center justify-center h-full text-sm text-gray-400 font-medium">Memuat informasi...</div>
+            <div class="rounded-xl overflow-hidden border border-gray-100 bg-gray-50 h-[450px] relative">
+                <div id="feed-TJ" class="absolute inset-0 overflow-y-auto">
+                    <a class="twitter-timeline" data-height="450" data-theme="light" data-chrome="noheader nofooter noborders transparent" href="https://twitter.com/PT_Transjakarta?ref_src=twsrc%5Etfw">Memuat cuitan Transjakarta...</a>
+                </div>
+                <div id="feed-KRL" class="absolute inset-0 overflow-y-auto hidden">
+                    <a class="twitter-timeline" data-height="450" data-theme="light" data-chrome="noheader nofooter noborders transparent" href="https://twitter.com/CommuterLine?ref_src=twsrc%5Etfw">Memuat cuitan KRL Commuter Line...</a>
+                </div>
+                <div id="feed-LRT" class="absolute inset-0 overflow-y-auto hidden">
+                    <a class="twitter-timeline" data-height="450" data-theme="light" data-chrome="noheader nofooter noborders transparent" href="https://twitter.com/lrtjabodebek?ref_src=twsrc%5Etfw">Memuat cuitan LRT Jabodebek...</a>
+                </div>
             </div>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
             
             <p class="mt-4 text-[10px] text-gray-400 font-sans text-center">
-                Data operasional ditarik dari informasi resmi masing-masing moda
+                Data ditarik secara real-time dari akun X (Twitter) resmi masing-masing moda
             </p>
         </div>
     </section>
