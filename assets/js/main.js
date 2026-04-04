@@ -847,7 +847,7 @@ function renderGlobalFooter() {
             </div>
             <div class="border-t border-gray-700 pt-5 pb-2 text-center text-[13px] md:text-[14px] text-gray-400 font-sans flex flex-col items-center justify-center gap-1.5">
                 <p>© 2026 Transportasi MAN 9 Jakarta.</p>
-                <p>v1.4.5 (Beta)</p>
+                <p>v1.4.9 (Beta)</p>
             </div>
         </div>
     `;
