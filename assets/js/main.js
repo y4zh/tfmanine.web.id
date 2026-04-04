@@ -3,35 +3,6 @@ let currentSearchQuery = "";
 let currentRouteDetail = null;
 let currentDirectionIndex = 0;
 
-function switchInfoTab(tab) {
-    const btnTJ = document.getElementById('tab-TJ');
-    const btnKRL = document.getElementById('tab-KRL');
-    const btnLRT = document.getElementById('tab-LRT');
-
-    if (btnTJ) btnTJ.className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
-    if (btnKRL) btnKRL.className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
-    if (btnLRT) btnLRT.className = "px-4 py-2 bg-gray-50 text-gray-500 text-[13px] font-bold rounded-xl shrink-0 transition-all border border-gray-200";
-
-    let activeBtn = document.getElementById('tab-' + tab);
-    if (activeBtn) {
-        activeBtn.className = "px-4 py-2 text-white text-[13px] font-bold rounded-xl shrink-0 shadow-sm transition-all border border-transparent";
-        if(tab === 'KRL') activeBtn.style.backgroundColor = '#FF5733';
-        else if(tab === 'LRT') activeBtn.style.backgroundColor = '#006838';
-        else activeBtn.style.backgroundColor = '#0072bc';
-    }
-
-    const feedTJ = document.getElementById('feed-TJ');
-    const feedKRL = document.getElementById('feed-KRL');
-    const feedLRT = document.getElementById('feed-LRT');
-
-    if (feedTJ) feedTJ.classList.add('hidden');
-    if (feedKRL) feedKRL.classList.add('hidden');
-    if (feedLRT) feedLRT.classList.add('hidden');
-
-    const activeFeed = document.getElementById('feed-' + tab);
-    if (activeFeed) activeFeed.classList.remove('hidden');
-}
-
 function renderCategories() {
     const container = document.getElementById('category-grid');
     if (!container) return; 
@@ -136,13 +107,13 @@ function updateRouteListUI() {
                 <div class="flex items-center space-x-3">
                     ${formatBadge(route.code, route.badgeColor || '#0072bc')}
                     <div>
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-2 flex-wrap">
                             <h3 class="font-semibold text-gray-800 font-sans">${route.name}</h3>
                             ${route.subtype === 'rusun' ? '<span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded font-sans">RUSUN</span>' : ''}
                         </div>
                     </div>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </div>
