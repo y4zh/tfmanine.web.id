@@ -2,23 +2,6 @@ let currentFilter = null;
 let currentSearchQuery = "";
 let currentRouteDetail = null;
 let currentDirectionIndex = 0;
-window.activeDisruptions = [];
-
-let liveUpdatesData = {
-    'TJ': [],
-    'KRL': [],
-    'LRT': []
-};
-
-async function loadLiveUpdates() {
-    try {
-        const response = await fetch('assets/data/live-update.json');
-        if (response.ok) {
-            liveUpdatesData = await response.json();
-        }
-    } catch (error) {}
-    switchInfoTab('TJ');
-}
 
 function switchInfoTab(tab) {
     const btnTJ = document.getElementById('tab-TJ');
@@ -37,71 +20,16 @@ function switchInfoTab(tab) {
         else activeBtn.style.backgroundColor = '#0072bc';
     }
 
-    renderInfoFeed(tab);
-}
+    const feedTJ = document.getElementById('feed-TJ');
+    const feedKRL = document.getElementById('feed-KRL');
+    const feedLRT = document.getElementById('feed-LRT');
 
-function renderInfoFeed(tab) {
-    const container = document.getElementById('info-feed-container');
-    if(!container) return;
+    if (feedTJ) feedTJ.classList.add('hidden');
+    if (feedKRL) feedKRL.classList.add('hidden');
+    if (feedLRT) feedLRT.classList.add('hidden');
 
-    const feeds = liveUpdatesData[tab] || [];
-    
-    if (feeds.length === 0) {
-        container.innerHTML = `<div class="flex items-center justify-center h-full text-sm text-gray-400 font-medium">Tidak ada informasi terbaru saat ini.</div>`;
-        analyzeDisruptions();
-        return;
-    }
-
-    container.innerHTML = feeds.map(feed => `
-        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-            <p class="text-[13.5px] text-gray-700 font-sans leading-relaxed mb-3">${feed.text}</p>
-            <div class="flex items-center justify-between border-t border-gray-50 pt-2">
-                <a href="${feed.url || '#'}" target="_blank" class="text-[11px] text-primary font-bold hover:underline">Lihat sumber resmi ↗</a>
-                <span class="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">Diperbarui: ${feed.time}</span>
-            </div>
-        </div>
-    `).join('');
-
-    analyzeDisruptions();
-}
-
-function analyzeDisruptions() {
-    window.activeDisruptions = [];
-    const allFeeds = [...(liveUpdatesData['TJ'] || []), ...(liveUpdatesData['KRL'] || []), ...(liveUpdatesData['LRT'] || [])];
-    
-    allFeeds.forEach(feed => {
-        if (!feed || !feed.text) return;
-        const text = feed.text;
-        
-        if (window.appData && window.appData.routes) {
-            window.appData.routes.forEach(route => {
-                let routeCode = route.code;
-                let isMentioned = false;
-                
-                if (routeCode.startsWith('JAK')) {
-                    const num = routeCode.replace('JAK', '').trim();
-                    const regex1 = new RegExp(`\\bJAK\\s*${num}\\b`, 'i');
-                    const regex2 = new RegExp(`\\bJAKARTA\\s*${num}\\b`, 'i');
-                    if (regex1.test(text) || regex2.test(text) || text.includes(routeCode)) isMentioned = true;
-                } else if (route.mode === 'krl' || route.mode === 'lrt') {
-                    const regex = new RegExp(`\\b${routeCode}\\b`, 'i');
-                    if (regex.test(text) || text.toLowerCase().includes(route.name.toLowerCase().split(' - ')[0])) {
-                        isMentioned = true;
-                    }
-                    if (routeCode === 'C' && text.toLowerCase().includes('cikarang')) isMentioned = true;
-                    if (routeCode === 'BK' && text.toLowerCase().includes('bekasi')) isMentioned = true;
-                } else {
-                    const regex = new RegExp(`\\b${routeCode}\\b`, 'i');
-                    if (regex.test(text)) isMentioned = true;
-                }
-                
-                if (isMentioned && !window.activeDisruptions.includes(route.code)) {
-                    window.activeDisruptions.push(route.code);
-                }
-            });
-        }
-    });
-    updateRouteListUI();
+    const activeFeed = document.getElementById('feed-' + tab);
+    if (activeFeed) activeFeed.classList.remove('hidden');
 }
 
 function renderCategories() {
@@ -202,30 +130,24 @@ function updateRouteListUI() {
         return `<span class="text-white text-sm font-bold px-3 py-1.5 rounded-lg font-sans" style="background-color: ${color}">${code}</span>`;
     };
 
-    container.innerHTML = filteredRoutes.map(route => {
-        const hasDisrupt = window.activeDisruptions && window.activeDisruptions.includes(route.code);
-        const disruptBadge = hasDisrupt ? `<span class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-2 py-0.5 rounded-md font-sans ml-2 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>INFO TERKINI</span>` : '';
-        
-        return `
+    container.innerHTML = filteredRoutes.map(route => `
         <div class="route-card bg-white rounded-xl p-4 shadow-sm cursor-pointer border border-gray-100 mb-3" onclick="openDetail('${route.id}')">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     ${formatBadge(route.code, route.badgeColor || '#0072bc')}
                     <div>
-                        <div class="flex items-center space-x-2 flex-wrap">
+                        <div class="flex items-center space-x-2">
                             <h3 class="font-semibold text-gray-800 font-sans">${route.name}</h3>
                             ${route.subtype === 'rusun' ? '<span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded font-sans">RUSUN</span>' : ''}
-                            ${disruptBadge}
                         </div>
                     </div>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </div>
         </div>
-        `;
-    }).join('');
+    `).join('');
 }
 
 function clearFilter() {
@@ -978,11 +900,5 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSearchQuery = e.target.value.toLowerCase();
             updateRouteListUI();
         });
-    }
-
-    if (document.getElementById('info-feed-container')) {
-        setTimeout(() => {
-            loadLiveUpdates();
-        }, 300);
     }
 });
